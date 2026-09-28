@@ -401,27 +401,28 @@ Ingestion, έλεγχοι ποιότητας, υπολογισμός δεικτ�
 | Στρώμα | Επιλογή | Αιτιολόγηση |
 |---|---|---|
 | Γλώσσα | Python 3.12+, με `uv` για αναπαραγώγιμο περιβάλλον | Ένα οικοσύστημα για pipeline, στατιστική και tests |
-| Δεδομένα | DuckDB + Parquet, Polars | Αναλυτική SQL χωρίς server, versioned αρχεία |
+| Δεδομένα | Parquet ως αποθήκευση· Polars για όλους τους μετασχηματισμούς· DuckDB μόνο για SQL ερωτήματα πάνω σε Parquet (ADR 0005) | Ένας κινητήρας ανά ρόλο, versioned αρχεία |
 | Επικύρωση | `pandera` (schemas), `pytest`, `hypothesis` (property tests, π.χ. διατήρηση πληθυσμού στον cohort-component χωρίς γεννήσεις/θανάτους/μετανάστευση) | Τα tests είναι ο κύριος μηχανισμός ποιότητας όταν γράφει το Claude |
 | Στατιστική | `statsmodels`, `scipy`, `PyMC` (Bayesian small-area, Φάση 3) | Ώριμα, τεκμηριωμένα |
 | Πιθανοτικές προβολές | R `bayesTFR` / `bayesLife` / `bayesPop` **μόνο στο CI** | Η μεθοδολογία του ΟΗΕ δεν έχει ισοδύναμο σε Python |
-| Site | Observable Framework (στατικό, data loaders σε Python, Observable Plot / D3) | Σχεδιασμένο για data-driven publishing. **Κίνδυνος:** να επιβεβαιωθεί ότι συντηρείται ενεργά. Εναλλακτικά Astro + Observable Plot/D3. |
-| Εκθέσεις / papers | Quarto → HTML + PDF (Typst), EL/EN | Literate programming: κείμενο και κώδικας μαζί |
+| Site | **Quarto website** με OJS cells και βιβλιοθήκη γραφημάτων ως ανεξάρτητο ES module (Observable Plot / D3) (ADR 0005) | Το Observable Framework βρίσκεται σε κατάσταση συντήρησης. Ένα εργαλείο για site και δημοσιεύσεις. Έξοδος διαφυγής: Astro, με τα ίδια γραφήματα και tokens. |
+| Εκθέσεις / papers | Quarto → HTML + PDF (Typst), EL/EN, κοινό `_brand.yml` με το site | Literate programming: κείμενο και κώδικας μαζί |
 | Φιλοξενία | GitHub Pages (ή Cloudflare Pages) | Δωρεάν, στατικό |
 | Αρχειοθέτηση | GitHub Releases + ενσωμάτωση Zenodo για DOI ανά έκδοση | Μόνιμη, αναφέρσιμη εκδοχή δεδομένων και κώδικα |
 | Ingestion | Προγραμματισμένο GitHub Actions workflow | Οι runners έχουν πρόσβαση στις πηγές. Snapshots αποθηκεύονται ως release assets. |
 
 ### 9.2 Δομή repository (στόχος)
 
+Αναλυτικά, με τα μοτίβα ανά module, στην [ADR 0005](decisions/0005-software-architecture.md). Σειρά υλοποίησης στο [`IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md).
+
 ```
-pipeline/      # ingestion, harmonization, indicators, models (Python package)
-  sources/     # ένας connector ανά πηγή, με registry μεταδεδομένων
-  tests/
-data/          # μόνο μικρά reference αρχεία (concordance, peer groups)· τα μεγάλα σε releases
-design/        # tokens, παλέτες, τυπογραφία, validators
-site/          # Observable Framework
-publications/  # Quarto: working papers, ετήσια έκθεση
-docs/          # πρόταση, αποφάσεις (ADR), μεθοδολογία
+pipeline/src/grpop/  # sources, snapshots, parse, provenance, harmonize, indicators, models, bridge_r, build, publish
+data/reference/      # μόνο μικρά reference αρχεία (concordance, peer groups)· τα μεγάλα σε releases
+design/              # tokens.json, γεννήτριες (CSS, JS, _brand.yml), validators
+charts/              # βιβλιοθήκη γραφημάτων (ES module), tests, visual regression
+site/                # Quarto website (observatory)
+publications/        # Quarto: working papers, ετήσια έκθεση
+docs/                # πρόταση, αποφάσεις (ADR), σχέδιο υλοποίησης, μεθοδολογία
 ```
 
 ---

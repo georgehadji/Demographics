@@ -63,7 +63,8 @@
   "value": null,
   "unit": "persons 65+ per 100 persons 15-64",
   "source": "Eurostat",
-  "dataset_code": "demo_pjanind",
+  "dataset_code": "demo_pjan",
+  "check_against": "demo_pjanind",
   "vintage": "<from source metadata>",
   "retrieved_at": "<pipeline timestamp>",
   "nature": "derived",
@@ -81,7 +82,7 @@
 
 | Πηγή | Χρήση | Πρόσβαση | Σημειώσεις |
 |---|---|---|---|
-| **Eurostat** | Βασική μηχανή ingestion για Ελλάδα και ΕΕ: πληθυσμός κατά ηλικία/φύλο (`demo_pjan`), ισοζύγια (`demo_gind`), γονιμότητα (`demo_find`, `demo_fasec`), προσδόκιμο ζωής (`demo_mlexpec`), δείκτες δομής (`demo_pjanind`), περιφερειακά (`demo_r_*`), μετανάστευση (`migr_*`), μηνιαίες γεννήσεις/θάνατοι (`demo_fmonth`, `demo_mmonth`) | REST / SDMX 2.1 & 3.0, JSON-stat, CSV | Ενιαίοι ορισμοί ΕΕ. Η ELSTAT διαβιβάζει στη Eurostat, οπότε τα δεδομένα είναι συγκρίσιμα αλλά μπορεί να έχουν καθυστέρηση. |
+| **Eurostat** | Βασική μηχανή ingestion για Ελλάδα και ΕΕ: πληθυσμός κατά ηλικία/φύλο (`demo_pjan`), ισοζύγια (`demo_gind`), γονιμότητα (`demo_find`, `demo_frate`), προσδόκιμο ζωής (`demo_mlexpec`), δείκτες δομής (`demo_pjanind`), περιφερειακά (`demo_r_*`), μετανάστευση (`migr_*`), μηνιαίες γεννήσεις/θάνατοι (`demo_fmonth`, `demo_mmonth`) | REST / SDMX 2.1 & 3.0, JSON-stat, CSV | Ενιαίοι ορισμοί ΕΕ. Η ELSTAT διαβιβάζει στη Eurostat, οπότε τα δεδομένα είναι συγκρίσιμα αλλά μπορεί να έχουν καθυστέρηση. |
 | **Eurostat EUROPOP2025** | Επίσημες προβολές 2025–2100 (εθνικές, `proj_25n*`). Περιφερειακές NUTS 3 αν επιβεβαιωθούν. | Όπως παραπάνω | Δημοσιεύθηκε 16/4/2026. Ταξινόμηση NUTS 2024. |
 | **ELSTAT** | Αναφορά για Ελλάδα: δελτία πληθυσμού, ζωτικά γεγονότα, απογραφές 2011/2021, λεπτομέρεια κάτω από NUTS 3 | **UNKNOWN**: πιθανότατα XLS/PDF | Χρησιμοποιείται για reconciliation και για ό,τι δεν υπάρχει στη Eurostat. Το κόστος parsing μετράται στη Φάση 0. |
 | **UN WPP 2024** | Παγκόσμιες συγκρίσεις, μακροχρόνιες πιθανοτικές προβολές | Bulk CSV· Data Portal API με bearer token | Επόμενη έκδοση το **2027** (όχι το 2026). |
@@ -138,7 +139,7 @@
 
 | Επίπεδο | Τι | Πότε |
 |---|---|---|
-| **Α. Επίσημες προβολές** | EUROPOP2025 (baseline + sensitivities), WPP 2024 (median + 80/95% διαστήματα) | MVP |
+| **Α. Επίσημες προβολές** | EUROPOP2025 (baseline και όσες εναλλακτικές παραλλαγές δημοσιεύονται), WPP 2024 (median + 80/95% διαστήματα) | MVP |
 | **Β. Ντετερμινιστικός simulator** | Cohort-component με υποθέσεις του χρήστη | Φάση 2 |
 | **Γ. Πιθανοτικές προβολές** | Μεθοδολογία ΟΗΕ μέσω `bayesTFR` / `bayesLife` / `bayesPop` (R), με υποεθνική επέκταση | Φάση 3 |
 
@@ -148,13 +149,14 @@
 
 Μονοετείς ηλικίες $x = 0,\dots,\omega$ (π.χ. $\omega = 100$, ανοιχτή ομάδα $\omega+$), φύλο $s \in \{f, m\}$, βήμα 1 έτους. Η μετανάστευση ακολουθεί σύμβαση «μισή στην αρχή, μισή στο τέλος του διαστήματος».
 
-**Επιβίωση** (από πίνακα επιβίωσης περιόδου, με person-years $L_x$ και $T_x$):
+**Επιβίωση** (από πίνακα επιβίωσης περιόδου, με person-years $L_x$ και $T_x$). Ο πίνακας επιβίωσης πρέπει να έχει την ανοιχτή ομάδα του στην ίδια ηλικία $\omega$ με τον πληθυσμό, ώστε $T_\omega = L_{\omega+}$:
 
 $$
-S_{s,x,t} = \frac{L_{s,x+1,t}}{L_{s,x,t}}, \qquad
-S_{s,\omega-1,t} = \frac{T_{s,\omega,t}}{T_{s,\omega-1,t}}, \qquad
-S_{s,\omega+,t} = \frac{T_{s,\omega+1,t}}{T_{s,\omega,t}}
+S_{s,x,t} = \frac{L_{s,x+1,t}}{L_{s,x,t}} \quad (x = 0,\dots,\omega-2), \qquad
+S_{s,\omega-1+,t} = \frac{T_{s,\omega,t}}{T_{s,\omega-1,t}}
 $$
+
+Αν ο πίνακας της πηγής κλείνει σε χαμηλότερη ηλικία (π.χ. 85+), χρειάζεται πρώτα επέκταση της θνησιμότητας στις μεγάλες ηλικίες (π.χ. μοντέλο Kannisto). Η επέκταση τεκμηριώνεται ως υπόθεση.
 
 **Γήρανση** ($x = 0,\dots,\omega-2$):
 
@@ -162,10 +164,10 @@ $$
 P_{s,x+1,t+1} = \left(P_{s,x,t} + \tfrac{1}{2}M_{s,x,t}\right) S_{s,x,t} + \tfrac{1}{2}M_{s,x+1,t}
 $$
 
-**Ανοιχτή ομάδα:**
+**Ανοιχτή ομάδα** (οι ηλικίες $\omega-1$ και $\omega+$ επιβιώνουν μαζί προς την $\omega+$):
 
 $$
-P_{s,\omega+,t+1} = \left(P_{s,\omega-1,t} + \tfrac{1}{2}M_{s,\omega-1,t}\right) S_{s,\omega-1,t} + \left(P_{s,\omega+,t} + \tfrac{1}{2}M_{s,\omega+,t}\right) S_{s,\omega+,t} + \tfrac{1}{2}M_{s,\omega+,t}
+P_{s,\omega+,t+1} = \left(P_{s,\omega-1,t} + P_{s,\omega+,t} + \tfrac{1}{2}M_{s,\omega-1,t} + \tfrac{1}{2}M_{s,\omega+,t}\right) S_{s,\omega-1+,t} + \tfrac{1}{2}M_{s,\omega+,t}
 $$
 
 **Γεννήσεις** (με μέση έκθεση γυναικών αναπαραγωγικής ηλικίας 15–49):

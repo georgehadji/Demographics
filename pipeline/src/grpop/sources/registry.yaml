@@ -16,7 +16,7 @@
   licence: to_verify
   used_for: [population_1jan, age_structure, pyramids, dependency_ratios]
   phase: 1
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_gind
   provider: Eurostat
@@ -28,7 +28,7 @@
   licence: to_verify
   used_for: [natural_change, net_migration, growth_rate]
   phase: 1
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_find
   provider: Eurostat
@@ -40,7 +40,7 @@
   licence: to_verify
   used_for: [tfr, mean_age_first_birth]
   phase: 1
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_frate
   provider: Eurostat
@@ -52,8 +52,7 @@
   licence: to_verify
   used_for: [asfr, tfr_check]
   phase: 1
-  notes: candidate code
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_mlexpec
   provider: Eurostat
@@ -65,7 +64,7 @@
   licence: to_verify
   used_for: [life_expectancy_birth, life_expectancy_65]
   phase: 1
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_pjanind
   provider: Eurostat
@@ -77,7 +76,7 @@
   licence: to_verify
   used_for: [acceptance_tests_for_derived_indicators]
   phase: 1
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_r_gind3
   provider: Eurostat
@@ -85,11 +84,13 @@
   title: Population change - demographic balance and crude rates at regional level (NUTS 3)
   access: api
   probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL30&lastTimePeriod=1
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL&sinceTimePeriod=2020
   licence: to_verify
   used_for: [r1_regional_decomposition]
   phase: 2
-  notes: A metadata page for this code exists (seen in search results during the v1 review).
+  notes: >-
+    Probe run 36432199610 returned HTTP 200 but 0 values for geo=EL30 and the
+    latest period only. Query changed to geo=EL, 2020 onwards; re-check.
   verification: {status: unverified}
 
 - id: eurostat_demo_r_pjangrp3
@@ -102,8 +103,7 @@
   licence: to_verify
   used_for: [regional_age_structure]
   phase: 2
-  notes: candidate code
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_fmonth
   provider: Eurostat
@@ -115,7 +115,7 @@
   licence: to_verify
   used_for: [nowcasting]
   phase: 3
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_mmonth
   provider: Eurostat
@@ -127,7 +127,7 @@
   licence: to_verify
   used_for: [r4_excess_mortality, nowcasting]
   phase: 3
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_proj_25np
   provider: Eurostat
@@ -140,9 +140,9 @@
   used_for: [official_projections, simulator_reproduction_test]
   phase: 2
   notes: >-
-    candidate code, INFERENCE from the EUROPOP2023 naming (proj_23np). The
-    EUROPOP2025 collection metadata page is proj_25n_esms.
-  verification: {status: unverified}
+    Confirmed by probe: 7 projection types for Greece (baseline and variants),
+    dataset updated 2026-06-11.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: gisco_nuts_2024
   provider: Eurostat GISCO
@@ -154,8 +154,7 @@
   licence: to_verify
   used_for: [maps, geo_concordance]
   phase: 1
-  notes: candidate URL pattern
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
 - id: elstat_population_estimate_2025
   provider: ELSTAT
@@ -170,7 +169,7 @@
   notes: >-
     Phase 0 spike: find the machine-readable (XLS) tables behind this release
     and measure parsing effort.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
 - id: un_wpp_2024
   provider: UN DESA Population Division
@@ -185,7 +184,7 @@
   notes: >-
     The Data Portal API needs a bearer token, so bulk CSV files are preferred.
     The next edition was postponed to 2027.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
 - id: hmd_grc
   provider: Human Mortality Database
@@ -200,7 +199,7 @@
   notes: >-
     Registration is required. Greek data start in 1981; 1981-1991 are of lower
     quality according to the HMD country notes.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
 - id: hfd_grc
   provider: Human Fertility Database
@@ -215,4 +214,4 @@
   notes: >-
     Registration is required. Greek data were last updated in March 2017, so this
     is not a source for current fertility.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}

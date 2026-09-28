@@ -216,3 +216,111 @@
     Registration is required. Greek data were last updated in March 2017, so this
     is not a source for current fertility.
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+# --- Added for ADR 0004 (sub-national data, Phase 3) ---
+
+- id: eurostat_proj_25rp5
+  provider: Eurostat
+  dataset_code: proj_25rp5
+  title: EUROPOP2025 population on 1 January by age group, sex, projection type and NUTS 3 region
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rp5?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [regional_official_projections]
+  phase: 3
+  notes: >-
+    ADR 0004: all 52 Greek NUTS 3 regions (NUTS 2024) have values; baseline (BSL)
+    only; 5-year steps 2025-2100; 5-year age groups. Checked by direct API call
+    on 2026-09-28, not yet by the Source probe.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+- id: eurostat_proj_25rpind
+  provider: Eurostat
+  dataset_code: proj_25rpind
+  title: EUROPOP2025 population structure indicators by projection type and NUTS 3 region
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rpind?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
+  licence: to_verify
+  used_for: [regional_official_projections, acceptance_tests_for_derived_indicators]
+  phase: 3
+  notes: ADR 0004. Baseline only; 16 indicators.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+- id: eurostat_proj_25rdbal
+  provider: Eurostat
+  dataset_code: proj_25rdbal
+  title: EUROPOP2025 demographic balances by projection type and NUTS 3 region (5-year aggregates)
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rdbal?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
+  licence: to_verify
+  used_for: [regional_official_projections]
+  phase: 3
+  notes: ADR 0004. Baseline only; 5-year aggregates.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+- id: eurostat_demo_r_pjanaggr3
+  provider: Eurostat
+  dataset_code: demo_r_pjanaggr3
+  title: Population on 1 January by broad age group, sex and NUTS 3 region
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanaggr3?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [nuts3_population, sae_control_totals]
+  phase: 3
+  notes: >-
+    ADR 0004: 94 Greek NUTS 3 codes across NUTS versions against 52 in NUTS 2024,
+    so a NUTS concordance is required before use.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+- id: elstat_births_municipal
+  provider: ELSTAT
+  dataset_code: SPO03 table 06
+  title: Live births by place of usual residence of the mother - municipalities and municipal units, 1999-2024
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO03/2024
+  licence: to_verify
+  used_for: [municipal_births, sae_inputs]
+  phase: 3
+  notes: >-
+    ADR 0004. The probe URL is the publication page; the xlsx sits behind a portal
+    link with a documentID (251204 for the 2024 edition), not a stable file name.
+    Sheets 1999-2013 and 2014-2024. The 2014-2024 sheet mixes Kallikratis and
+    Kleisthenis municipality names, so a concordance is required. Many municipal
+    units have single-digit yearly counts.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+- id: elstat_deaths_municipal
+  provider: ELSTAT
+  dataset_code: SPO09 table 07
+  title: Deaths by place of usual residence - municipalities and municipal units, 1999-2024
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO09/2024
+  licence: to_verify
+  used_for: [municipal_deaths, sae_inputs]
+  phase: 3
+  notes: >-
+    ADR 0004. Only the table title was checked; the structure is assumed to match
+    SPO03 table 06 (INFERENCE). Same portal-link caveat.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+- id: elstat_census_2021_settlement
+  provider: ELSTAT
+  dataset_code: Census 2021 resident population by settlement
+  title: 2021 Census resident population by region, regional unit, municipality, municipal unit, community and settlement
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://www.statistics.gr/documents/20181/17286366/MON_PLI_DHM_OIKISN_2021.xlsx/2b5a5f24-4083-ede5-7201-3c4fb109fb44
+  licence: to_verify
+  used_for: [municipal_census_population, sae_benchmarks]
+  phase: 3
+  notes: >-
+    ADR 0004. One sheet, about 21,000 rows, a hierarchy from country to settlement
+    with ELSTAT geographic codes; totals only, no sex breakdown. Population by
+    municipality and sex is published only as a PDF (Census2022_GR.pdf).
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}

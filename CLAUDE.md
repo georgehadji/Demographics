@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Demographer** (working name, see ADR 0002): a non-commercial research and publication project on the demography of Greece. Goal: public credibility.
+**Κοόρτες / Kohortes** (open demographic analysis of Greece; see ADR 0003): a non-commercial research and publication project on the demography of Greece. Goal: public credibility.
 Claude builds everything (code, analysis, text, design). The responsible editor is **Georgios-Chrysovalantis Chatzivantsidis**, who approves every publication.
 There is **no external reviewer yet**. Publications must carry their review tier (PROPOSAL §1B) and must never be presented as reviewed. See `AI_USE.md`.
 Licences: code MIT, content and derived data CC BY 4.0, subject to the source terms.

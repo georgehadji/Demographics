@@ -233,7 +233,7 @@
     ADR 0004: all 52 Greek NUTS 3 regions (NUTS 2024) have values; baseline (BSL)
     only; 5-year steps 2025-2100; 5-year age groups. Checked by direct API call
     on 2026-09-28, not yet by the Source probe.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_proj_25rpind
   provider: Eurostat
@@ -246,7 +246,7 @@
   used_for: [regional_official_projections, acceptance_tests_for_derived_indicators]
   phase: 3
   notes: ADR 0004. Baseline only; 16 indicators.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_proj_25rdbal
   provider: Eurostat
@@ -259,7 +259,7 @@
   used_for: [regional_official_projections]
   phase: 3
   notes: ADR 0004. Baseline only; 5-year aggregates.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_r_pjanaggr3
   provider: Eurostat
@@ -274,7 +274,7 @@
   notes: >-
     ADR 0004: 94 Greek NUTS 3 codes across NUTS versions against 52 in NUTS 2024,
     so a NUTS concordance is required before use.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: elstat_births_municipal
   provider: ELSTAT
@@ -292,7 +292,7 @@
     Sheets 1999-2013 and 2014-2024. The 2014-2024 sheet mixes Kallikratis and
     Kleisthenis municipality names, so a concordance is required. Many municipal
     units have single-digit yearly counts.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
 - id: elstat_deaths_municipal
   provider: ELSTAT
@@ -307,7 +307,7 @@
   notes: >-
     ADR 0004. Only the table title was checked; the structure is assumed to match
     SPO03 table 06 (INFERENCE). Same portal-link caveat.
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
 - id: elstat_census_2021_settlement
   provider: ELSTAT
@@ -323,4 +323,4 @@
     ADR 0004. One sheet, about 21,000 rows, a hierarchy from country to settlement
     with ELSTAT geographic codes; totals only, no sex breakdown. Population by
     municipality and sex is published only as a PDF (Census2022_GR.pdf).
-  verification: {status: unverified}
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}

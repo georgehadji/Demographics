@@ -1,0 +1,14 @@
+# Metric definitions: the single source of truth for what a definition_id means.
+#
+# Every definition_id written into an observation is defined here exactly once.
+# Parsers and indicators read `metric` and `unit` from this file instead of
+# typing them. Changing what a definition means requires a new version (@v2);
+# the old version stays so that published values keep their meaning.
+
+- id: population_1jan@v1
+  metric: population
+  unit: persons
+  title: Population on 1 January
+  description: >-
+    Usual resident population on 1 January of the reference year. The period is
+    the year (YYYY), as in Eurostat demo_pjan.

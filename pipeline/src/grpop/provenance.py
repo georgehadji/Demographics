@@ -49,12 +49,16 @@ OBSERVATION_KEY = (
     "scenario_id",
 )
 
+# Format of a definition id, e.g. "population_1jan@v1". The definitions themselves
+# live in definitions.yaml.
+DEFINITION_ID_PATTERN = r"^[a-z0-9_]+@v\d+$"
+
 
 class ObservationSchema(pa.DataFrameModel):
     """Schema of the long-format observations table."""
 
     metric: str = pa.Field(str_length={"min_value": 1})
-    definition_id: str = pa.Field(str_matches=r"^[a-z0-9_]+@v\d+$")
+    definition_id: str = pa.Field(str_matches=DEFINITION_ID_PATTERN)
     geo_code: str = pa.Field(str_length={"min_value": 2})
     geo_vintage: str = pa.Field(str_length={"min_value": 1})
     period: str = pa.Field(str_matches=r"^\d{4}(-\d{2}(-\d{2})?)?$")

@@ -22,6 +22,7 @@ def entry(kind: str) -> SourceEntry:
         probe_kind=kind,
         probe_url="https://example.org/data",
         licence="to_verify",
+        licence_key="to_verify",
         used_for=["a"],
         phase=1,
         verification={"status": "unverified"},

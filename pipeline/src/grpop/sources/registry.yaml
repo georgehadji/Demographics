@@ -407,4 +407,4 @@ sources:
     used_for: [population_1jan, reconciliation]
     phase: 1
     notes: Stable portal URL whose content is updated in place; see docs/spikes/elstat-ingestion.md.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36482771328: HTTP 200, xlsx (99735 bytes). Content parsed and checked in the A2 spike'}

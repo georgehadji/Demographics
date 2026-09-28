@@ -50,6 +50,7 @@ class SourceEntry(BaseModel):
     probe_url: str = Field(pattern=r"^https://")
     # A new entry may start as "to_verify"; the shipped registry may not (test_registry).
     licence: Licence | Literal["to_verify"]
+    licence_key: str  # key into the registry's `licences` section, or "to_verify"
     used_for: list[str] = Field(min_length=1)
     phase: int = Field(ge=0, le=3)
     notes: str | None = None
@@ -57,12 +58,45 @@ class SourceEntry(BaseModel):
 
 
 def load_registry(text: str | None = None) -> list[SourceEntry]:
-    """Load and validate the registry. Pass ``text`` to validate other YAML (tests)."""
+    """Load and validate the registry. Pass ``text`` to validate other YAML (tests).
+
+    Each source names its licence by key; the key is resolved against the
+    ``licences`` section, so every licence is written once (single source of truth).
+    """
     if text is None:
         text = resources.files("grpop.sources").joinpath("registry.yaml").read_text("utf-8")
-    entries = [SourceEntry.model_validate(item) for item in yaml.safe_load(text)]
+    doc = yaml.safe_load(text)
+    if set(doc) != {"licences", "sources"}:
+        raise ValueError("registry must have exactly 'licences' and 'sources'")
+    licences = doc["licences"] or {}
+
+    entries = []
+    for item in doc["sources"]:
+        key = item.get("licence")
+        item = {**item, "licence_key": key}
+        if key != "to_verify":
+            if key not in licences:
+                raise ValueError(f"{item.get('id')}: unknown licence key {key!r}")
+            terms = dict(licences[key])
+            terms["attribution"] = terms["attribution"].format(
+                dataset_code=item.get("dataset_code")
+            )
+            item["licence"] = terms
+        entries.append(SourceEntry.model_validate(item))
+
     ids = [e.id for e in entries]
     duplicates = sorted({i for i in ids if ids.count(i) > 1})
     if duplicates:
         raise ValueError(f"duplicate registry ids: {duplicates}")
+    unused = sorted(set(licences) - {e.licence_key for e in entries})
+    if unused:
+        raise ValueError(f"licences not used by any source: {unused}")
     return entries
+
+
+def get_source(source_id: str) -> SourceEntry:
+    """The shipped registry entry with this id."""
+    for entry in load_registry():
+        if entry.id == source_id:
+            return entry
+    raise KeyError(f"no registry entry {source_id!r}")

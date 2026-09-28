@@ -1,257 +1,27 @@
-# Source registry (Phase 0).
+# Source registry.
 #
 # Every dataset the project uses is listed here before any code depends on it.
 # verification.status changes to "verified" only after a probe report
 # (grpop-probe, run in GitHub Actions) has been read and the evidence recorded.
 # Dataset codes marked "candidate" in notes are expected codes that have not yet
 # been confirmed against the live catalogue.
+#
+# Single source of truth for source metadata and reuse terms. Each licence is
+# defined once under `licences` and referenced by key from `sources`; in an
+# attribution, {dataset_code} is filled in from the source entry.
 
-- id: eurostat_demo_pjan
-  provider: Eurostat
-  dataset_code: demo_pjan
-  title: Population on 1 January by age and sex
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
-  licence:
+licences:
+  eurostat:
     name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
     terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_pjan'
+    attribution: 'Source: Eurostat, dataset {dataset_code}'
     commercial_reuse: true
     checked_at: 2026-09-28
     notes: >-
       Reuse allowed if the source is acknowledged and changes are indicated. Data
       for countries outside the EU and EFTA (e.g. the USA, Japan) is for
       non-commercial reuse only: check before adding non-European peers.
-  used_for: [population_1jan, age_structure, pyramids, dependency_ratios]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_gind
-  provider: Eurostat
-  dataset_code: demo_gind
-  title: Population change - demographic balance and crude rates at national level
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_gind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_gind'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [natural_change, net_migration, growth_rate]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_find
-  provider: Eurostat
-  dataset_code: demo_find
-  title: Fertility indicators
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_find?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_find'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [tfr, mean_age_first_birth]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_frate
-  provider: Eurostat
-  dataset_code: demo_frate
-  title: Fertility rates by age
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_frate'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [asfr, tfr_check]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_mlexpec
-  provider: Eurostat
-  dataset_code: demo_mlexpec
-  title: Life expectancy by age and sex
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?format=JSON&lang=EN&geo=EL&age=Y_LT1&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_mlexpec'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [life_expectancy_birth, life_expectancy_65]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_pjanind
-  provider: Eurostat
-  dataset_code: demo_pjanind
-  title: Population structure indicators at national level
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_pjanind'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [acceptance_tests_for_derived_indicators]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_r_gind3
-  provider: Eurostat
-  dataset_code: demo_r_gind3
-  title: Population change - demographic balance and crude rates at regional level (NUTS 3)
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL&sinceTimePeriod=2020
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_r_gind3'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [r1_regional_decomposition]
-  phase: 2
-  notes: >-
-    Probe run 36432199610 returned 0 values for geo=EL30 at the latest period.
-    With geo=EL from 2020 (run 36432356547) it returns 67 values over 7 years.
-    Which NUTS 2/3 codes and years are populated is still to be mapped in Phase 1.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432356547: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_r_pjangrp3
-  provider: Eurostat
-  dataset_code: demo_r_pjangrp3
-  title: Population on 1 January by age group, sex and NUTS 3 region
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjangrp3?format=JSON&lang=EN&geo=EL30&sex=T&age=TOTAL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_r_pjangrp3'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [regional_age_structure]
-  phase: 2
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_fmonth
-  provider: Eurostat
-  dataset_code: demo_fmonth
-  title: Live births by month
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_fmonth'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [nowcasting]
-  phase: 3
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_demo_mmonth
-  provider: Eurostat
-  dataset_code: demo_mmonth
-  title: Deaths by month
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_mmonth'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [r4_excess_mortality, nowcasting]
-  phase: 3
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: eurostat_proj_25np
-  provider: Eurostat
-  dataset_code: proj_25np
-  title: EUROPOP2025 population on 1 January by age, sex and projection type
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset proj_25np'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [official_projections, simulator_reproduction_test]
-  phase: 2
-  notes: >-
-    Confirmed by probe: 7 projection types for Greece (baseline and variants),
-    dataset updated 2026-06-11.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
-
-- id: gisco_nuts_2024
-  provider: Eurostat GISCO
-  dataset_code: NUTS 2024
-  title: NUTS 2024 boundaries (file index)
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/nuts-2024-files.json
-  licence:
+  gisco_geodata:
     name: Eurostat/GISCO geodata terms (non-commercial)
     terms_url: https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units
     attribution: © EuroGeographics for the administrative boundaries
@@ -262,18 +32,7 @@
       data is not used commercially and the source is acknowledged. The notice
       must be visible on every map. Boundary geometry therefore cannot be
       released under CC BY 4.0 (see LICENSE-CONTENT.md).
-  used_for: [maps, geo_concordance]
-  phase: 1
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
-
-- id: elstat_population_estimate_2025
-  provider: ELSTAT
-  dataset_code: estimated population 1.1.2025 and migration flows 2024
-  title: Estimated population (1.1.2025) and migration flows (2024), press release
-  access: pdf
-  probe_kind: http
-  probe_url: https://www.statistics.gr/documents/20181/18730878/DT_population_2025_en.pdf/5dafb9ee-8c2a-92cb-168f-92a5625aec79
-  licence:
+  elstat:
     name: ELSTAT copyright and reuse policy
     terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
     attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
@@ -284,21 +43,7 @@
       licence, provided the source is indicated. Any modification (including
       translation) must be stated to the end user together with a statement that
       ELSTAT bears no responsibility for the result. Third-party material is excluded.
-  used_for: [reconciliation, headline_figures]
-  phase: 0
-  notes: >-
-    Phase 0 spike: find the machine-readable (XLS) tables behind this release
-    and measure parsing effort.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
-
-- id: un_wpp_2024
-  provider: UN DESA Population Division
-  dataset_code: WPP2024
-  title: World Population Prospects 2024
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://population.un.org/wpp/
-  licence:
+  un_wpp:
     name: CC BY 3.0 IGO
     terms_url: https://creativecommons.org/licenses/by/3.0/igo/
     attribution: 'United Nations, Department of Economic and Social Affairs, Population Division (2024). World Population Prospects 2024.'
@@ -308,21 +53,7 @@
       VERIFIED for figures and tables of the WPP 2024 Summary of Results (copyright
       page). That the data files carry the same licence is an INFERENCE; confirm on
       the download page when ingestion starts.
-  used_for: [official_projections, global_comparisons, r7_projection_uncertainty]
-  phase: 2
-  notes: >-
-    The Data Portal API needs a bearer token, so bulk CSV files are preferred.
-    The next edition was postponed to 2027.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
-
-- id: hmd_grc
-  provider: Human Mortality Database
-  dataset_code: GRC
-  title: Greece life tables and mortality series
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://www.mortality.org/Country/Country?cntr=GRC
-  licence:
+  hmd:
     name: CC BY 4.0
     terms_url: https://www.mortality.org/Data/UserAgreement
     attribution: 'HMD. Human Mortality Database. Max Planck Institute for Demographic Research (Germany), University of California, Berkeley (USA), and French Institute for Demographic Studies (France). Available at www.mortality.org.'
@@ -332,21 +63,7 @@
       CC BY 4.0 covers HMD estimates. "Input Data" must not be re-published in any
       form without the data owners' permission. HMD asks users to point others to
       its website rather than share copies.
-  used_for: [r3_life_expectancy_decomposition, life_tables]
-  phase: 3
-  notes: >-
-    Registration is required. Greek data start in 1981; 1981-1991 are of lower
-    quality according to the HMD country notes.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
-
-- id: hfd_grc
-  provider: Human Fertility Database
-  dataset_code: GRC
-  title: Greece fertility series
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://www.humanfertility.org/Country/Country?cntr=GRC
-  licence:
+  hfd:
     name: CC BY 4.0
     terms_url: https://www.humanfertility.org/Data/UserAgreement
     attribution: 'HFD. Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria). Available at www.humanfertility.org. Data downloaded on [date].'
@@ -356,183 +73,338 @@
       Input data must not be re-published commercially without the owners'
       permission. HFD prefers that users are referred to its website rather than
       given copies of the data.
-  used_for: [r2_tempo_quantum_historical]
-  phase: 3
-  notes: >-
-    Registration is required. Greek data were last updated in March 2017, so this
-    is not a source for current fertility.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
-# --- Added for ADR 0004 (sub-national data, Phase 3) ---
+sources:
+  - id: eurostat_demo_pjan
+    provider: Eurostat
+    dataset_code: demo_pjan
+    title: Population on 1 January by age and sex
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [population_1jan, age_structure, pyramids, dependency_ratios]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
-- id: eurostat_proj_25rp5
-  provider: Eurostat
-  dataset_code: proj_25rp5
-  title: EUROPOP2025 population on 1 January by age group, sex, projection type and NUTS 3 region
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rp5?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset proj_25rp5'
-    commercial_reuse: true
-    checked_at: 2026-09-28
+  - id: eurostat_demo_gind
+    provider: Eurostat
+    dataset_code: demo_gind
+    title: Population change - demographic balance and crude rates at national level
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_gind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [natural_change, net_migration, growth_rate]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_find
+    provider: Eurostat
+    dataset_code: demo_find
+    title: Fertility indicators
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_find?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [tfr, mean_age_first_birth]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_frate
+    provider: Eurostat
+    dataset_code: demo_frate
+    title: Fertility rates by age
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [asfr, tfr_check]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_mlexpec
+    provider: Eurostat
+    dataset_code: demo_mlexpec
+    title: Life expectancy by age and sex
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?format=JSON&lang=EN&geo=EL&age=Y_LT1&lastTimePeriod=1
+    licence: eurostat
+    used_for: [life_expectancy_birth, life_expectancy_65]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_pjanind
+    provider: Eurostat
+    dataset_code: demo_pjanind
+    title: Population structure indicators at national level
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [acceptance_tests_for_derived_indicators]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_r_gind3
+    provider: Eurostat
+    dataset_code: demo_r_gind3
+    title: Population change - demographic balance and crude rates at regional level (NUTS 3)
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL&sinceTimePeriod=2020
+    licence: eurostat
+    used_for: [r1_regional_decomposition]
+    phase: 2
     notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [regional_official_projections]
-  phase: 3
-  notes: >-
-    ADR 0004: all 52 Greek NUTS 3 regions (NUTS 2024) have values; baseline (BSL)
-    only; 5-year steps 2025-2100; 5-year age groups. Checked by direct API call
-    on 2026-09-28, not yet by the Source probe.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+      Probe run 36432199610 returned 0 values for geo=EL30 at the latest period.
+      With geo=EL from 2020 (run 36432356547) it returns 67 values over 7 years.
+      Which NUTS 2/3 codes and years are populated is still to be mapped in Phase 1.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432356547: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
-- id: eurostat_proj_25rpind
-  provider: Eurostat
-  dataset_code: proj_25rpind
-  title: EUROPOP2025 population structure indicators by projection type and NUTS 3 region
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rpind?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset proj_25rpind'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [regional_official_projections, acceptance_tests_for_derived_indicators]
-  phase: 3
-  notes: ADR 0004. Baseline only; 16 indicators.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+  - id: eurostat_demo_r_pjangrp3
+    provider: Eurostat
+    dataset_code: demo_r_pjangrp3
+    title: Population on 1 January by age group, sex and NUTS 3 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjangrp3?format=JSON&lang=EN&geo=EL30&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [regional_age_structure]
+    phase: 2
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
-- id: eurostat_proj_25rdbal
-  provider: Eurostat
-  dataset_code: proj_25rdbal
-  title: EUROPOP2025 demographic balances by projection type and NUTS 3 region (5-year aggregates)
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rdbal?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset proj_25rdbal'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [regional_official_projections]
-  phase: 3
-  notes: ADR 0004. Baseline only; 5-year aggregates.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+  - id: eurostat_demo_fmonth
+    provider: Eurostat
+    dataset_code: demo_fmonth
+    title: Live births by month
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nowcasting]
+    phase: 3
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
-- id: eurostat_demo_r_pjanaggr3
-  provider: Eurostat
-  dataset_code: demo_r_pjanaggr3
-  title: Population on 1 January by broad age group, sex and NUTS 3 region
-  access: api
-  probe_kind: eurostat_jsonstat
-  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanaggr3?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&lastTimePeriod=1
-  licence:
-    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
-    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
-    attribution: 'Source: Eurostat, dataset demo_r_pjanaggr3'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Reuse allowed if the source is acknowledged and changes are indicated. Data
-      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
-      non-commercial reuse only: check before adding non-European peers.
-  used_for: [nuts3_population, sae_control_totals]
-  phase: 3
-  notes: >-
-    ADR 0004: 94 Greek NUTS 3 codes across NUTS versions against 52 in NUTS 2024,
-    so a NUTS concordance is required before use.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+  - id: eurostat_demo_mmonth
+    provider: Eurostat
+    dataset_code: demo_mmonth
+    title: Deaths by month
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [r4_excess_mortality, nowcasting]
+    phase: 3
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
-- id: elstat_births_municipal
-  provider: ELSTAT
-  dataset_code: SPO03 table 06
-  title: Live births by place of usual residence of the mother - municipalities and municipal units, 1999-2024
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO03/2024
-  licence:
-    name: ELSTAT copyright and reuse policy
-    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
-    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
-    commercial_reuse: true
-    checked_at: 2026-09-28
+  - id: eurostat_proj_25np
+    provider: Eurostat
+    dataset_code: proj_25np
+    title: EUROPOP2025 population on 1 January by age, sex and projection type
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [official_projections, simulator_reproduction_test]
+    phase: 2
     notes: >-
-      Free reuse, commercial and non-commercial, without payment or written
-      licence, provided the source is indicated. Any modification (including
-      translation) must be stated to the end user together with a statement that
-      ELSTAT bears no responsibility for the result. Third-party material is excluded.
-  used_for: [municipal_births, sae_inputs]
-  phase: 3
-  notes: >-
-    ADR 0004. The probe URL is the publication page; the xlsx sits behind a portal
-    link with a documentID (251204 for the 2024 edition), not a stable file name.
-    Sheets 1999-2013 and 2014-2024. The 2014-2024 sheet mixes Kallikratis and
-    Kleisthenis municipality names, so a concordance is required. Many municipal
-    units have single-digit yearly counts.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+      Confirmed by probe: 7 projection types for Greece (baseline and variants),
+      dataset updated 2026-06-11.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
-- id: elstat_deaths_municipal
-  provider: ELSTAT
-  dataset_code: SPO09 table 07
-  title: Deaths by place of usual residence - municipalities and municipal units, 1999-2024
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO09/2024
-  licence:
-    name: ELSTAT copyright and reuse policy
-    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
-    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
-    commercial_reuse: true
-    checked_at: 2026-09-28
-    notes: >-
-      Free reuse, commercial and non-commercial, without payment or written
-      licence, provided the source is indicated. Any modification (including
-      translation) must be stated to the end user together with a statement that
-      ELSTAT bears no responsibility for the result. Third-party material is excluded.
-  used_for: [municipal_deaths, sae_inputs]
-  phase: 3
-  notes: >-
-    ADR 0004. Only the table title was checked; the structure is assumed to match
-    SPO03 table 06 (INFERENCE). Same portal-link caveat.
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+  - id: gisco_nuts_2024
+    provider: Eurostat GISCO
+    dataset_code: NUTS 2024
+    title: NUTS 2024 boundaries (file index)
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/nuts-2024-files.json
+    licence: gisco_geodata
+    used_for: [maps, geo_concordance]
+    phase: 1
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
-- id: elstat_census_2021_settlement
-  provider: ELSTAT
-  dataset_code: Census 2021 resident population by settlement
-  title: 2021 Census resident population by region, regional unit, municipality, municipal unit, community and settlement
-  access: bulk_file
-  probe_kind: http
-  probe_url: https://www.statistics.gr/documents/20181/17286366/MON_PLI_DHM_OIKISN_2021.xlsx/2b5a5f24-4083-ede5-7201-3c4fb109fb44
-  licence:
-    name: ELSTAT copyright and reuse policy
-    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
-    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
-    commercial_reuse: true
-    checked_at: 2026-09-28
+  - id: elstat_population_estimate_2025
+    provider: ELSTAT
+    dataset_code: estimated population 1.1.2025 and migration flows 2024
+    title: Estimated population (1.1.2025) and migration flows (2024), press release
+    access: pdf
+    probe_kind: http
+    probe_url: https://www.statistics.gr/documents/20181/18730878/DT_population_2025_en.pdf/5dafb9ee-8c2a-92cb-168f-92a5625aec79
+    licence: elstat
+    used_for: [reconciliation, headline_figures]
+    phase: 0
     notes: >-
-      Free reuse, commercial and non-commercial, without payment or written
-      licence, provided the source is indicated. Any modification (including
-      translation) must be stated to the end user together with a statement that
-      ELSTAT bears no responsibility for the result. Third-party material is excluded.
-  used_for: [municipal_census_population, sae_benchmarks]
-  phase: 3
-  notes: >-
-    ADR 0004. One sheet, about 21,000 rows, a hierarchy from country to settlement
-    with ELSTAT geographic codes; totals only, no sex breakdown. Population by
-    municipality and sex is published only as a PDF (Census2022_GR.pdf).
-  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+      Phase 0 spike: find the machine-readable (XLS) tables behind this release
+      and measure parsing effort.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  - id: un_wpp_2024
+    provider: UN DESA Population Division
+    dataset_code: WPP2024
+    title: World Population Prospects 2024
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/
+    licence: un_wpp
+    used_for: [official_projections, global_comparisons, r7_projection_uncertainty]
+    phase: 2
+    notes: >-
+      The Data Portal API needs a bearer token, so bulk CSV files are preferred.
+      The next edition was postponed to 2027.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  - id: hmd_grc
+    provider: Human Mortality Database
+    dataset_code: GRC
+    title: Greece life tables and mortality series
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://www.mortality.org/Country/Country?cntr=GRC
+    licence: hmd
+    used_for: [r3_life_expectancy_decomposition, life_tables]
+    phase: 3
+    notes: >-
+      Registration is required. Greek data start in 1981; 1981-1991 are of lower
+      quality according to the HMD country notes.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  - id: hfd_grc
+    provider: Human Fertility Database
+    dataset_code: GRC
+    title: Greece fertility series
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://www.humanfertility.org/Country/Country?cntr=GRC
+    licence: hfd
+    used_for: [r2_tempo_quantum_historical]
+    phase: 3
+    notes: >-
+      Registration is required. Greek data were last updated in March 2017, so this
+      is not a source for current fertility.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  # --- Added for ADR 0004 (sub-national data, Phase 3) ---
+
+  - id: eurostat_proj_25rp5
+    provider: Eurostat
+    dataset_code: proj_25rp5
+    title: EUROPOP2025 population on 1 January by age group, sex, projection type and NUTS 3 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rp5?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [regional_official_projections]
+    phase: 3
+    notes: >-
+      ADR 0004: all 52 Greek NUTS 3 regions (NUTS 2024) have values; baseline (BSL)
+      only; 5-year steps 2025-2100; 5-year age groups. Checked by direct API call
+      on 2026-09-28, not yet by the Source probe.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_proj_25rpind
+    provider: Eurostat
+    dataset_code: proj_25rpind
+    title: EUROPOP2025 population structure indicators by projection type and NUTS 3 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rpind?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
+    licence: eurostat
+    used_for: [regional_official_projections, acceptance_tests_for_derived_indicators]
+    phase: 3
+    notes: ADR 0004. Baseline only; 16 indicators.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_proj_25rdbal
+    provider: Eurostat
+    dataset_code: proj_25rdbal
+    title: EUROPOP2025 demographic balances by projection type and NUTS 3 region (5-year aggregates)
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rdbal?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
+    licence: eurostat
+    used_for: [regional_official_projections]
+    phase: 3
+    notes: ADR 0004. Baseline only; 5-year aggregates.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_r_pjanaggr3
+    provider: Eurostat
+    dataset_code: demo_r_pjanaggr3
+    title: Population on 1 January by broad age group, sex and NUTS 3 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanaggr3?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nuts3_population, sae_control_totals]
+    phase: 3
+    notes: >-
+      ADR 0004: 94 Greek NUTS 3 codes across NUTS versions against 52 in NUTS 2024,
+      so a NUTS concordance is required before use.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: elstat_births_municipal
+    provider: ELSTAT
+    dataset_code: SPO03 table 06
+    title: Live births by place of usual residence of the mother - municipalities and municipal units, 1999-2024
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO03/2024
+    licence: elstat
+    used_for: [municipal_births, sae_inputs]
+    phase: 3
+    notes: >-
+      ADR 0004. The probe URL is the publication page; the xlsx sits behind a portal
+      link with a documentID (251204 for the 2024 edition), not a stable file name.
+      Sheets 1999-2013 and 2014-2024. The 2014-2024 sheet mixes Kallikratis and
+      Kleisthenis municipality names, so a concordance is required. Many municipal
+      units have single-digit yearly counts.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  - id: elstat_deaths_municipal
+    provider: ELSTAT
+    dataset_code: SPO09 table 07
+    title: Deaths by place of usual residence - municipalities and municipal units, 1999-2024
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO09/2024
+    licence: elstat
+    used_for: [municipal_deaths, sae_inputs]
+    phase: 3
+    notes: >-
+      ADR 0004. Only the table title was checked; the structure is assumed to match
+      SPO03 table 06 (INFERENCE). Same portal-link caveat.
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  - id: elstat_census_2021_settlement
+    provider: ELSTAT
+    dataset_code: Census 2021 resident population by settlement
+    title: 2021 Census resident population by region, regional unit, municipality, municipal unit, community and settlement
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://www.statistics.gr/documents/20181/17286366/MON_PLI_DHM_OIKISN_2021.xlsx/2b5a5f24-4083-ede5-7201-3c4fb109fb44
+    licence: elstat
+    used_for: [municipal_census_population, sae_benchmarks]
+    phase: 3
+    notes: >-
+      ADR 0004. One sheet, about 21,000 rows, a hierarchy from country to settlement
+      with ELSTAT geographic codes; totals only, no sex breakdown. Population by
+      municipality and sex is published only as a PDF (Census2022_GR.pdf).
+    verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
+
+  # --- Added for the ELSTAT ingestion spike (IMPLEMENTATION-PLAN A2) ---
+
+  - id: elstat_spo18_t10
+    provider: ELSTAT
+    dataset_code: SPO18 table 10
+    title: Estimated population on 1 January by sex, region and regional unit, 2002 onwards
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://www.statistics.gr/el/statistics?p_p_id=documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_javax.faces.resource=document&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_ln=downloadResources&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_documentID=116985&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_locale=el
+    licence: elstat
+    used_for: [population_1jan, reconciliation]
+    phase: 1
+    notes: Stable portal URL whose content is updated in place; see docs/spikes/elstat-ingestion.md.
+    verification: {status: unverified}

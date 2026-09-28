@@ -10,8 +10,8 @@ The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/de
 
 ## Non-negotiable rules
 
-- **No number without provenance.** Every value carries `source`, `dataset_code`, `source_url`, `vintage`, `retrieved_at` (set by the pipeline, never by hand), `unit`, `definition_id`, `geo_code`, `geo_vintage`, `transform_version`, `nature`, `status` (see PROPOSAL §2).
-- `nature` ∈ `observed | official_estimate | derived | projected | scenario`; `status` ∈ `provisional | final | revised | break_in_series | not_available`. Official ≠ verified: ELSTAT net migration is an `official_estimate`.
+- **Single source of truth ([ADR 0006](docs/decisions/0006-single-source-of-truth.md)).** Every fact has exactly one home (the table in ADR 0006). Code reads it and text links to it; never copy values (codes, URLs, numbers, licence terms, units, colours) into a second place. Derived files are generated, never hand-edited. When you find a duplicate, remove it or add it to step A5 of `docs/IMPLEMENTATION-PLAN.md`.
+- **No number without provenance.** Every value passes the contract in `pipeline/src/grpop/provenance.py`, which defines the fields, the `nature`/`status` vocabulary and the observation key. `retrieved_at` is set by the pipeline, never by hand. Official ≠ verified: ELSTAT net migration is an `official_estimate`.
 - **Never type a number into prose.** Publications are Quarto documents with inline computed values.
 - **Never write a citation from memory.** Every DOI is resolved and matched against title and authors before use.
 - Never overwrite a source value silently. Snapshots are immutable, and revisions are stored as history.
@@ -21,13 +21,9 @@ The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/de
 - Migration terminology: distinguish foreign citizens, foreign-born, and migration flows vs stocks. Never use ethnic framing.
 - In user-facing text, mark claims as VERIFIED / INFERENCE / HYPOTHESIS / UNKNOWN where certainty matters.
 
-## Stack (decided, see ADR 0001)
+## Stack and architecture
 
-- Python 3.12+ with `uv`, DuckDB + Parquet, Polars, `pandera`, `pytest`, `hypothesis`, `statsmodels`, `scipy`, `PyMC`.
-- R only in CI, for `bayesPop` / `bayesTFR` / `bayesLife`.
-- Site: Observable Framework (static), with Observable Plot / D3. Reports: Quarto → HTML + PDF (Typst).
-- Hosting on GitHub Pages. DOIs via the Zenodo GitHub integration. Scheduled ingestion in GitHub Actions.
-- No backend, no auth, no LLM features in the public product.
+Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, static-only) and [ADR 0005](docs/decisions/0005-software-architecture.md) (layers, patterns per module, Quarto for site and reports). The stack table is PROPOSAL §9.1; what LLMs may and may not do is PROPOSAL §8. Read them before changing the stack; do not restate them here.
 
 ## Design system (PROPOSAL §7A)
 
@@ -41,18 +37,15 @@ The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/de
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-Current state (Phase 0): `pipeline/` is the only code. The site, the Quarto reports and the DuckDB store listed under Stack are planned and don't exist yet.
+Current state: Phase 0 is closing (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline/` is the only code. The site, the reports and the snapshot store are planned (ADR 0005) and don't exist yet.
 
-- Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check .` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`. Ruff uses line length 100 and rule sets `E,F,I,B,UP,SIM,RUF`.
+- Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check .` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
-- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`. The schema is a pandera/polars `DataFrameModel` with these properties:
-  - `strict=True`: undeclared columns are rejected.
-  - `coerce=False`: types must already be correct, and `retrieved_at` must be a UTC-aware `Datetime`.
-  - `definition_id` looks like `name@v1`. `period` is `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
-  - Cross-field rules: `value` is null exactly when `status = not_available`, and `scenario_id` is set exactly when `nature = scenario`.
-  - `OBSERVATION_KEY` must be unique. A second row with the same key is a revision and goes to a history table.
+- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`. The schema is strict and never coerces types: read the module before producing observations. It has no sex/age dimensions yet (see `docs/spikes/elstat-ingestion.md` §5).
+- `src/grpop/definitions.yaml` defines every `definition_id` (meaning, unit, version). Parsers and indicators read metric and unit from it via `get_definition`; they never type them.
+- Parsers take source metadata from the registry via `get_source(<id>)`, not from constants. Example: `src/grpop/sources/elstat_xlsx.py`.
 - `src/grpop/sources/jsonstat.py` turns Eurostat JSON-stat into long format: one string column per dimension, plus `value` and the source `flag` (e.g. `p` = provisional). Cells the source did not publish are kept as null rows, so "not published" stays distinct from "not requested".
-- `src/grpop/sources/registry.yaml` lists every source, validated by `registry.py`, a pydantic model with `extra="forbid"`. The verification flow:
+- `src/grpop/sources/registry.yaml` lists every source, validated by `registry.py`. Each licence is written once under `licences` and referenced by key from each source; an unknown or unused key is an error. The verification flow:
   1. The `Source probe` workflow runs `grpop-probe` weekly, on demand, and whenever `registry.yaml` or `probe.py` changes.
   2. It uploads `probe-report.md/json` as an artifact.
   3. The probe never edits the registry. A person or Claude reads the report and records it.

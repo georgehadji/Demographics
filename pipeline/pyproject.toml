@@ -7,6 +7,7 @@ license = "MIT"
 authors = [{ name = "Georgios-Chrysovalantis Chatzivantsidis" }]
 requires-python = ">=3.12"
 dependencies = [
+    "fastexcel>=0.11",
     "httpx>=0.27",
     "pandera[polars]>=0.20",
     "polars>=1.0",

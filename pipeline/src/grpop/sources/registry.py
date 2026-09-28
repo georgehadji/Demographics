@@ -24,6 +24,20 @@ class Verification(BaseModel):
         return self
 
 
+class Licence(BaseModel):
+    """Reuse terms of a source, as read from the provider's own terms page."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    terms_url: str = Field(pattern=r"^https://")
+    attribution: str  # the credit line the provider asks for
+    # False blocks publishing derived data under CC BY 4.0 (LICENSE-CONTENT.md).
+    commercial_reuse: bool
+    checked_at: date
+    notes: str | None = None
+
+
 class SourceEntry(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -34,7 +48,8 @@ class SourceEntry(BaseModel):
     access: Literal["api", "bulk_file", "web_page", "pdf"]
     probe_kind: Literal["eurostat_jsonstat", "http"]
     probe_url: str = Field(pattern=r"^https://")
-    licence: str
+    # A new entry may start as "to_verify"; the shipped registry may not (test_registry).
+    licence: Licence | Literal["to_verify"]
     used_for: list[str] = Field(min_length=1)
     phase: int = Field(ge=0, le=3)
     notes: str | None = None

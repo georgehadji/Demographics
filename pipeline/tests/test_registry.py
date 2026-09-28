@@ -24,6 +24,28 @@ def test_shipped_registry_is_valid():
     assert all(e.probe_url.startswith("https://") for e in entries)
 
 
+def test_shipped_registry_has_no_unverified_licence():
+    pending = [e.id for e in load_registry() if e.licence == "to_verify"]
+    assert pending == []
+
+
+def test_licence_requires_https_terms_and_attribution():
+    licence = (
+        "{name: CC BY 4.0, terms_url: https://example.org/terms, attribution: 'Source: P',"
+        " commercial_reuse: true, checked_at: 2026-10-01}"
+    )
+    base = ENTRY.format(verification="{status: unverified}")
+    load_registry(base.replace("licence: to_verify", f"licence: {licence}"))
+
+    for bad in (
+        licence.replace("https://", "http://"),
+        licence.replace(" attribution: 'Source: P',", ""),
+        licence.replace("}", ", extra: 1}"),
+    ):
+        with pytest.raises(pydantic.ValidationError):
+            load_registry(base.replace("licence: to_verify", f"licence: {bad}"))
+
+
 def test_verified_entry_needs_evidence():
     with pytest.raises(pydantic.ValidationError):
         load_registry(ENTRY.format(verification="{status: verified}"))

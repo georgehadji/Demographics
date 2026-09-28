@@ -13,7 +13,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_pjan'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [population_1jan, age_structure, pyramids, dependency_ratios]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -25,7 +34,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_gind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_gind'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [natural_change, net_migration, growth_rate]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -37,7 +55,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_find?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_find'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [tfr, mean_age_first_birth]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -49,7 +76,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_frate'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [asfr, tfr_check]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -61,7 +97,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?format=JSON&lang=EN&geo=EL&age=Y_LT1&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_mlexpec'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [life_expectancy_birth, life_expectancy_65]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -73,7 +118,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_pjanind'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [acceptance_tests_for_derived_indicators]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -85,7 +139,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL&sinceTimePeriod=2020
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_r_gind3'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [r1_regional_decomposition]
   phase: 2
   notes: >-
@@ -101,7 +164,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjangrp3?format=JSON&lang=EN&geo=EL30&sex=T&age=TOTAL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_r_pjangrp3'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [regional_age_structure]
   phase: 2
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -113,7 +185,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_fmonth'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [nowcasting]
   phase: 3
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -125,7 +206,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_mmonth'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [r4_excess_mortality, nowcasting]
   phase: 3
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
@@ -137,7 +227,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset proj_25np'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [official_projections, simulator_reproduction_test]
   phase: 2
   notes: >-
@@ -152,7 +251,17 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/nuts-2024-files.json
-  licence: to_verify
+  licence:
+    name: Eurostat/GISCO geodata terms (non-commercial)
+    terms_url: https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units
+    attribution: © EuroGeographics for the administrative boundaries
+    commercial_reuse: false
+    checked_at: 2026-09-28
+    notes: >-
+      Non-exclusive, non-transferable right to use and process, on condition the
+      data is not used commercially and the source is acknowledged. The notice
+      must be visible on every map. Boundary geometry therefore cannot be
+      released under CC BY 4.0 (see LICENSE-CONTENT.md).
   used_for: [maps, geo_concordance]
   phase: 1
   verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
@@ -164,7 +273,17 @@
   access: pdf
   probe_kind: http
   probe_url: https://www.statistics.gr/documents/20181/18730878/DT_population_2025_en.pdf/5dafb9ee-8c2a-92cb-168f-92a5625aec79
-  licence: to_verify
+  licence:
+    name: ELSTAT copyright and reuse policy
+    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
+    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Free reuse, commercial and non-commercial, without payment or written
+      licence, provided the source is indicated. Any modification (including
+      translation) must be stated to the end user together with a statement that
+      ELSTAT bears no responsibility for the result. Third-party material is excluded.
   used_for: [reconciliation, headline_figures]
   phase: 0
   notes: >-
@@ -179,7 +298,16 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://population.un.org/wpp/
-  licence: to_verify
+  licence:
+    name: CC BY 3.0 IGO
+    terms_url: https://creativecommons.org/licenses/by/3.0/igo/
+    attribution: 'United Nations, Department of Economic and Social Affairs, Population Division (2024). World Population Prospects 2024.'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      VERIFIED for figures and tables of the WPP 2024 Summary of Results (copyright
+      page). That the data files carry the same licence is an INFERENCE; confirm on
+      the download page when ingestion starts.
   used_for: [official_projections, global_comparisons, r7_projection_uncertainty]
   phase: 2
   notes: >-
@@ -194,7 +322,16 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://www.mortality.org/Country/Country?cntr=GRC
-  licence: to_verify
+  licence:
+    name: CC BY 4.0
+    terms_url: https://www.mortality.org/Data/UserAgreement
+    attribution: 'HMD. Human Mortality Database. Max Planck Institute for Demographic Research (Germany), University of California, Berkeley (USA), and French Institute for Demographic Studies (France). Available at www.mortality.org.'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      CC BY 4.0 covers HMD estimates. "Input Data" must not be re-published in any
+      form without the data owners' permission. HMD asks users to point others to
+      its website rather than share copies.
   used_for: [r3_life_expectancy_decomposition, life_tables]
   phase: 3
   notes: >-
@@ -209,7 +346,16 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://www.humanfertility.org/Country/Country?cntr=GRC
-  licence: CC BY 4.0
+  licence:
+    name: CC BY 4.0
+    terms_url: https://www.humanfertility.org/Data/UserAgreement
+    attribution: 'HFD. Human Fertility Database. Max Planck Institute for Demographic Research (Germany) and Vienna Institute of Demography (Austria). Available at www.humanfertility.org. Data downloaded on [date].'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Input data must not be re-published commercially without the owners'
+      permission. HFD prefers that users are referred to its website rather than
+      given copies of the data.
   used_for: [r2_tempo_quantum_historical]
   phase: 3
   notes: >-
@@ -226,7 +372,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rp5?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset proj_25rp5'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [regional_official_projections]
   phase: 3
   notes: >-
@@ -242,7 +397,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rpind?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset proj_25rpind'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [regional_official_projections, acceptance_tests_for_derived_indicators]
   phase: 3
   notes: ADR 0004. Baseline only; 16 indicators.
@@ -255,7 +419,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rdbal?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset proj_25rdbal'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [regional_official_projections]
   phase: 3
   notes: ADR 0004. Baseline only; 5-year aggregates.
@@ -268,7 +441,16 @@
   access: api
   probe_kind: eurostat_jsonstat
   probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanaggr3?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&lastTimePeriod=1
-  licence: to_verify
+  licence:
+    name: CC BY 4.0 (Eurostat copyright notice; Commission Decision 2011/833/EU)
+    terms_url: https://ec.europa.eu/eurostat/help/copyright-notice
+    attribution: 'Source: Eurostat, dataset demo_r_pjanaggr3'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Reuse allowed if the source is acknowledged and changes are indicated. Data
+      for countries outside the EU and EFTA (e.g. the USA, Japan) is for
+      non-commercial reuse only: check before adding non-European peers.
   used_for: [nuts3_population, sae_control_totals]
   phase: 3
   notes: >-
@@ -283,7 +465,17 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO03/2024
-  licence: to_verify
+  licence:
+    name: ELSTAT copyright and reuse policy
+    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
+    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Free reuse, commercial and non-commercial, without payment or written
+      licence, provided the source is indicated. Any modification (including
+      translation) must be stated to the end user together with a statement that
+      ELSTAT bears no responsibility for the result. Third-party material is excluded.
   used_for: [municipal_births, sae_inputs]
   phase: 3
   notes: >-
@@ -301,7 +493,17 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO09/2024
-  licence: to_verify
+  licence:
+    name: ELSTAT copyright and reuse policy
+    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
+    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Free reuse, commercial and non-commercial, without payment or written
+      licence, provided the source is indicated. Any modification (including
+      translation) must be stated to the end user together with a statement that
+      ELSTAT bears no responsibility for the result. Third-party material is excluded.
   used_for: [municipal_deaths, sae_inputs]
   phase: 3
   notes: >-
@@ -316,7 +518,17 @@
   access: bulk_file
   probe_kind: http
   probe_url: https://www.statistics.gr/documents/20181/17286366/MON_PLI_DHM_OIKISN_2021.xlsx/2b5a5f24-4083-ede5-7201-3c4fb109fb44
-  licence: to_verify
+  licence:
+    name: ELSTAT copyright and reuse policy
+    terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
+    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
+    commercial_reuse: true
+    checked_at: 2026-09-28
+    notes: >-
+      Free reuse, commercial and non-commercial, without payment or written
+      licence, provided the source is indicated. Any modification (including
+      translation) must be stated to the end user together with a statement that
+      ELSTAT bears no responsibility for the result. Third-party material is excluded.
   used_for: [municipal_census_population, sae_benchmarks]
   phase: 3
   notes: >-

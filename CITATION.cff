@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Demographer: open research on the demography of Greece"
+authors:
+  - family-names: Chatzivantsidis
+    given-names: Georgios-Chrysovalantis
+type: software
+license: MIT
+repository-code: "https://github.com/georgehadji/Demographics"
+keywords:
+  - demography
+  - Greece
+  - population projections
+  - open data

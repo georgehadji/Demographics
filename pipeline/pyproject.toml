@@ -1,0 +1,41 @@
+[project]
+name = "grpop"
+version = "0.0.1"
+description = "Data pipeline for a research project on the demography of Greece"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Georgios-Chrysovalantis Chatzivantsidis" }]
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",
+    "pandera[polars]>=0.20",
+    "polars>=1.0",
+    "pydantic>=2.7",
+    "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+grpop-probe = "grpop.sources.probe:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/grpop"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]

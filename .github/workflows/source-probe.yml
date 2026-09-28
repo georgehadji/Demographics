@@ -1,0 +1,37 @@
+name: Source probe
+
+# Checks every entry of the source registry against the live source.
+# Runs here because the cloud dev environment cannot reach the data hosts.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * 1" # weekly, Monday 05:17 UTC
+  push:
+    paths:
+      - pipeline/src/grpop/sources/registry.yaml
+      - pipeline/src/grpop/sources/probe.py
+      - .github/workflows/source-probe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Probe sources
+        run: |
+          uv run grpop-probe --report probe-report.md --json probe-report.json
+          cat probe-report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe-report
+          path: |
+            pipeline/probe-report.md
+            pipeline/probe-report.json

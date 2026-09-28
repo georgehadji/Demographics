@@ -1,7 +1,9 @@
 # CLAUDE.md
 
-Non-commercial research and publication project on the demography of Greece. Goal: public credibility.
-Claude builds everything (code, analysis, text, design). A named human owner approves publications, and external experts review them.
+**Demographer** (working name, see ADR 0002): a non-commercial research and publication project on the demography of Greece. Goal: public credibility.
+Claude builds everything (code, analysis, text, design). The responsible editor is **Georgios-Chrysovalantis Chatzivantsidis**, who approves every publication.
+There is **no external reviewer yet**. Publications must carry their review tier (PROPOSAL §1B) and must never be presented as reviewed. See `AI_USE.md`.
+Licences: code MIT, content and derived data CC BY 4.0, subject to the source terms.
 The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/decisions/`. Read both before starting a new phase.
 
 ## Non-negotiable rules
@@ -34,6 +36,13 @@ The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/de
 - Greek: no accented all-caps; locale number formatting via `Intl.NumberFormat` (`10.372.335`, `−0,03%`); true minus sign.
 - Every chart has a data-table view, a CSV download and data-derived alt text. Target WCAG 2.2 AA.
 - Playwright visual regression in light/dark/print. Inspect screenshots before every release.
+
+## Working in `pipeline/` (Python package `grpop`)
+
+- `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check .` must pass before every push. CI runs the same steps.
+- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`.
+- `src/grpop/sources/registry.yaml` lists every source. Set an entry to `verified` only with `checked_at` and `evidence` taken from a `Source probe` workflow report.
+- Test fixtures that were hand-written rather than recorded from a real response must say so in a `_comment` field.
 
 ## Environment notes
 

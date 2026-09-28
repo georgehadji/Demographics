@@ -1,0 +1,17 @@
+{
+  "_comment": "Hand-written from the JSON-stat 2.0 spec to mirror the shape of a Eurostat response. Values are placeholders, not statistics. Replace with a real recorded response once the source hosts are reachable.",
+  "version": "2.0",
+  "class": "dataset",
+  "label": "Placeholder dataset",
+  "updated": "2026-01-01T00:00:00+0100",
+  "id": ["freq", "sex", "geo", "time"],
+  "size": [1, 2, 2, 2],
+  "dimension": {
+    "freq": {"label": "Time frequency", "category": {"index": {"A": 0}, "label": {"A": "Annual"}}},
+    "sex": {"label": "Sex", "category": {"index": {"F": 0, "M": 1}, "label": {"F": "Females", "M": "Males"}}},
+    "geo": {"label": "Geo", "category": {"index": ["EL", "IT"], "label": {"EL": "Greece", "IT": "Italy"}}},
+    "time": {"label": "Time", "category": {"index": {"2023": 0, "2024": 1}, "label": {"2023": "2023", "2024": "2024"}}}
+  },
+  "value": {"0": 10, "1": 11, "2": 20, "4": 30, "5": 31, "6": 40, "7": 41},
+  "status": {"1": "p", "3": ":"}
+}

@@ -1,8 +1,8 @@
-# Demographics: η δημογραφία της Ελλάδας
+# Demographer: η δημογραφία της Ελλάδας
 
 Μη εμπορικό ερευνητικό και εκδοτικό έργο: ανοιχτά δεδομένα, αναπαραγώγιμη στατιστική ανάλυση, προβολές και οπτικοποίηση επιπέδου editorial για τον πληθυσμό της Ελλάδας σε σύγκριση με την Ευρώπη.
 
-**Κατάσταση:** Φάση 0 (εφικτότητα και θεμέλια).
+**Κατάσταση:** Φάση 0 (εφικτότητα και θεμέλια). Υπεύθυνος έκδοσης: Georgios-Chrysovalantis Chatzivantsidis. Όνομα εργασίας: Demographer. Καμία δημοσίευση δεν έχει ακόμη εξωτερικό επιστημονικό έλεγχο (βλ. [`AI_USE.md`](AI_USE.md)).
 
 | Αρχείο | Περιεχόμενο |
 |---|---|
@@ -30,3 +30,14 @@ doi.org
 cloud.r-project.org
 zenodo.org
 ```
+
+## Δομή
+
+| Φάκελος | Περιεχόμενο |
+|---|---|
+| `pipeline/` | Python package `grpop`: συμβόλαιο προέλευσης, μητρώο πηγών, connectors, tests (βλ. [`pipeline/README.md`](pipeline/README.md)) |
+| `.github/workflows/` | `CI` (lint + tests) και `Source probe` (έλεγχος των πηγών από το GitHub Actions) |
+
+## Άδειες
+
+Κώδικας: MIT ([`LICENSE`](LICENSE)). Κείμενα, γραφήματα και παράγωγα δεδομένα: CC BY 4.0 ([`LICENSE-CONTENT.md`](LICENSE-CONTENT.md)). Για παραπομπή: [`CITATION.cff`](CITATION.cff).

@@ -1,0 +1,218 @@
+# Source registry (Phase 0).
+#
+# Every dataset the project uses is listed here before any code depends on it.
+# verification.status changes to "verified" only after a probe report
+# (grpop-probe, run in GitHub Actions) has been read and the evidence recorded.
+# Dataset codes marked "candidate" in notes are expected codes that have not yet
+# been confirmed against the live catalogue.
+
+- id: eurostat_demo_pjan
+  provider: Eurostat
+  dataset_code: demo_pjan
+  title: Population on 1 January by age and sex
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [population_1jan, age_structure, pyramids, dependency_ratios]
+  phase: 1
+  verification: {status: unverified}
+
+- id: eurostat_demo_gind
+  provider: Eurostat
+  dataset_code: demo_gind
+  title: Population change - demographic balance and crude rates at national level
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_gind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [natural_change, net_migration, growth_rate]
+  phase: 1
+  verification: {status: unverified}
+
+- id: eurostat_demo_find
+  provider: Eurostat
+  dataset_code: demo_find
+  title: Fertility indicators
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_find?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [tfr, mean_age_first_birth]
+  phase: 1
+  verification: {status: unverified}
+
+- id: eurostat_demo_frate
+  provider: Eurostat
+  dataset_code: demo_frate
+  title: Fertility rates by age
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [asfr, tfr_check]
+  phase: 1
+  notes: candidate code
+  verification: {status: unverified}
+
+- id: eurostat_demo_mlexpec
+  provider: Eurostat
+  dataset_code: demo_mlexpec
+  title: Life expectancy by age and sex
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?format=JSON&lang=EN&geo=EL&age=Y_LT1&lastTimePeriod=1
+  licence: to_verify
+  used_for: [life_expectancy_birth, life_expectancy_65]
+  phase: 1
+  verification: {status: unverified}
+
+- id: eurostat_demo_pjanind
+  provider: Eurostat
+  dataset_code: demo_pjanind
+  title: Population structure indicators at national level
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [acceptance_tests_for_derived_indicators]
+  phase: 1
+  verification: {status: unverified}
+
+- id: eurostat_demo_r_gind3
+  provider: Eurostat
+  dataset_code: demo_r_gind3
+  title: Population change - demographic balance and crude rates at regional level (NUTS 3)
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL30&lastTimePeriod=1
+  licence: to_verify
+  used_for: [r1_regional_decomposition]
+  phase: 2
+  notes: A metadata page for this code exists (seen in search results during the v1 review).
+  verification: {status: unverified}
+
+- id: eurostat_demo_r_pjangrp3
+  provider: Eurostat
+  dataset_code: demo_r_pjangrp3
+  title: Population on 1 January by age group, sex and NUTS 3 region
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjangrp3?format=JSON&lang=EN&geo=EL30&sex=T&age=TOTAL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [regional_age_structure]
+  phase: 2
+  notes: candidate code
+  verification: {status: unverified}
+
+- id: eurostat_demo_fmonth
+  provider: Eurostat
+  dataset_code: demo_fmonth
+  title: Live births by month
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [nowcasting]
+  phase: 3
+  verification: {status: unverified}
+
+- id: eurostat_demo_mmonth
+  provider: Eurostat
+  dataset_code: demo_mmonth
+  title: Deaths by month
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [r4_excess_mortality, nowcasting]
+  phase: 3
+  verification: {status: unverified}
+
+- id: eurostat_proj_25np
+  provider: Eurostat
+  dataset_code: proj_25np
+  title: EUROPOP2025 population on 1 January by age, sex and projection type
+  access: api
+  probe_kind: eurostat_jsonstat
+  probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
+  licence: to_verify
+  used_for: [official_projections, simulator_reproduction_test]
+  phase: 2
+  notes: >-
+    candidate code, INFERENCE from the EUROPOP2023 naming (proj_23np). The
+    EUROPOP2025 collection metadata page is proj_25n_esms.
+  verification: {status: unverified}
+
+- id: gisco_nuts_2024
+  provider: Eurostat GISCO
+  dataset_code: NUTS 2024
+  title: NUTS 2024 boundaries (file index)
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/nuts-2024-files.json
+  licence: to_verify
+  used_for: [maps, geo_concordance]
+  phase: 1
+  notes: candidate URL pattern
+  verification: {status: unverified}
+
+- id: elstat_population_estimate_2025
+  provider: ELSTAT
+  dataset_code: estimated population 1.1.2025 and migration flows 2024
+  title: Estimated population (1.1.2025) and migration flows (2024), press release
+  access: pdf
+  probe_kind: http
+  probe_url: https://www.statistics.gr/documents/20181/18730878/DT_population_2025_en.pdf/5dafb9ee-8c2a-92cb-168f-92a5625aec79
+  licence: to_verify
+  used_for: [reconciliation, headline_figures]
+  phase: 0
+  notes: >-
+    Phase 0 spike: find the machine-readable (XLS) tables behind this release
+    and measure parsing effort.
+  verification: {status: unverified}
+
+- id: un_wpp_2024
+  provider: UN DESA Population Division
+  dataset_code: WPP2024
+  title: World Population Prospects 2024
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://population.un.org/wpp/
+  licence: to_verify
+  used_for: [official_projections, global_comparisons, r7_projection_uncertainty]
+  phase: 2
+  notes: >-
+    The Data Portal API needs a bearer token, so bulk CSV files are preferred.
+    The next edition was postponed to 2027.
+  verification: {status: unverified}
+
+- id: hmd_grc
+  provider: Human Mortality Database
+  dataset_code: GRC
+  title: Greece life tables and mortality series
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://www.mortality.org/Country/Country?cntr=GRC
+  licence: to_verify
+  used_for: [r3_life_expectancy_decomposition, life_tables]
+  phase: 3
+  notes: >-
+    Registration is required. Greek data start in 1981; 1981-1991 are of lower
+    quality according to the HMD country notes.
+  verification: {status: unverified}
+
+- id: hfd_grc
+  provider: Human Fertility Database
+  dataset_code: GRC
+  title: Greece fertility series
+  access: bulk_file
+  probe_kind: http
+  probe_url: https://www.humanfertility.org/Country/Country?cntr=GRC
+  licence: CC BY 4.0
+  used_for: [r2_tempo_quantum_historical]
+  phase: 3
+  notes: >-
+    Registration is required. Greek data were last updated in March 2017, so this
+    is not a source for current fertility.
+  verification: {status: unverified}

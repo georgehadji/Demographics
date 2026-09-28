@@ -89,9 +89,10 @@
   used_for: [r1_regional_decomposition]
   phase: 2
   notes: >-
-    Probe run 36432199610 returned HTTP 200 but 0 values for geo=EL30 and the
-    latest period only. Query changed to geo=EL, 2020 onwards; re-check.
-  verification: {status: unverified}
+    Probe run 36432199610 returned 0 values for geo=EL30 at the latest period.
+    With geo=EL from 2020 (run 36432356547) it returns 67 values over 7 years.
+    Which NUTS 2/3 codes and years are populated is still to be mapped in Phase 1.
+  verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432356547: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
 - id: eurostat_demo_r_pjangrp3
   provider: Eurostat

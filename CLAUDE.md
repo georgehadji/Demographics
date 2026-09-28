@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 **Κοόρτες / Kohortes** (open demographic analysis of Greece; see ADR 0003): a non-commercial research and publication project on the demography of Greece. Goal: public credibility.
 Claude builds everything (code, analysis, text, design). The responsible editor is **Georgios-Chrysovalantis Chatzivantsidis**, who approves every publication.
 There is **no external reviewer yet**. Publications must carry their review tier (PROPOSAL §1B) and must never be presented as reviewed. See `AI_USE.md`.
@@ -39,12 +41,26 @@ The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/de
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-- `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check .` must pass before every push. CI runs the same steps.
-- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`.
-- `src/grpop/sources/registry.yaml` lists every source. Set an entry to `verified` only with `checked_at` and `evidence` taken from a `Source probe` workflow report.
+Current state (Phase 0): `pipeline/` is the only code. The site, the Quarto reports and the DuckDB store listed under Stack are planned and don't exist yet.
+
+- Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check .` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`. Ruff uses line length 100 and rule sets `E,F,I,B,UP,SIM,RUF`.
+- To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
+- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`. The schema is a pandera/polars `DataFrameModel` with these properties:
+  - `strict=True`: undeclared columns are rejected.
+  - `coerce=False`: types must already be correct, and `retrieved_at` must be a UTC-aware `Datetime`.
+  - `definition_id` looks like `name@v1`. `period` is `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
+  - Cross-field rules: `value` is null exactly when `status = not_available`, and `scenario_id` is set exactly when `nature = scenario`.
+  - `OBSERVATION_KEY` must be unique. A second row with the same key is a revision and goes to a history table.
+- `src/grpop/sources/jsonstat.py` turns Eurostat JSON-stat into long format: one string column per dimension, plus `value` and the source `flag` (e.g. `p` = provisional). Cells the source did not publish are kept as null rows, so "not published" stays distinct from "not requested".
+- `src/grpop/sources/registry.yaml` lists every source, validated by `registry.py`, a pydantic model with `extra="forbid"`. The verification flow:
+  1. The `Source probe` workflow runs `grpop-probe` weekly, on demand, and whenever `registry.yaml` or `probe.py` changes.
+  2. It uploads `probe-report.md/json` as an artifact.
+  3. The probe never edits the registry. A person or Claude reads the report and records it.
+  4. Set an entry to `verified` only with `checked_at` and `evidence` (the run id and the observed result) taken from that report.
 - Test fixtures that were hand-written rather than recorded from a real response must say so in a `_comment` field.
 
 ## Environment notes
 
 - The cloud dev environment's network policy currently blocks the data-source hosts (Eurostat, ELSTAT, UN, World Bank, HMD, OpenAlex, GISCO, CRAN). Only package registries (PyPI, npm) are reachable. Use test fixtures locally and run real ingestion in GitHub Actions until the owner allows those domains.
-- Chromium is preinstalled for Playwright (`/opt/pw-browsers`). Do not run `playwright install`.
+- Cloud environment only: Chromium is preinstalled for Playwright (`/opt/pw-browsers`). Do not run `playwright install`.
+- Windows: Windows has no IANA timezone database. Keep the `tzdata; sys_platform == 'win32'` dependency, because without it the UTC `retrieved_at` column panics in polars (`ZoneInfoNotFoundError: UTC`).

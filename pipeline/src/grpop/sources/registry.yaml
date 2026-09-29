@@ -199,6 +199,19 @@ sources:
     phase: 3
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
+  - id: eurostat_demo_r_mwk_ts
+    provider: Eurostat
+    dataset_code: demo_r_mwk_ts
+    title: Deaths by week and sex
+    access: api
+    probe_kind: eurostat_jsonstat
+    # Greece reports with a lag: the latest week has no values, so the probe asks for a range.
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_mwk_ts?format=JSON&lang=EN&geo=EL&sex=T&sinceTimePeriod=2025-W01
+    licence: eurostat
+    used_for: [r4_excess_mortality]
+    phase: 3
+    verification: {status: unverified}
+
   - id: eurostat_proj_25np
     provider: Eurostat
     dataset_code: proj_25np

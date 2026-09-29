@@ -38,6 +38,7 @@ zenodo.org
 | Φάκελος | Περιεχόμενο |
 |---|---|
 | `pipeline/` | Python package `grpop`: συμβόλαιο προέλευσης, μητρώο πηγών, connectors, tests (βλ. [`pipeline/README.md`](pipeline/README.md)) |
+| `data/reference/` | Μικρά αρχεία αναφοράς (CSV): οι ελληνικοί κωδικοί NUTS 2024, οι ετικέτες περιφερειών της ELSTAT |
 | `.github/workflows/` | `CI` (lint, τύποι, tests), `Source probe` (έλεγχος των πηγών) και `Ingest` (λήψη των datasets σε snapshots, αποθηκευμένα στο release `snapshots`) |
 
 ## Άδειες

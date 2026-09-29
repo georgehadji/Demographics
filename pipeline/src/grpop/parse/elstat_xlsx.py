@@ -15,12 +15,12 @@ from __future__ import annotations
 import csv
 import re
 from datetime import datetime
-from importlib import resources
 
 import fastexcel
 import polars as pl
 
 from grpop.definitions import get_definition
+from grpop.harmonize import REFERENCE
 from grpop.provenance import AGE_TOTAL, Sex
 from grpop.sources.registry import get_source
 
@@ -46,8 +46,7 @@ def normalise_label(text: str) -> str:
 
 def region_codes() -> tuple[dict[str, str], str]:
     """(English ELSTAT label (normalised) -> NUTS code, NUTS vintage) from the reference CSV."""
-    path = resources.files("grpop.sources").joinpath("elstat_regions_nuts.csv")
-    with path.open(encoding="utf-8") as f:
+    with (REFERENCE / "elstat_regions_nuts.csv").open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     vintages = {r["geo_vintage"] for r in rows}
     if len(vintages) != 1:

@@ -24,7 +24,7 @@ def _category_codes(dimension: dict[str, Any]) -> list[str]:
     return [code for code, _ in sorted(index.items(), key=lambda kv: kv[1])]
 
 
-def _lookup(container: list | dict | None, flat_index: int) -> Any:
+def _lookup(container: list[Any] | dict[str, Any] | None, flat_index: int) -> Any:
     if container is None:
         return None
     if isinstance(container, list):

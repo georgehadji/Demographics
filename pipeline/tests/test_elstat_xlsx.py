@@ -11,8 +11,8 @@ from pathlib import Path
 import polars as pl
 import pytest
 
+from grpop.parse.elstat_xlsx import normalise_label, parse_sheet, read_population_1jan
 from grpop.provenance import validate_observations
-from grpop.sources.elstat_xlsx import normalise_label, parse_sheet, read_population_1jan
 
 FIXTURE = Path(__file__).parent / "fixtures" / "elstat_spo18_t10_2025.xlsx"
 

@@ -157,7 +157,7 @@ sources:
     licence: eurostat
     used_for: [evidence_for_known_differences]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36561110360: HTTP 200, JSON-stat with 5 Greek values (age TOTAL, Y_LT15, Y15-64, Y_GE65, UNK); confirms the code exists'}
 
   - id: eurostat_demo_pjangroup
     provider: Eurostat
@@ -169,7 +169,7 @@ sources:
     licence: eurostat
     used_for: [evidence_for_known_differences]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36561110360: HTTP 200, JSON-stat with 22 Greek values (age groups); confirms the code exists'}
 
   - id: eurostat_demo_minfind
     provider: Eurostat
@@ -181,7 +181,7 @@ sources:
     licence: eurostat
     used_for: [infant_mortality]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36561110360: HTTP 200, JSON-stat with 4 Greek values (indic_de has 5 codes); confirms the code exists'}
 
   - id: eurostat_demo_r_gind3
     provider: Eurostat

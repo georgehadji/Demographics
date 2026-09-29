@@ -218,7 +218,7 @@ sources:
       EL11-EL14, EL2, EL21-EL25); harmonize.recode_nuts2010 handles them. Not
       additive in 2018: EL4 men aged 55 and EL6 women aged 87 differ from the sum of
       their NUTS 2 regions by 3 persons, and EL with them.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36615720154: HTTP 200, JSON-stat with 1 Greek value (EL51, total); confirms the code exists'}
 
   - id: eurostat_demo_r_pjanind2
     provider: Eurostat
@@ -230,7 +230,7 @@ sources:
     licence: eurostat
     used_for: [acceptance_tests_for_derived_indicators]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36615720154: HTTP 200, JSON-stat with 55 Greek values (EL51); confirms the code exists'}
 
   - id: eurostat_demo_r_find2
     provider: Eurostat
@@ -244,7 +244,7 @@ sources:
     phase: 1
     notes: >-
       Has TOTFERRT, AGEMOTH and MEDAGEMOTH but not the mean age at first birth (AGEMOTH1).
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36615720154: HTTP 200, JSON-stat with 3 Greek values (EL51); confirms the code exists'}
 
   - id: eurostat_demo_r_frate2
     provider: Eurostat
@@ -256,7 +256,7 @@ sources:
     licence: eurostat
     used_for: [nuts2_tfr]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36615720154: HTTP 200, JSON-stat with 38 Greek values (EL51, age classes); confirms the code exists'}
 
   - id: eurostat_demo_r_mlifexp
     provider: Eurostat
@@ -268,7 +268,7 @@ sources:
     licence: eurostat
     used_for: [nuts2_life_expectancy]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36615720154: HTTP 200, JSON-stat with 1 Greek value (EL51, at birth); confirms the code exists'}
 
   - id: eurostat_demo_r_minfind
     provider: Eurostat
@@ -280,7 +280,7 @@ sources:
     licence: eurostat
     used_for: [nuts2_infant_mortality]
     phase: 1
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36615720154: HTTP 200, JSON-stat with 1 Greek value (EL51); confirms the code exists'}
 
   - id: eurostat_demo_r_pjangrp3
     provider: Eurostat

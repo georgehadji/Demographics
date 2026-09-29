@@ -210,7 +210,7 @@ sources:
     licence: eurostat
     used_for: [r4_excess_mortality]
     phase: 3
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36541561359: HTTP 200, JSON-stat with 79 Greek values (2025-W01 onwards); confirms the code exists'}
 
   - id: eurostat_proj_25np
     provider: Eurostat

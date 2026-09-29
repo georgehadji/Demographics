@@ -53,3 +53,23 @@ def test_gap_is_reported_at_the_parent(population):
         value=pl.when(pl.col("geo_code") == "EL301").then(0.0).otherwise(pl.col("value"))
     )
     assert harmonize.hierarchy_gaps(broken)["geo_code"].to_list() == ["EL30"]
+
+
+def test_nuts_2010_codes_are_recoded_or_dropped(population):
+    def at(code, period, value=1.0):
+        row = population.filter(pl.col("geo_code") == "EL51")
+        return row.with_columns(
+            geo_code=pl.lit(code), period=pl.lit(period), value=pl.lit(value, dtype=pl.Float64)
+        )
+
+    old = pl.concat([at("EL11", "2011"), at("EL1", "2011"), at("EL111", "2011")])
+    old = pl.concat([old, at("EL11", "2012", None), at("EL1", "2012", None)])
+    empty_current = at("EL51", "2011", None)
+    out = harmonize.recode_nuts2010(pl.concat([empty_current, old]))
+    assert out.select("geo_code", "period", "value").rows() == [("EL51", "2011", 1.0)]
+    later = at("EL111", "2012")
+    assert harmonize.recode_nuts2010(later).height == 1  # kept, so check_greek_codes fails
+
+
+def test_parent_with_a_missing_child_is_not_compared(population):
+    assert harmonize.hierarchy_gaps(population.filter(pl.col("geo_code") != "EL301")).is_empty()

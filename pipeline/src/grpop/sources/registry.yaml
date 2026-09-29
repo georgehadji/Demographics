@@ -191,13 +191,96 @@ sources:
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL&sinceTimePeriod=2020
     licence: eurostat
-    used_for: [r1_regional_decomposition]
-    phase: 2
+    used_for: [r1_regional_decomposition, nuts2_growth_rate, nuts2_natural_change, nuts2_net_migration]
+    phase: 1
     notes: >-
       Probe run 36432199610 returned 0 values for geo=EL30 at the latest period.
       With geo=EL from 2020 (run 36432356547) it returns 67 values over 7 years.
-      Which NUTS 2/3 codes and years are populated is still to be mapped in Phase 1.
+      Full download of 2026-09-29: Greek values for EL, the 4 NUTS 1, 13 NUTS 2 and 52
+      NUTS 3 codes of NUTS 2024, 2000-2025. It has no average population (AVG). In
+      2000 the Greek natural change and net migration differ from the sum of the NUTS 1
+      regions by 56 persons (every other year adds up).
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432356547: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
+
+  - id: eurostat_demo_r_d2jan
+    provider: Eurostat
+    dataset_code: demo_r_d2jan
+    title: Population on 1 January by age, sex and NUTS 2 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_d2jan?format=JSON&lang=EN&geo=EL51&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nuts2_population, nuts2_age_structure]
+    phase: 1
+    notes: >-
+      Full download of 2026-09-29: current Greek NUTS 1/2 codes 1990-2025, except 2011
+      for EL5, EL6 and their regions, which is published only in NUTS 2010 codes (EL1,
+      EL11-EL14, EL2, EL21-EL25); harmonize.recode_nuts2010 handles them. Not
+      additive in 2018: EL4 men aged 55 and EL6 women aged 87 differ from the sum of
+      their NUTS 2 regions by 3 persons, and EL with them.
+    verification: {status: unverified}
+
+  - id: eurostat_demo_r_pjanind2
+    provider: Eurostat
+    dataset_code: demo_r_pjanind2
+    title: Population structure indicators by NUTS 2 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanind2?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
+    licence: eurostat
+    used_for: [acceptance_tests_for_derived_indicators]
+    phase: 1
+    verification: {status: unverified}
+
+  - id: eurostat_demo_r_find2
+    provider: Eurostat
+    dataset_code: demo_r_find2
+    title: Fertility indicators by NUTS 2 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_find2?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nuts2_tfr_check]
+    phase: 1
+    notes: >-
+      Has TOTFERRT, AGEMOTH and MEDAGEMOTH but not the mean age at first birth (AGEMOTH1).
+    verification: {status: unverified}
+
+  - id: eurostat_demo_r_frate2
+    provider: Eurostat
+    dataset_code: demo_r_frate2
+    title: Fertility rates by age and NUTS 2 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_frate2?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nuts2_tfr]
+    phase: 1
+    verification: {status: unverified}
+
+  - id: eurostat_demo_r_mlifexp
+    provider: Eurostat
+    dataset_code: demo_r_mlifexp
+    title: Life expectancy by age, sex and NUTS 2 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_mlifexp?format=JSON&lang=EN&geo=EL51&sex=T&age=Y_LT1&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nuts2_life_expectancy]
+    phase: 1
+    verification: {status: unverified}
+
+  - id: eurostat_demo_r_minfind
+    provider: Eurostat
+    dataset_code: demo_r_minfind
+    title: Infant mortality rates by NUTS 2 region
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_minfind?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
+    licence: eurostat
+    used_for: [nuts2_infant_mortality]
+    phase: 1
+    verification: {status: unverified}
 
   - id: eurostat_demo_r_pjangrp3
     provider: Eurostat
@@ -391,11 +474,13 @@ sources:
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanaggr3?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&lastTimePeriod=1
     licence: eurostat
-    used_for: [nuts3_population, sae_control_totals]
-    phase: 3
+    used_for: [nuts3_population, sae_control_totals, corroboration_of_regional_structure_indicators]
+    phase: 1
     notes: >-
-      ADR 0004: 94 Greek NUTS 3 codes across NUTS versions against 52 in NUTS 2024,
-      so a NUTS concordance is required before use.
+      ADR 0004 counted 94 Greek NUTS 3 codes across NUTS versions against 52 in NUTS
+      2024. The full download of 2026-09-29 explains it: the 42 NUTS 2010 NUTS 3 codes
+      (with their NUTS 1/2 parents) have values only for 2011, where the current codes
+      of EL5 and EL6 have none; harmonize.recode_nuts2010 handles them.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36470771614: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
   - id: elstat_births_municipal

@@ -8,14 +8,16 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from grpop import indicators
+from grpop import harmonize, indicators
 from grpop.provenance import validate_observations
 from grpop.snapshots import Snapshot
 
 FIXTURES = Path(__file__).parent / "fixtures"
-# Recorded extract per source id: Greece and Cyprus, 2023 onwards for demo_pjan and
-# demo_pjanind, 2021 onwards for the others. An indicator or series whose sources have
-# no entry here fails its tests until one is recorded.
+# Recorded extract per source id. National: Greece and Cyprus, 2023 onwards for
+# demo_pjan, demo_pjanind and demo_pjanbroad, 2021 onwards for the others. Regional:
+# EL, EL5 and EL51-EL54, 2024 onwards for the population tables, 2023 for the others.
+# An indicator or series whose sources have no entry here fails its tests until one is
+# recorded.
 RECORDED = {
     "eurostat_demo_pjan": "eurostat_demo_pjan_el_cy.json",
     "eurostat_demo_pjanind": "eurostat_demo_pjanind_el_cy.json",
@@ -24,6 +26,11 @@ RECORDED = {
     "eurostat_demo_frate": "eurostat_demo_frate_el_cy.json",
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
+    "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",
+    **{
+        f"eurostat_demo_r_{code}": f"eurostat_demo_r_{code}_el5.json"
+        for code in ("d2jan", "pjanind2", "pjanaggr3", "gind3", "find2", "mlifexp", "minfind")
+    },
 }
 
 
@@ -42,11 +49,7 @@ def data(source_ids):
     return out
 
 
-def sources(ind):
-    series = [*ind.inputs.values(), *ind.official]
-    return {s.source_id for s in series}
-
-
+sources = indicators.sources
 WITH_OFFICIAL = [name for name, ind in indicators.INDICATORS.items() if ind.official]
 
 
@@ -65,7 +68,8 @@ def test_indicator_agrees_with_official_value(name):
     ours = indicators.compute(ind, d)
     compared = ours.join(indicators.read_official(ind, d), on=indicators.KEY)
     assert compared.height > 0, "nothing to compare"
-    assert indicators.disagreements(ind, ours, d).filter(~pl.col("known")).is_empty()
+    rows = indicators.disagreements(ind, ours, d)
+    assert rows.filter(~pl.col("known") & ~pl.col("corroborated")).is_empty()
 
 
 @pytest.mark.parametrize("name", list(indicators.SERIES))
@@ -73,6 +77,13 @@ def test_series_passes_the_contract(name):
     series = indicators.SERIES[name]
     obs = validate_observations(series.read(data({series.source_id})))
     assert obs.filter(pl.col("geo_code") == "EL")["value"].is_not_null().any()
+
+
+def test_regional_population_adds_up():
+    series = indicators.SERIES["population_regional"]
+    obs = series.read(data({series.source_id}))
+    assert obs.filter(pl.col("geo_code") == "EL5")["value"].is_not_null().any()
+    assert harmonize.hierarchy_gaps(obs).is_empty()
 
 
 def test_inputs_from_several_sources_are_rejected():
@@ -91,6 +102,20 @@ def test_disagreement_is_reported():
     rows = indicators.disagreements(known, ours, d)
     assert rows.filter(pl.col("known"))["geo_code"].unique().to_list() == ["EL"]
     assert set(rows.filter(pl.col("known"))["period"]) == {"2024"}
+
+
+def test_corroborated_difference_is_explained():
+    ind = indicators.INDICATORS["old_age_dependency_ratio"]
+    d = data(sources(ind))
+    ours = indicators.compute(ind, d).with_columns(value=pl.col("value") + 0.1)
+    assert not indicators.disagreements(ind, ours, d)["corroborated"].any()
+    (broad,) = ind.corroboration
+    bumped = dataclasses.replace(
+        broad, formula=lambda i: broad.formula(i).with_columns(value=pl.col("value") + 0.1)
+    )
+    rows = indicators.disagreements(dataclasses.replace(ind, corroboration=(bumped,)), ours, d)
+    assert rows.height > 0
+    assert rows["corroborated"].all()
 
 
 @pytest.mark.parametrize("name", ["old_age_dependency_ratio", "median_age"])

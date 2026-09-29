@@ -8,9 +8,11 @@ passed through.
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 import re
+from typing import Any
 
 import polars as pl
 
@@ -30,12 +32,12 @@ _KEY = ["geo", "time", "sex"]
 def flag_meaning(flag: str) -> tuple[bool, bool, bool]:
     """Eurostat flag -> (provisional, estimated, break in series).
 
-    Letters before "|" are status flags; after it comes confidentiality ("N" = not for
-    publication), which only occurs with a missing value. Only the letters seen in
-    the ingested datasets are accepted: b, e, p, i (imputed, counted as estimated).
+    Letters before "|" are status flags; after it comes "N" (not for publication) or
+    "C" (confidential), which only occur with a missing value. Only the letters seen
+    in the ingested datasets are accepted: b, e, p, i (imputed, counted as estimated).
     """
     letters, _, confidentiality = flag.partition("|")
-    unknown = (set(letters) - set("bepi")) | (set(confidentiality) - {"N"})
+    unknown = (set(letters) - set("bepi")) | (set(confidentiality) - {"N", "C"})
     if unknown:
         raise ValueError(f"unknown Eurostat flag {flag!r}")
     return "p" in letters, bool(set(letters) & {"e", "i"}), "b" in letters
@@ -49,6 +51,8 @@ def age(code: str) -> str:
         return "unknown"
     if code == "Y_LT1":
         return "0"
+    if m := re.fullmatch(r"Y_LT(\d+)", code):
+        return f"0-{int(m[1]) - 1}"
     if m := re.fullmatch(r"Y(\d+)", code):
         return m[1]
     if m := re.fullmatch(r"Y(\d+)-(\d+)", code):
@@ -81,6 +85,14 @@ def _resolve_open_age(df: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+@functools.lru_cache(maxsize=4)
+def _parsed(data: bytes) -> tuple[dict[str, Any], pl.DataFrame]:
+    """Dataset metadata and long table of a snapshot. Memoized: a build reads several
+    series from the same snapshot, and the largest take half a minute to expand."""
+    doc = json.loads(data)
+    return {k: doc[k] for k in ("id", "dimension", "updated")}, jsonstat.to_long(doc)
+
+
 def to_observations(
     snapshot: Snapshot,
     data: bytes,
@@ -98,8 +110,7 @@ def to_observations(
     """
     if hashlib.sha256(data).hexdigest() != snapshot.sha256:
         raise ValueError("data does not belong to this snapshot")
-    doc = json.loads(data)
-    df = jsonstat.to_long(doc)
+    doc, df = _parsed(data)
     for dim, code in (select or {}).items():
         if code not in doc["dimension"][dim]["category"]["index"]:
             raise ValueError(f"{code!r} is not a {dim!r} category of {snapshot.source_id}")

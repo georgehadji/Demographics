@@ -54,6 +54,6 @@ Current state: Phase 0 is closing (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline
 
 ## Environment notes
 
-- The cloud dev environment's network policy currently blocks the data-source hosts (Eurostat, ELSTAT, UN, World Bank, HMD, OpenAlex, GISCO, CRAN). Only package registries (PyPI, npm) are reachable. Use test fixtures locally and run real ingestion in GitHub Actions until the owner allows those domains.
+- The cloud dev environment's network policy currently blocks the data-source hosts (the list in `README.md`, checked against the registry by `tests/test_docs.py`). Only package registries (PyPI, npm) are reachable. Use test fixtures locally and run real ingestion in GitHub Actions until the owner allows those domains.
 - Cloud environment only: Chromium is preinstalled for Playwright (`/opt/pw-browsers`). Do not run `playwright install`.
 - Windows: Windows has no IANA timezone database. Keep the `tzdata; sys_platform == 'win32'` dependency, because without it the UTC `retrieved_at` column panics in polars (`ZoneInfoNotFoundError: UTC`).

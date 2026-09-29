@@ -100,6 +100,12 @@ def test_multi_category_dimension_must_be_selected(tmp_path):
         parse(data, tmp_path, source_id="eurostat_demo_find")
 
 
+def test_unknown_selected_code_fails(tmp_path):
+    data = (FIXTURES / "eurostat_demo_find_el.json").read_bytes()
+    with pytest.raises(ValueError, match="'TOTFERT' is not a 'indic_de' category"):
+        parse(data, tmp_path, source_id="eurostat_demo_find", select={"indic_de": "TOTFERT"})
+
+
 def test_data_must_match_snapshot(tmp_path):
     snap = snapshots.put(
         tmp_path,

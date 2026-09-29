@@ -20,3 +20,46 @@
   description: >-
     Persons aged 65 and over per 100 persons aged 15 to 64, on 1 January. Persons of
     unknown age are excluded. The same ratio as Eurostat demo_pjanind OLDDEP1.
+
+- id: young_age_dependency_ratio@v1
+  metric: young_age_dependency_ratio
+  unit: per 100 persons aged 15-64
+  title: Young-age dependency ratio
+  description: >-
+    Persons aged 0 to 14 per 100 persons aged 15 to 64, on 1 January. The same ratio
+    as Eurostat demo_pjanind YOUNGDEP1.
+
+- id: total_age_dependency_ratio@v1
+  metric: total_age_dependency_ratio
+  unit: per 100 persons aged 15-64
+  title: Total age dependency ratio
+  description: >-
+    Persons aged 0 to 14 and 65 and over per 100 persons aged 15 to 64, on 1 January.
+    Persons of unknown age are excluded. The same ratio as Eurostat demo_pjanind
+    DEPRATIO1.
+
+- id: ageing_index@v1
+  metric: ageing_index
+  unit: per 100 persons aged 0-14
+  title: Ageing index
+  description: >-
+    Persons aged 65 and over per 100 persons aged 0 to 14, on 1 January. Persons of
+    unknown age are excluded. Not in Eurostat demo_pjanind.
+
+- id: population_share@v1
+  metric: population_share
+  unit: "% of persons of known age"
+  title: Share of the population in an age band
+  description: >-
+    Persons in the age band (the age column, e.g. 0-14 or 80+) per 100 persons of
+    known age, on 1 January. As Eurostat demo_pjanind PC_Y0_14, PC_Y15_64, PC_Y65_MAX
+    and PC_Y80_MAX.
+
+- id: median_age@v1
+  metric: median_age
+  unit: years
+  title: Median age of the population
+  description: >-
+    The age that divides persons of known age into two equal halves on 1 January,
+    interpolated linearly within the single year of age. As Eurostat demo_pjanind
+    MEDAGEPOP, MMEDAGEPOP and FMEDAGEPOP.

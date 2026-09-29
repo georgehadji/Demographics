@@ -27,6 +27,7 @@ dev = [
 [project.scripts]
 grpop-probe = "grpop.sources.probe:main"
 grpop-ingest = "grpop.sources.eurostat:main"
+grpop-check-indicators = "grpop.indicators:main"
 
 [build-system]
 requires = ["hatchling"]

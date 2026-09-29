@@ -1,5 +1,6 @@
 """Acceptance tests generated from INDICATORS, on responses recorded from the live API."""
 
+import dataclasses
 import hashlib
 from datetime import UTC, datetime
 from pathlib import Path
@@ -35,7 +36,7 @@ def data(source_ids):
 
 
 def sources(ind):
-    series = [*ind.inputs.values(), *([ind.official] if ind.official else [])]
+    series = [*ind.inputs.values(), *ind.official]
     return {s.source_id for s in series}
 
 
@@ -55,20 +56,25 @@ def test_indicator_agrees_with_official_value(name):
     ind = indicators.INDICATORS[name]
     d = data(sources(ind))
     ours = indicators.compute(ind, d)
-    compared = ours.join(ind.official.read(d), on=indicators.KEY)
+    compared = ours.join(indicators.read_official(ind, d), on=indicators.KEY)
     assert compared.height > 0, "nothing to compare"
-    assert indicators.disagreements(ind, ours, d).is_empty()
+    assert indicators.disagreements(ind, ours, d).filter(~pl.col("known")).is_empty()
 
 
 def test_disagreement_is_reported():
     ind = indicators.INDICATORS["old_age_dependency_ratio"]
     d = data(sources(ind))
     ours = indicators.compute(ind, d).with_columns(value=pl.col("value") + 0.1)
-    assert indicators.disagreements(ind, ours, d).height > 0
+    assert not indicators.disagreements(ind, ours, d)["known"].any()
+    known = dataclasses.replace(ind, known_differences=frozenset({("EL", "2024")}))
+    rows = indicators.disagreements(known, ours, d)
+    assert rows.filter(pl.col("known"))["geo_code"].unique().to_list() == ["EL"]
+    assert set(rows.filter(pl.col("known"))["period"]) == {"2024"}
 
 
-def test_incomplete_ages_are_not_computed():
-    ind = indicators.INDICATORS["old_age_dependency_ratio"]
+@pytest.mark.parametrize("name", ["old_age_dependency_ratio", "median_age"])
+def test_incomplete_ages_are_not_computed(name):
+    ind = indicators.INDICATORS[name]
     pop = ind.inputs["population"].read(data(sources(ind)))
     gap = pop.filter(~((pl.col("geo_code") == "EL") & (pl.col("age") == "30")))
     out = ind.formula({"population": gap})

@@ -3,9 +3,11 @@
 Greek NUTS codes and boundaries are the same in NUTS 2013, 2016, 2021 and 2024:
 Eurostat's correspondence tables list only one Greek name change (EL421, 2021).
 Eurostat also publishes Greek regional series back-cast to these codes (EL51 from
-1991 in demo_r_pjanaggr3). So no code mapping is needed. What remains is to reject
-codes of older versions (NUTS 2010, e.g. EL11 -> EL51, EL300 split into EL301-EL307)
-and to check that each level adds up to its parent.
+1991 in demo_r_pjanaggr3), except the census year 2011 for EL5, EL6 and their
+regions, which some tables give only in NUTS 2010 codes. ``recode_nuts2010`` maps
+those NUTS 2 codes (a code change only, e.g. EL11 -> EL51) and drops the rest;
+``check_greek_codes`` rejects any other old code (e.g. EL300, split into
+EL301-EL307); ``hierarchy_gaps`` checks that each level adds up to its parent.
 
 The reference list data/reference/nuts2024_el.csv is the Greek part of GISCO's
 NUTS_AT_2024.csv (registry: gisco_nuts_2024).
@@ -27,6 +29,32 @@ def greek_nuts() -> set[str]:
     return set(pl.read_csv(REFERENCE / "nuts2024_el.csv")["geo_code"])
 
 
+def recode_nuts2010(obs: pl.DataFrame) -> pl.DataFrame:
+    """Greek NUTS 2010 codes in ``obs`` recoded or removed, so that only current codes
+    remain.
+
+    Eurostat publishes 2011 for EL5, EL6 and their NUTS 2 regions only in NUTS 2010
+    codes (demo_r_d2jan, demo_r_pjanind2 and demo_r_pjanaggr3, checked 2026-09-29).
+    - At NUTS 2 only the code changed (EL11 -> EL51, ...): those are recoded, from
+      data/reference/nuts2010_el_recodes.csv (Eurostat's "NUTS 2010 - NUTS 2013"
+      correspondence, sheet "Correspondence NUTS-2", all "Code change").
+    - EL1 and EL2 shifted boundaries into EL5 and EL6, and NUTS 3 changed too: those
+      codes are dropped where they only repeat 2011 or are empty cells.
+    An old code with a value in any other year is kept, so that ``check_greek_codes``
+    rejects it; two values for one key fail ``validate_observations``.
+    """
+    recodes = dict(pl.read_csv(REFERENCE / "nuts2010_el_recodes.csv").iter_rows())
+    old = pl.col("geo_code").str.starts_with("EL") & ~pl.col("geo_code").is_in(list(greek_nuts()))
+    recoded = (
+        obs.filter(~(old & pl.col("value").is_null()))
+        .with_columns(geo_code=pl.col("geo_code").replace(recodes))
+        .filter(~(old & (pl.col("period") == "2011")))
+    )
+    # The current code has an empty cell where the recoded one has the value.
+    key = [k for k in OBSERVATION_KEY if k in recoded.columns]
+    return recoded.filter(~(pl.col("value").is_null() & pl.struct(key).is_duplicated()))
+
+
 def check_greek_codes(obs: pl.DataFrame) -> None:
     """Raise if a Greek geo_code is not a current NUTS code (e.g. a NUTS 2010 code)."""
     el = set(obs.filter(pl.col("geo_code").str.starts_with("EL"))["geo_code"])
@@ -40,16 +68,24 @@ def hierarchy_gaps(obs: pl.DataFrame, *, tolerance: float = 0.5) -> pl.DataFrame
 
     Compares every Greek code with the sum of the codes one level below it (a child's
     parent is its code without the last character), per observation key without
-    geography. Status and nature are not part of the match, so a provisional child
-    still counts towards a final parent. Returns the offending rows; an empty frame
-    means every level adds up.
+    geography, where every child has a value (e.g. not for EL in 2011, when EL5 and
+    EL6 have none). Status and nature are not part of the match, so a provisional
+    child still counts towards a final parent. Returns the offending rows; an empty
+    frame means every level adds up.
     """
     keys = [k for k in OBSERVATION_KEY if k not in ("geo_code", "geo_vintage", "scenario_id")]
     el = obs.filter(pl.col("geo_code").str.starts_with("EL") & pl.col("value").is_not_null())
+    expected = (
+        pl.DataFrame({"code": sorted(greek_nuts())})
+        .group_by(geo_code=pl.col("code").str.head(-1))
+        .agg(expected=pl.len())
+    )
     children = (
         el.filter(pl.col("geo_code").str.len_chars() > 2)
         .group_by([*keys, pl.col("geo_code").str.head(-1)])
-        .agg(children=pl.col("value").sum())
+        .agg(children=pl.col("value").sum(), n=pl.len())
+        .join(expected, on="geo_code")
+        .filter(pl.col("n") == pl.col("expected"))
     )
     return (
         el.join(children, on=[*keys, "geo_code"], how="inner")

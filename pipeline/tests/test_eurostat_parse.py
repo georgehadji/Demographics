@@ -42,13 +42,14 @@ def parse(data, tmp_path, source_id="eurostat_demo_pjan", **kw):
         ("bep", (True, True, True)),
         ("|N", (False, False, False)),
         ("b|N", (False, False, True)),
+        ("|C", (False, False, False)),  # NUTS 2 datasets, 2026-09-29
     ],
 )
 def test_every_ingested_flag_has_a_meaning(flag, meaning):
     assert eurostat.flag_meaning(flag) == meaning
 
 
-@pytest.mark.parametrize("flag", ["c", "d", "u", "|C"])
+@pytest.mark.parametrize("flag", ["c", "d", "u", "|X"])
 def test_unknown_flag_fails(flag):
     with pytest.raises(ValueError, match="unknown Eurostat flag"):
         eurostat.flag_meaning(flag)
@@ -60,6 +61,7 @@ def test_unknown_flag_fails(flag):
         ("TOTAL", "total"),
         ("UNK", "unknown"),
         ("Y_LT1", "0"),
+        ("Y_LT15", "0-14"),
         ("Y42", "42"),
         ("Y15-19", "15-19"),
         ("Y_GE85", "85+"),
@@ -71,7 +73,7 @@ def test_age_codes(code, age):
 
 def test_unknown_age_code_fails():
     with pytest.raises(ValueError, match="unknown Eurostat age"):
-        eurostat.age("Y_LT15")
+        eurostat.age("Y_LE15")
 
 
 def test_recorded_snapshot_passes_the_contract(tmp_path):

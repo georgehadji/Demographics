@@ -19,7 +19,7 @@ from pathlib import Path
 
 import polars as pl
 
-from grpop import snapshots
+from grpop import harmonize, snapshots
 from grpop.definitions import get_definition
 from grpop.parse import eurostat
 from grpop.provenance import Nature, Status, validate_observations
@@ -28,6 +28,8 @@ from grpop.snapshots import Snapshot
 # Snapshot and bytes per registry source id, as the build reads them from the store.
 Data = Mapping[str, tuple[Snapshot, bytes]]
 KEY = ["geo_code", "period", "sex", "age"]
+# Input observations by name -> KEY + value + provisional + break_in_series + _CARRIED.
+Formula = Callable[[dict[str, pl.DataFrame]], pl.DataFrame]
 _CARRIED = ["source", "dataset_code", "source_url", "vintage", "retrieved_at", "geo_vintage"]
 
 
@@ -43,6 +45,7 @@ class Series:
     # Breakdowns the source puts in the code instead of a dimension, e.g. {"sex": "male"}
     # for demo_pjanind MMEDAGEPOP or {"age": "0-14"} for PC_Y0_14.
     fixed: dict[str, str] = field(default_factory=dict)
+    geo_prefix: str = ""  # keep only geo codes that start with it, e.g. "EL"
 
     def read(self, data: Data) -> pl.DataFrame:
         snapshot, raw = data[self.source_id]
@@ -54,6 +57,10 @@ class Series:
             geo_vintage=self.geo_vintage,
             select=self.select or None,
         )
+        obs = harmonize.recode_nuts2010(
+            obs.filter(pl.col("geo_code").str.starts_with(self.geo_prefix))
+        )
+        harmonize.check_greek_codes(obs)
         return obs.with_columns(**{k: pl.lit(v) for k, v in self.fixed.items()})
 
 
@@ -62,8 +69,7 @@ class Indicator:
     definition_id: str  # meaning and unit
     transform_version: str  # changes whenever the formula changes
     inputs: dict[str, Series]
-    # Input observations by name -> KEY + value + provisional + break_in_series + _CARRIED.
-    formula: Callable[[dict[str, pl.DataFrame]], pl.DataFrame]
+    formula: Formula
     official: tuple[Series, ...] = ()  # the same indicator as an official source publishes it
     decimals: int = 1  # rounding of the official value
     # Rounding error our value inherits from rounded inputs, added to the comparison
@@ -72,6 +78,10 @@ class Indicator:
     # (geo_code, period) where the official value is known to differ from ours. Each set
     # is explained, with its evidence, where it is defined.
     known_differences: frozenset[tuple[str, str]] = frozenset()
+    # The same indicator computed from another table of the official source. Where ours
+    # differs from the official value but equals a corroborating value, the official
+    # source disagrees with itself: the difference is explained without a list.
+    corroboration: tuple[Indicator, ...] = ()
 
 
 def carried() -> list[pl.Expr]:
@@ -125,12 +135,28 @@ def _age_groups(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
     )
 
 
-def _per_100(
-    numerator: pl.Expr, denominator: pl.Expr
-) -> Callable[[dict[str, pl.DataFrame]], pl.DataFrame]:
+def _broad_groups(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
+    """As ``_age_groups``, from a table of broad age groups (0-14, 15-64, 65+); no 80+."""
+    value, age = pl.col("value"), pl.col("age")
+    return (
+        inputs["population"]
+        .filter(value.is_not_null())
+        .group_by(_GROUP)
+        .agg(
+            *carried(),
+            known=value.filter(age == "total").first() - value.filter(age == "unknown").sum(),
+            y0_14=value.filter(age == "0-14").first(),
+            y15_64=value.filter(age == "15-64").first(),
+            y65_=value.filter(age == "65+").first(),
+        )
+        .with_columns(y80_=pl.lit(None, dtype=pl.Float64))
+    )
+
+
+def _per_100(numerator: pl.Expr, denominator: pl.Expr, groups: Formula = _age_groups) -> Formula:
     def formula(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
         return (
-            _age_groups(inputs)
+            groups(inputs)
             .with_columns(age=pl.lit("total"), value=numerator / denominator * 100)
             .filter(pl.col("value").is_not_null())
         )
@@ -141,12 +167,16 @@ def _per_100(
 _SHARES = {"0-14": "y0_14", "15-64": "y15_64", "65+": "y65_", "80+": "y80_"}
 
 
-def _shares(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
-    groups = _age_groups(inputs)
-    return pl.concat(
-        groups.with_columns(age=pl.lit(band), value=pl.col(group) / pl.col("known") * 100)
-        for band, group in _SHARES.items()
-    ).filter(pl.col("value").is_not_null())
+def _shares(groups: Formula) -> Formula:
+    def formula(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
+        return pl.concat(
+            groups(inputs).with_columns(
+                age=pl.lit(band), value=pl.col(group) / pl.col("known") * 100
+            )
+            for band, group in _SHARES.items()
+        ).filter(pl.col("value").is_not_null())
+
+    return formula
 
 
 def _median_age(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
@@ -253,89 +283,130 @@ def _gind(definition_id: str, code: str) -> Series:
     )
 
 
+def _regional(source_id: str, definition_id: str, nature: Nature, **select: str) -> Series:
+    """A Greek regional series (EL and its NUTS 1-3 codes, as the table has them)."""
+    return Series(source_id, definition_id, nature, select=select, geo_prefix="EL")
+
+
 def _find(definition_id: str, code: str) -> Series:
     return Series(
         "eurostat_demo_find", definition_id, Nature.OFFICIAL_ESTIMATE, select={"indic_de": code}
     )
 
 
-# Known differences below, checked 2026-09-29 against the tables updated 2026-09-25.
-# They are cells where demo_pjanind disagrees with Eurostat's own population tables.
-# VERIFIED: in these country-years, the dependency ratios and the 0-14 and 65+ shares
-# computed from demo_pjanbroad (broad age groups), and the 80+ share from demo_pjangroup
-# (five-year groups), equal ours to every digit. For AM 2024, the median age from
-# demo_pjangroup is 39.1 (ours 39.1, demo_pjanind 33.7). The other median-age
-# differences (at most 0.16) are in the same country-years; five-year groups are too
-# coarse to settle them. INFERENCE: demo_pjanind was not recomputed after these
-# populations were revised. MD 2014 is different: demo_pjan, demo_pjangroup and
-# demo_pjanind give three different 80+ shares (2.1, 2.7, 2.4, the last flagged "e");
-# the cause is UNKNOWN. `grpop-check-indicators` fails if a listed difference goes away.
-_POPULATION = Series("eurostat_demo_pjan", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE)
-_Y0_14, _Y15_64, _Y65_ = pl.col("y0_14"), pl.col("y15_64"), pl.col("y65_")
+def _pjanind2(definition_id: str, code: str, **fixed: str) -> Series:
+    unit = "YR" if definition_id == "median_age@v1" else "PC"
+    return Series(
+        "eurostat_demo_r_pjanind2",
+        definition_id,
+        Nature.OFFICIAL_ESTIMATE,
+        select={"indic_de": code, "unit": unit},
+        fixed=fixed,
+        geo_prefix="EL",
+    )
 
+
+_Y0_14, _Y15_64, _Y65_ = pl.col("y0_14"), pl.col("y15_64"), pl.col("y65_")
+# Ratio indicators: numerator, denominator and the demo_pjanind(2) code.
+_RATIOS = {
+    "old_age_dependency_ratio": (_Y65_, _Y15_64, "OLDDEP1"),
+    "young_age_dependency_ratio": (_Y0_14, _Y15_64, "YOUNGDEP1"),
+    "total_age_dependency_ratio": (_Y0_14 + _Y65_, _Y15_64, "DEPRATIO1"),
+    "ageing_index": (_Y65_, _Y0_14, None),
+}
+# demo_pjanind(2) has no PC_Y15_64; 15-64 is 100 minus the other two.
+_SHARE_CODES = {"0-14": "PC_Y0_14", "65+": "PC_Y65_MAX", "80+": "PC_Y80_MAX"}
+_MEDIAN_CODES = {"total": "MEDAGEPOP", "male": "MMEDAGEPOP", "female": "FMEDAGEPOP"}
+
+
+def _structure(
+    population: Series,
+    broad: Series,
+    official: Callable[..., Series],
+    known: dict[str, str],
+) -> dict[str, Indicator]:
+    """#9-#12 from single ages in ``population``, compared with ``official`` and
+    corroborated by the broad age groups in ``broad``."""
+
+    def indicator(
+        name: str, formula: Formula, broad_formula: Formula | None, compared: tuple[Series, ...]
+    ) -> Indicator:
+        definition_id, version = f"{name}@v1", f"{name}@0.1"
+        corroboration = (
+            (Indicator(definition_id, version, {"population": broad}, broad_formula),)
+            if broad_formula
+            else ()
+        )
+        return Indicator(
+            definition_id,
+            version,
+            {"population": population},
+            formula,
+            official=compared,
+            known_differences=_cells(known[name]) if name in known else frozenset(),
+            corroboration=corroboration,
+        )
+
+    out = {
+        name: indicator(
+            name,
+            _per_100(numerator, denominator),
+            _per_100(numerator, denominator, _broad_groups),
+            (official(f"{name}@v1", code),) if code else (),
+        )
+        for name, (numerator, denominator, code) in _RATIOS.items()
+    }
+    out["population_share"] = indicator(
+        "population_share",
+        _shares(_age_groups),
+        _shares(_broad_groups),
+        tuple(official("population_share@v1", c, age=band) for band, c in _SHARE_CODES.items()),
+    )
+    out["median_age"] = indicator(
+        "median_age",
+        _median_age,
+        None,
+        tuple(official("median_age@v1", c, sex=sex) for sex, c in _MEDIAN_CODES.items()),
+    )
+    return out
+
+
+# Known differences: cells where the official structure indicators disagree with
+# Eurostat's own population tables and no broad-group table can corroborate ours
+# (checked 2026-09-29 on the tables of that date; corroborated differences are found by
+# `grpop-check-indicators` itself). 80+ share: VERIFIED that demo_pjangroup (five-year
+# groups) equals ours to every digit, except MD 2014, where demo_pjan, demo_pjangroup and
+# demo_pjanind give three different values (2.1, 2.7, 2.4, the last flagged "e"; cause
+# UNKNOWN). Median age: for AM 2024 demo_pjangroup gives 39.1 (ours 39.1, demo_pjanind
+# 33.7); the other differences (at most 0.16) are in country-years whose ratios are
+# corroborated, and five-year groups are too coarse to settle them. INFERENCE: the
+# indicator tables were not recomputed after the populations were revised.
+# `grpop-check-indicators` fails if a listed difference goes away.
+_POPULATION = Series("eurostat_demo_pjan", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE)
+_POPULATION_REGIONAL = _regional(
+    "eurostat_demo_r_d2jan", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE
+)
 INDICATORS = {
-    "old_age_dependency_ratio": Indicator(
-        definition_id="old_age_dependency_ratio@v1",
-        transform_version="old_age_dependency_ratio@0.1",
-        inputs={"population": _POPULATION},
-        formula=_per_100(_Y65_, _Y15_64),
-        official=(_pjanind("old_age_dependency_ratio@v1", "OLDDEP1"),),
-        known_differences=_cells("LT 2015-2020, IE 2012-2013, EE 2020, HR 2013, MT 1995"),
+    **_structure(
+        _POPULATION,
+        Series("eurostat_demo_pjanbroad", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE),
+        _pjanind,
+        known={
+            "population_share": "LT 2015-2020, IE 2012, MD 2014",
+            "median_age": "LT 2015, LT 2017-2020, EE 2015, HR 2013, AM 2024, MD 2014",
+        },
     ),
-    "young_age_dependency_ratio": Indicator(
-        definition_id="young_age_dependency_ratio@v1",
-        transform_version="young_age_dependency_ratio@0.1",
-        inputs={"population": _POPULATION},
-        formula=_per_100(_Y0_14, _Y15_64),
-        official=(_pjanind("young_age_dependency_ratio@v1", "YOUNGDEP1"),),
-        known_differences=_cells("LT 2015, IE 2012-2013"),
-    ),
-    "total_age_dependency_ratio": Indicator(
-        definition_id="total_age_dependency_ratio@v1",
-        transform_version="total_age_dependency_ratio@0.1",
-        inputs={"population": _POPULATION},
-        formula=_per_100(_Y0_14 + _Y65_, _Y15_64),
-        official=(_pjanind("total_age_dependency_ratio@v1", "DEPRATIO1"),),
-        known_differences=_cells(
-            "LT 2015-2020, IE 2012-2013, EE 2015, HR 2013, EA20 2020, EU27_2007 2016"
-        ),
-    ),
-    "ageing_index": Indicator(
-        definition_id="ageing_index@v1",
-        transform_version="ageing_index@0.1",
-        inputs={"population": _POPULATION},
-        formula=_per_100(_Y65_, _Y0_14),
-    ),
-    "population_share": Indicator(
-        definition_id="population_share@v1",
-        transform_version="population_share@0.1",
-        inputs={"population": _POPULATION},
-        formula=_shares,
-        official=tuple(
-            _pjanind("population_share@v1", code, age=band)
-            # demo_pjanind has no PC_Y15_64; 15-64 is 100 minus the other two.
-            for band, code in {
-                "0-14": "PC_Y0_14",
-                "65+": "PC_Y65_MAX",
-                "80+": "PC_Y80_MAX",
-            }.items()
-        ),
-        known_differences=_cells(
-            "LT 2015-2020, IE 2012-2013, EE 2015, HR 2013, EA20 2020, MD 2014"
-        ),
-    ),
-    "median_age": Indicator(
-        definition_id="median_age@v1",
-        transform_version="median_age@0.1",
-        inputs={"population": _POPULATION},
-        formula=_median_age,
-        official=(
-            _pjanind("median_age@v1", "MEDAGEPOP"),
-            _pjanind("median_age@v1", "MMEDAGEPOP", sex="male"),
-            _pjanind("median_age@v1", "FMEDAGEPOP", sex="female"),
-        ),
-        known_differences=_cells("LT 2015, LT 2017-2020, EE 2015, HR 2013, AM 2024, MD 2014"),
-    ),
+    # Greece and its NUTS 1-2 regions, from demo_r_d2jan. Same definitions; keys end in
+    # _regional. Other countries' regions are out of scope (PROPOSAL §4).
+    **{
+        f"{name}_regional": indicator
+        for name, indicator in _structure(
+            _POPULATION_REGIONAL,
+            _regional("eurostat_demo_r_pjanaggr3", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE),
+            _pjanind2,
+            known={},
+        ).items()
+    },
     "population_growth_rate": Indicator(
         definition_id="population_growth_rate@v1",
         transform_version="population_growth_rate@0.1",
@@ -391,6 +462,51 @@ SERIES = {
         Nature.OFFICIAL_ESTIMATE,
         select={"indic_de": "INFMORRT"},
     ),
+    # Greek regional series (EL and NUTS 1-3 as each table has them). #6 has no regional
+    # table: demo_r_find2 has no mean age at first birth. #2 and #5 are published, not
+    # derived, here: VERIFIED 2026-09-29 that they cannot be reproduced from the
+    # published regional inputs (all EU regions).
+    # demo_r_gind3 has no average population, and GROW over the mean of the two
+    # 1 January populations misses GROWRT in 326 of 46,359 cells (EL 2013 among them).
+    # The demo_r_frate2 rates sum to demo_r_find2 TOTFERRT except in 406 of 11,862 cells
+    # (up to 0.26), and demo_r_frate2's own TOTAL matches neither in 367 of them.
+    "population_regional": _POPULATION_REGIONAL,
+    "population_growth_rate_regional": _regional(
+        "eurostat_demo_r_gind3",
+        "population_growth_rate@v1",
+        Nature.OFFICIAL_ESTIMATE,
+        indic_de="GROWRT",
+    ),
+    "natural_change_regional": _regional(
+        "eurostat_demo_r_gind3", "natural_change@v1", Nature.OBSERVED, indic_de="NATGROW"
+    ),
+    "net_migration_regional": _regional(
+        "eurostat_demo_r_gind3",
+        "net_migration@v1",
+        Nature.OFFICIAL_ESTIMATE,
+        indic_de="CNMIGRAT",
+    ),
+    "total_fertility_rate_regional": _regional(
+        "eurostat_demo_r_find2",
+        "total_fertility_rate@v1",
+        Nature.OFFICIAL_ESTIMATE,
+        indic_de="TOTFERRT",
+        unit="NR",
+    ),
+    **{
+        f"life_expectancy_{age}_regional": Series(
+            "eurostat_demo_r_mlifexp",
+            "life_expectancy@v1",
+            Nature.OFFICIAL_ESTIMATE,
+            select={"age": code},
+            fixed={"age": age},
+            geo_prefix="EL",
+        )
+        for age, code in {"0": "Y_LT1", "65": "Y65"}.items()
+    },
+    "infant_mortality_rate_regional": _regional(
+        "eurostat_demo_r_minfind", "infant_mortality_rate@v1", Nature.OFFICIAL_ESTIMATE
+    ),
 }
 
 
@@ -419,6 +535,13 @@ def compute(indicator: Indicator, data: Data) -> pl.DataFrame:
     )
 
 
+def sources(indicator: Indicator) -> set[str]:
+    """Registry ids of every source the indicator, its official values and its
+    corroboration read."""
+    series = [*indicator.inputs.values(), *indicator.official]
+    return {s.source_id for s in series}.union(*(sources(c) for c in indicator.corroboration))
+
+
 def read_official(indicator: Indicator, data: Data) -> pl.DataFrame:
     if not indicator.official:
         raise ValueError(f"{indicator.definition_id} has no official counterpart")
@@ -428,28 +551,43 @@ def read_official(indicator: Indicator, data: Data) -> pl.DataFrame:
 def disagreements(indicator: Indicator, ours: pl.DataFrame, data: Data) -> pl.DataFrame:
     """Rows where our value and the official one differ by more than the official rounding.
 
-    Compared wherever both have a value. Returns KEY, ours, official and ``known``
-    (the country-year is in ``indicator.known_differences``).
+    Compared wherever both have a value. Returns KEY, ours, official, ``known`` (the
+    country-year is in ``indicator.known_differences``) and ``corroborated`` (a
+    corroborating indicator gives our value).
     """
     official = read_official(indicator, data).select(*KEY, official="value")
     known = pl.DataFrame(
-        list(indicator.known_differences), schema=["geo_code", "period"], orient="row"
+        list(indicator.known_differences),
+        schema={"geo_code": pl.String, "period": pl.String},
+        orient="row",
     ).with_columns(known=pl.lit(True))
     half_unit = 0.5 * 10**-indicator.decimals + indicator.input_rounding + 1e-9
-    return (
+    rows = (
         ours.select(*KEY, ours="value")
         .join(official, on=KEY)
         .filter((pl.col("ours") - pl.col("official")).abs() > half_unit)
         .join(known, on=["geo_code", "period"], how="left")
-        .with_columns(pl.col("known").fill_null(False))
+        .with_columns(pl.col("known").fill_null(False), corroborated=pl.lit(False))
     )
+    for other in indicator.corroboration:
+        alt = compute(other, data).select(*KEY, alt="value")
+        rows = (
+            rows.join(alt, on=KEY, how="left")
+            .with_columns(
+                corroborated=pl.col("corroborated")
+                | ((pl.col("alt") - pl.col("ours")).abs() < 1e-9).fill_null(False)
+            )
+            .drop("alt")
+        )
+    return rows
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Compare every indicator with its official counterpart, on the "
-        "latest snapshot of each source in a store. Fails on a difference that is not "
-        "a known difference, and on a known difference that has gone away."
+        "latest snapshot of each source in a store. Fails on a difference that is "
+        "neither corroborated nor listed, and on a listed difference that is gone or "
+        "now corroborated."
     )
     parser.add_argument("--store", type=Path, required=True)
     store = parser.parse_args(argv).store
@@ -457,17 +595,21 @@ def main(argv: list[str] | None = None) -> int:
     for name, indicator in INDICATORS.items():
         if not indicator.official:
             continue
-        ids = {s.source_id for s in (*indicator.inputs.values(), *indicator.official)}
         data = {}
-        for source_id in ids:
+        for source_id in sources(indicator):
             snapshot = snapshots.history(store, source_id)[-1]
             data[source_id] = (snapshot, snapshots.read(store, snapshot.sha256))
         rows = disagreements(indicator, compute(indicator, data), data)
-        unexplained = rows.filter(~pl.col("known"))
+        unexplained = rows.filter(~pl.col("known") & ~pl.col("corroborated"))
         gone = indicator.known_differences - set(
-            rows.filter("known").select("geo_code", "period").iter_rows()
+            rows.filter(pl.col("known") & ~pl.col("corroborated"))
+            .select("geo_code", "period")
+            .iter_rows()
         )
-        print(f"{name}: {unexplained.height} unexplained, {len(gone)} known gone")
+        print(
+            f"{name}: {rows['corroborated'].sum()} corroborated, {unexplained.height} "
+            f"unexplained, {len(gone)} listed but gone or corroborated"
+        )
         if unexplained.height or gone:
             failed = True
             with pl.Config(tbl_rows=-1):

@@ -9,7 +9,7 @@ codes.
 
 from __future__ import annotations
 
-from itertools import product
+import math
 from typing import Any
 
 import polars as pl
@@ -24,12 +24,15 @@ def _category_codes(dimension: dict[str, Any]) -> list[str]:
     return [code for code, _ in sorted(index.items(), key=lambda kv: kv[1])]
 
 
-def _lookup(container: list[Any] | dict[str, Any] | None, flat_index: int) -> Any:
+def _cells(container: list[Any] | dict[str, Any] | None, n: int, dtype: Any) -> pl.Series:
+    """``value`` or ``status`` as one entry per cell, null where absent."""
     if container is None:
-        return None
+        return pl.repeat(None, n, dtype=dtype, eager=True)
     if isinstance(container, list):
-        return container[flat_index]
-    return container.get(str(flat_index))
+        return pl.Series(container, dtype=dtype, strict=False)
+    positions = pl.Series([int(k) for k in container], dtype=pl.Int64)
+    entries = pl.Series(list(container.values()), dtype=dtype, strict=False)
+    return pl.repeat(None, n, dtype=dtype, eager=True).scatter(positions, entries)
 
 
 def to_long(doc: dict[str, Any]) -> pl.DataFrame:
@@ -48,14 +51,16 @@ def to_long(doc: dict[str, Any]) -> pl.DataFrame:
     if [len(c) for c in codes] != sizes:
         raise ValueError("category counts do not match 'size'")
 
-    values, statuses = doc.get("value"), doc.get("status")
-    rows = []
-    for flat, combo in enumerate(product(*codes)):
-        raw = _lookup(values, flat)
-        rows.append((*combo, None if raw is None else float(raw), _lookup(statuses, flat)))
-
-    schema = {d: pl.String for d in ids} | {"value": pl.Float64, "flag": pl.String}
-    return pl.DataFrame(rows, schema=schema, orient="row")
+    n = math.prod(sizes)
+    flat = pl.int_range(0, n, dtype=pl.Int64, eager=True)
+    columns = []
+    stride = n
+    for d, c in zip(ids, codes, strict=True):
+        stride //= len(c)  # row-major: the last dimension varies fastest
+        columns.append(pl.Series(d, c, dtype=pl.String).gather((flat // stride) % len(c)))
+    columns.append(_cells(doc.get("value"), n, pl.Float64).alias("value"))
+    columns.append(_cells(doc.get("status"), n, pl.String).alias("flag"))
+    return pl.DataFrame(columns)
 
 
 def summarize(doc: dict[str, Any]) -> dict[str, Any]:

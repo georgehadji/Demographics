@@ -9,8 +9,8 @@ from grpop.provenance import Nature, Sex, Status, validate_observations
 # Illustrative row. The value is a placeholder, not a real statistic: tests check the
 # contract, not demographic facts.
 BASE_ROW = {
-    "metric": "population_1jan",
-    "definition_id": "pop_usual_residence_1jan@v1",
+    "metric": "population",
+    "definition_id": "population_1jan@v1",
     "geo_code": "EL",
     "geo_vintage": "NUTS2024",
     "period": "2025-01-01",
@@ -26,6 +26,7 @@ BASE_ROW = {
     "transform_version": "0.0.1",
     "nature": Nature.OFFICIAL_ESTIMATE.value,
     "status": Status.FINAL.value,
+    "break_in_series": False,
     "scenario_id": None,
 }
 
@@ -47,6 +48,7 @@ SCHEMA = {
     "transform_version": pl.String,
     "nature": pl.String,
     "status": pl.String,
+    "break_in_series": pl.Boolean,
     "scenario_id": pl.String,
 }
 
@@ -65,6 +67,7 @@ def test_valid_row_passes():
         {"source_url": "http://insecure.example.org"},
         {"nature": "verified"},  # the v1 label that conflated "official" with "verified"
         {"status": "unknown"},
+        {"status": "break_in_series"},  # a separate boolean column since B4
         {"definition_id": "no_version"},
         {"period": "Jan 2025"},
         {"unit": ""},
@@ -142,3 +145,20 @@ def test_sex_and_age_are_part_of_the_key():
     validate_observations(
         frame({}, {"sex": Sex.MALE.value}, {"sex": Sex.FEMALE.value}, {"age": "0"})
     )
+
+
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"definition_id": "no_such_metric@v1"},  # not in definitions.yaml
+        {"metric": "births"},  # does not match the definition
+        {"unit": "thousands"},
+    ],
+)
+def test_row_must_match_its_definition(override):
+    with pytest.raises(pandera.errors.SchemaErrors):
+        validate_observations(frame(override))
+
+
+def test_break_is_independent_of_status():
+    validate_observations(frame({"status": Status.PROVISIONAL.value, "break_in_series": True}))

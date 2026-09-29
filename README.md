@@ -38,7 +38,7 @@ zenodo.org
 | Φάκελος | Περιεχόμενο |
 |---|---|
 | `pipeline/` | Python package `grpop`: συμβόλαιο προέλευσης, μητρώο πηγών, connectors, tests (βλ. [`pipeline/README.md`](pipeline/README.md)) |
-| `.github/workflows/` | `CI` (lint + tests) και `Source probe` (έλεγχος των πηγών από το GitHub Actions) |
+| `.github/workflows/` | `CI` (lint, τύποι, tests), `Source probe` (έλεγχος των πηγών) και `Ingest` (λήψη των datasets σε snapshots, αποθηκευμένα στο release `snapshots`) |
 
 ## Άδειες
 

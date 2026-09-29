@@ -1,0 +1,58 @@
+name: Ingest
+
+# Downloads the Phase 1 Eurostat datasets into the snapshot store (grpop-ingest).
+# The store lives as assets of the `snapshots` release and is never overwritten:
+# each object is uploaded once under its sha256, and each run that stores something
+# adds a manifest-<UTC time>.jsonl with only its new lines. The full manifest is
+# those files concatenated in name order.
+# ponytail: one release holds at most 1000 assets; start a second release (or move to
+# object storage) when the store nears that.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 5 * * 2" # weekly, Tuesday 05:43 UTC
+
+permissions:
+  contents: write # release assets
+
+concurrency: ingest # two runs would race on the manifest
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+        shell: bash # -eo pipefail: a failed grpop-ingest fails the step despite tee
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Restore manifest
+        run: |
+          gh release view snapshots >/dev/null 2>&1 || gh release create snapshots \
+            --prerelease --title "Source snapshots" \
+            --notes "Raw source files by sha256 plus manifest-*.jsonl, written by the Ingest workflow (pipeline/src/grpop/snapshots.py)."
+          gh release view snapshots --json assets -q '.assets[].name' > assets.txt
+          mkdir -p store parts
+          if grep -q '^manifest-' assets.txt; then
+            gh release download snapshots -p 'manifest-*.jsonl' -D parts
+            cat $(ls parts/manifest-*.jsonl | sort) > store/manifest.jsonl
+          fi
+      - name: Download sources
+        run: |
+          before=$( [ -f store/manifest.jsonl ] && wc -l < store/manifest.jsonl || echo 0 )
+          uv run grpop-ingest --store store | tee -a "$GITHUB_STEP_SUMMARY"
+          tail -n +$((before + 1)) store/manifest.jsonl > new-lines.jsonl
+      - name: Upload new objects, then their manifest lines
+        run: |
+          shopt -s nullglob
+          [ -s new-lines.jsonl ] || { echo "No new snapshots."; exit 0; }
+          for f in store/objects/*; do
+            grep -qx "$(basename "$f")" assets.txt || gh release upload snapshots "$f"
+          done
+          part="manifest-$(date -u +%Y%m%dT%H%M%SZ).jsonl"
+          cp new-lines.jsonl "$part"
+          gh release upload snapshots "$part"

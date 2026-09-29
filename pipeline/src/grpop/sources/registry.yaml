@@ -237,6 +237,10 @@ sources:
     licence: gisco_geodata
     used_for: [maps, geo_concordance]
     phase: 1
+    notes: >-
+      Access and format checked 2026-09-29 (step B5): the index JSON lists files in csv,
+      geojson, gpkg, parquet, pbf, shp, svg and topojson. csv/NUTS_AT_2024.csv holds
+      codes and names; its 70 Greek rows are data/reference/nuts2024_el.csv.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
   - id: elstat_population_estimate_2025

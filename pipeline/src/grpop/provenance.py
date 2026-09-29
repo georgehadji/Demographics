@@ -35,6 +35,21 @@ class Status(StrEnum):
     NOT_AVAILABLE = "not_available"
 
 
+class Sex(StrEnum):
+    """Sex breakdown of a value. Totals are explicit, never null."""
+
+    TOTAL = "total"
+    MALE = "male"
+    FEMALE = "female"
+
+
+# Age breakdown of a value, in completed years: "total", "unknown", an exact age
+# ("0"), an inclusive band ("15-64") or an open-ended band ("85+"). Parsers map
+# source codes to this form (e.g. Eurostat Y_LT1 -> "0", Y_GE85 -> "85+").
+AGE_TOTAL = "total"
+AGE_PATTERN = r"^(" + AGE_TOTAL + r"|unknown|\d{1,3}(-\d{1,3}|\+)?)$"
+
+
 # Columns that identify one published value. A second row with the same key is a
 # revision and belongs in the history table, not in the current table.
 OBSERVATION_KEY = (
@@ -43,6 +58,8 @@ OBSERVATION_KEY = (
     "geo_code",
     "geo_vintage",
     "period",
+    "sex",
+    "age",
     "source",
     "dataset_code",
     "vintage",
@@ -62,6 +79,8 @@ class ObservationSchema(pa.DataFrameModel):
     geo_code: str = pa.Field(str_length={"min_value": 2})
     geo_vintage: str = pa.Field(str_length={"min_value": 1})
     period: str = pa.Field(str_matches=r"^\d{4}(-\d{2}(-\d{2})?)?$")
+    sex: str = pa.Field(isin=[s.value for s in Sex])
+    age: str = pa.Field(str_matches=AGE_PATTERN)
     value: float = pa.Field(nullable=True)
     unit: str = pa.Field(str_length={"min_value": 1})
     source: str = pa.Field(str_length={"min_value": 1})
@@ -91,6 +110,14 @@ class ObservationSchema(pa.DataFrameModel):
         return data.lazyframe.select(
             pl.col("scenario_id").is_not_null() == (pl.col("nature") == Nature.SCENARIO.value)
         )
+
+    @pa.dataframe_check(error="age band must run from lower to higher age")
+    @classmethod
+    def age_band_ordered(cls, data: PolarsData) -> pl.LazyFrame:
+        bounds = pl.col("age").str.extract_groups(r"^(\d+)-(\d+)$")
+        low = bounds.struct.field("1").cast(pl.Int32)
+        high = bounds.struct.field("2").cast(pl.Int32)
+        return data.lazyframe.select((low < high).fill_null(True))
 
     @pa.dataframe_check(error="duplicate observation key: revisions belong in history")
     @classmethod

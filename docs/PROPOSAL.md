@@ -445,7 +445,7 @@ docs/                # πρόταση, αποφάσεις (ADR), σχέδιο υ
   - Registry: όλες οι πηγές με `phase: 1` έχουν `verification.status: verified` (VERIFIED, `registry.yaml`). Για ορισμένες το τεκμήριο (`evidence`) επιβεβαιώνει μόνο το URL· το format τους ελέγχεται στο connector της Φάσης 1.
   - Δημοτικό επίπεδο: απόφαση στην ADR 0004 (VERIFIED).
   - CI: πράσινο στο `main` (VERIFIED, GitHub Actions).
-- **Μεταφέρεται στη Φάση 1:** επέκταση του contract με διαστάσεις φύλου και ηλικίας πριν από το B4 (spike A2 §5)· αφαίρεση διπλοεγγραφών (A5, [ADR 0006](decisions/0006-single-source-of-truth.md)).
+- **Μεταφέρεται στη Φάση 1:** αφαίρεση διπλοεγγραφών (A5, [ADR 0006](decisions/0006-single-source-of-truth.md)).
 
 ### Φάση 1: Πυρήνας δεδομένων και design system
 

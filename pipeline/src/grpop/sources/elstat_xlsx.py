@@ -2,8 +2,7 @@
 
 Phase 0 spike (IMPLEMENTATION-PLAN A2); findings in docs/spikes/elstat-ingestion.md.
 Only the country total and the 13 regions (NUTS 2) are read. Regional units need
-the concordance of step B5, and the male/female sheets need a sex dimension that
-the observations contract does not have yet.
+the concordance of step B5. The male/female sheets are not read yet.
 
 The workbook is laid out for print, so everything is located by content, never by
 row number: the header row is the one with "1.1.YYYY" cells, footnote markers are
@@ -22,6 +21,7 @@ import fastexcel
 import polars as pl
 
 from grpop.definitions import get_definition
+from grpop.provenance import AGE_TOTAL, Sex
 from grpop.sources.registry import get_source
 
 # Source metadata comes from registry.yaml and the metric from definitions.yaml;
@@ -124,7 +124,7 @@ def read_population_1jan(
     frames = []
     for name in reader.sheet_names:
         if not name.startswith("ΣΥΝΟΛΟ-TOTAL"):
-            continue  # male/female sheets: no sex dimension in the contract yet
+            continue  # male/female sheets not parsed yet: only totals are read
         sheet = reader.load_sheet(name, header_row=None, dtypes="string").to_polars()
         frames.append(parse_sheet([list(r) for r in sheet.iter_rows()], geo))
     if not frames:
@@ -139,6 +139,8 @@ def read_population_1jan(
         dataset_code=pl.lit(source.dataset_code),
         source_url=pl.lit(source_url),
         vintage=pl.lit(vintage),
+        sex=pl.lit(Sex.TOTAL.value),
+        age=pl.lit(AGE_TOTAL),
         retrieved_at=pl.lit(retrieved_at, dtype=pl.Datetime("us", "UTC")),
         transform_version=pl.lit(TRANSFORM_VERSION),
         nature=pl.lit("official_estimate"),

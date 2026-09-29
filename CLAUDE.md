@@ -41,7 +41,7 @@ Current state: Phase 0 is closing (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline
 
 - Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check .` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
-- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`. The schema is strict and never coerces types: read the module before producing observations. It has no sex/age dimensions yet (see `docs/spikes/elstat-ingestion.md` §5).
+- `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`. The schema is strict and never coerces types: read the module before producing observations. Breakdowns by sex and age are the `sex` and `age` columns, never separate metrics; totals are explicit values, not null.
 - `src/grpop/definitions.yaml` defines every `definition_id` (meaning, unit, version). Parsers and indicators read metric and unit from it via `get_definition`; they never type them.
 - Parsers take source metadata from the registry via `get_source(<id>)`, not from constants. Example: `src/grpop/sources/elstat_xlsx.py`.
 - `src/grpop/sources/jsonstat.py` turns Eurostat JSON-stat into long format: one string column per dimension, plus `value` and the source `flag` (e.g. `p` = provisional). Cells the source did not publish are kept as null rows, so "not published" stays distinct from "not requested".

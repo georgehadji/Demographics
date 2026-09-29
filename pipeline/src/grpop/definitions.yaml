@@ -12,3 +12,11 @@
   description: >-
     Usual resident population on 1 January of the reference year. The period is
     the year (YYYY), as in Eurostat demo_pjan.
+
+- id: old_age_dependency_ratio@v1
+  metric: old_age_dependency_ratio
+  unit: per 100 persons aged 15-64
+  title: Old-age dependency ratio
+  description: >-
+    Persons aged 65 and over per 100 persons aged 15 to 64, on 1 January. Persons of
+    unknown age are excluded. The same ratio as Eurostat demo_pjanind OLDDEP1.

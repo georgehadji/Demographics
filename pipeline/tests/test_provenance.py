@@ -4,7 +4,7 @@ import pandera.errors
 import polars as pl
 import pytest
 
-from grpop.provenance import Nature, Status, validate_observations
+from grpop.provenance import Nature, Sex, Status, validate_observations
 
 # Illustrative row. The value is a placeholder, not a real statistic: tests check the
 # contract, not demographic facts.
@@ -14,6 +14,8 @@ BASE_ROW = {
     "geo_code": "EL",
     "geo_vintage": "NUTS2024",
     "period": "2025-01-01",
+    "sex": Sex.TOTAL.value,
+    "age": "total",
     "value": 1.0,
     "unit": "persons",
     "source": "Eurostat",
@@ -33,6 +35,8 @@ SCHEMA = {
     "geo_code": pl.String,
     "geo_vintage": pl.String,
     "period": pl.String,
+    "sex": pl.String,
+    "age": pl.String,
     "value": pl.Float64,
     "unit": pl.String,
     "source": pl.String,
@@ -116,3 +120,25 @@ def test_duplicate_key_fails():
 
 def test_same_period_from_two_sources_is_allowed():
     validate_observations(frame({}, {"source": "ELSTAT", "dataset_code": "elstat_pop_est"}))
+
+
+@pytest.mark.parametrize("age", ["total", "unknown", "0", "100", "15-64", "85+"])
+def test_valid_ages_pass(age):
+    validate_observations(frame({"age": age}))
+
+
+@pytest.mark.parametrize("age", ["", "Y15", "Y_GE85", "15-", "64-15", "15-15", "-5", "1000"])
+def test_invalid_ages_fail(age):
+    with pytest.raises(pandera.errors.SchemaErrors):
+        validate_observations(frame({"age": age}))
+
+
+def test_sex_outside_vocabulary_fails():
+    with pytest.raises(pandera.errors.SchemaErrors):
+        validate_observations(frame({"sex": "T"}))
+
+
+def test_sex_and_age_are_part_of_the_key():
+    validate_observations(
+        frame({}, {"sex": Sex.MALE.value}, {"sex": Sex.FEMALE.value}, {"age": "0"})
+    )

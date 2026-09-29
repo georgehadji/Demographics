@@ -37,13 +37,14 @@ Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, st
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline/` is the only code. The site, the reports and the snapshot store are planned (ADR 0005) and don't exist yet.
+Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline/` is the only code. The site and the reports are planned (ADR 0005) and don't exist yet.
 
 - Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check . && uv run mypy` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
 - `src/grpop/provenance.py` is the provenance contract. Every published value must pass `validate_observations`. The schema is strict and never coerces types: read the module before producing observations. Breakdowns by sex and age are the `sex` and `age` columns, never separate metrics; totals are explicit values, not null.
 - `src/grpop/definitions.yaml` defines every `definition_id` (meaning, unit, version). Parsers and indicators read metric and unit from it via `get_definition`; they never type them.
 - Parsers take source metadata from the registry via `get_source(<id>)`, not from constants. Example: `src/grpop/parse/elstat_xlsx.py`.
+- `src/grpop/snapshots.py` stores raw downloads by sha256 with an append-only `manifest.jsonl`. Parsers read bytes from it, never from the network; `retrieved_at` comes from the snapshot.
 - `src/grpop/parse/jsonstat.py` turns Eurostat JSON-stat into long format: one string column per dimension, plus `value` and the source `flag` (e.g. `p` = provisional). Cells the source did not publish are kept as null rows, so "not published" stays distinct from "not requested".
 - `src/grpop/sources/registry.yaml` lists every source, validated by `registry.py`. Each licence is written once under `licences` and referenced by key from each source; an unknown or unused key is an error. The verification flow:
   1. The `Source probe` workflow runs `grpop-probe` weekly, on demand, and whenever `registry.yaml` or `probe.py` changes.

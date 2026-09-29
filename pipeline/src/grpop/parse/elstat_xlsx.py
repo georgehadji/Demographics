@@ -144,5 +144,6 @@ def read_population_1jan(
         retrieved_at=pl.lit(retrieved_at, dtype=pl.Datetime("us", "UTC")),
         transform_version=pl.lit(TRANSFORM_VERSION),
         nature=pl.lit("official_estimate"),
+        break_in_series=pl.lit(False),  # ponytail: break footnotes are not read yet
         scenario_id=pl.lit(None, dtype=pl.String),
     )

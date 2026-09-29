@@ -31,8 +31,9 @@ class Status(StrEnum):
     PROVISIONAL = "provisional"
     FINAL = "final"
     REVISED = "revised"
-    BREAK_IN_SERIES = "break_in_series"
     NOT_AVAILABLE = "not_available"
+    # A break in series is the separate boolean column ``break_in_series``: sources flag
+    # a break together with a status (Eurostat "bp" = break + provisional).
 
 
 class Sex(StrEnum):
@@ -91,6 +92,7 @@ class ObservationSchema(pa.DataFrameModel):
     transform_version: str = pa.Field(str_length={"min_value": 1})
     nature: str = pa.Field(isin=[n.value for n in Nature])
     status: str = pa.Field(isin=[s.value for s in Status])
+    break_in_series: bool = pa.Field()  # the series is not comparable across this period
     scenario_id: str = pa.Field(nullable=True)
 
     class Config:
@@ -118,6 +120,21 @@ class ObservationSchema(pa.DataFrameModel):
         low = bounds.struct.field("1").cast(pl.Int32)
         high = bounds.struct.field("2").cast(pl.Int32)
         return data.lazyframe.select((low < high).fill_null(True))
+
+    @pa.dataframe_check(error="definition_id, metric and unit must match definitions.yaml")
+    @classmethod
+    def matches_definition(cls, data: PolarsData) -> pl.LazyFrame:
+        from grpop.definitions import load_definitions  # it imports this module
+
+        cols = ["definition_id", "metric", "unit"]
+        known = pl.LazyFrame(
+            [(d.id, d.metric, d.unit, True) for d in load_definitions().values()],
+            schema=[*cols, "known"],
+            orient="row",
+        )
+        return data.lazyframe.join(known, on=cols, how="left", maintain_order="left").select(
+            pl.col("known").fill_null(False)
+        )
 
     @pa.dataframe_check(error="duplicate observation key: revisions belong in history")
     @classmethod

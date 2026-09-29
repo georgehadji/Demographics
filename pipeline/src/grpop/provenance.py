@@ -1,9 +1,9 @@
 """Provenance contract for every value the project publishes.
 
-A value is one row of the long-format ``observations`` table. It must carry the
-metadata listed in docs/PROPOSAL.md §2. The schema below enforces that
-contract. Nothing may be published, charted or quoted unless it passes
-``validate_observations``.
+A value is one row of the long-format ``observations`` table. This module is the
+only definition of its fields, vocabularies and key (ADR 0006); docs/PROPOSAL.md
+§2 explains why they exist. Nothing may be published, charted or quoted unless it
+passes ``validate_observations``.
 """
 
 from __future__ import annotations

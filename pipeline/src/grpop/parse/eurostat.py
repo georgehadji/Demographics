@@ -101,6 +101,8 @@ def to_observations(
     doc = json.loads(data)
     df = jsonstat.to_long(doc)
     for dim, code in (select or {}).items():
+        if code not in doc["dimension"][dim]["category"]["index"]:
+            raise ValueError(f"{code!r} is not a {dim!r} category of {snapshot.source_id}")
         df = df.filter(pl.col(dim) == code).drop(dim)
     extra = [d for d in doc["id"] if d in df.columns and d not in _OBSERVATION_DIMS]
     for d in extra:

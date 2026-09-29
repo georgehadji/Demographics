@@ -147,6 +147,42 @@ sources:
     phase: 1
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
+  - id: eurostat_demo_pjanbroad
+    provider: Eurostat
+    dataset_code: demo_pjanbroad
+    title: Population on 1 January by broad age group and sex
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanbroad?format=JSON&lang=EN&geo=EL&sex=T&lastTimePeriod=1
+    licence: eurostat
+    used_for: [evidence_for_known_differences]
+    phase: 1
+    verification: {status: unverified}
+
+  - id: eurostat_demo_pjangroup
+    provider: Eurostat
+    dataset_code: demo_pjangroup
+    title: Population on 1 January by age group and sex
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjangroup?format=JSON&lang=EN&geo=EL&sex=T&lastTimePeriod=1
+    licence: eurostat
+    used_for: [evidence_for_known_differences]
+    phase: 1
+    verification: {status: unverified}
+
+  - id: eurostat_demo_minfind
+    provider: Eurostat
+    dataset_code: demo_minfind
+    title: Infant mortality rates
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_minfind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [infant_mortality]
+    phase: 1
+    verification: {status: unverified}
+
   - id: eurostat_demo_r_gind3
     provider: Eurostat
     dataset_code: demo_r_gind3

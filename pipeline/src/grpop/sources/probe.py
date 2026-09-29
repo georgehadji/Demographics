@@ -16,7 +16,7 @@ from pathlib import Path
 
 import httpx
 
-from grpop.sources import jsonstat
+from grpop.parse import jsonstat
 from grpop.sources.registry import SourceEntry, load_registry
 
 USER_AGENT = "grpop-source-probe (non-commercial research; github.com/georgehadji/Demographics)"

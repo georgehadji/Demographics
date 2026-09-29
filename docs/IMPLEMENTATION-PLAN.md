@@ -20,7 +20,7 @@
 
 | # | Βήμα | Παραδοτέο | Έλεγχος ολοκλήρωσης |
 |---|---|---|---|
-| B1 | Αναδιάρθρωση πακέτου | `jsonstat.py` → `grpop/parse/`· κενά modules κατά την ADR 0005· `pyright` (ή `mypy --strict`) στο CI για `provenance`, `parse` | Υπάρχοντα tests πράσινα, έλεγχος τύπων πράσινος |
+| B1 | Αναδιάρθρωση πακέτου | `jsonstat.py` και `elstat_xlsx.py` → `grpop/parse/`· `mypy --strict` στο CI για όλο το `grpop`. Κάθε επόμενο βήμα δημιουργεί το δικό του module· δεν προστίθενται κενά modules | Υπάρχοντα tests πράσινα, έλεγχος τύπων πράσινος |
 | B2 | `snapshots/` | Content-addressed αποθήκη (sha256) + manifest JSON· απαγόρευση overwrite· αποθήκευση ως GitHub Release assets στο CI | Tests: ίδιο περιεχόμενο ⇒ ίδιο hash· δεύτερη εγγραφή ίδιου hash δεν αλλάζει τίποτα· διαφορετικό περιεχόμενο με ίδιο κλειδί πηγής ⇒ νέα έκδοση, όχι αντικατάσταση |
 | B3 | Connector Eurostat | Adapter που κατεβάζει τα datasets της Φάσης 1 σε snapshots, με retry/backoff και το `User-Agent` του probe | Τρέχει στο GitHub Actions· fixtures καταγεγραμμένα από πραγματικές απαντήσεις (όχι χειρόγραφα) |
 | B4 | `parse/`: JSON-stat → observations | Μετατροπή σε πίνακα του contract: flags της Eurostat → `status`, `retrieved_at` από το snapshot, `source_url`, `vintage` | Κάθε έξοδος περνά το `validate_observations`· test για κάθε flag της Eurostat που εμφανίζεται στα datasets |

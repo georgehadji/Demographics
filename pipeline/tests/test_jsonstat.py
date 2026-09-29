@@ -4,7 +4,7 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from grpop.sources import jsonstat
+from grpop.parse import jsonstat
 
 FIXTURES = Path(__file__).parent / "fixtures"
 

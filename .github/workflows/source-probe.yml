@@ -10,6 +10,7 @@ on:
     paths:
       - pipeline/src/grpop/sources/registry.yaml
       - pipeline/src/grpop/sources/probe.py
+      - pipeline/src/grpop/parse/jsonstat.py
       - .github/workflows/source-probe.yml
 
 permissions:

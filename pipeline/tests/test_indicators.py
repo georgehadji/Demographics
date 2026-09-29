@@ -9,14 +9,21 @@ import polars as pl
 import pytest
 
 from grpop import indicators
+from grpop.provenance import validate_observations
 from grpop.snapshots import Snapshot
 
 FIXTURES = Path(__file__).parent / "fixtures"
-# Recorded extract per source id (Greece and Cyprus, 2023 onwards). An indicator whose
-# sources have no entry here fails its acceptance test until one is recorded.
+# Recorded extract per source id: Greece and Cyprus, 2023 onwards for demo_pjan and
+# demo_pjanind, 2021 onwards for the others. An indicator or series whose sources have
+# no entry here fails its tests until one is recorded.
 RECORDED = {
     "eurostat_demo_pjan": "eurostat_demo_pjan_el_cy.json",
     "eurostat_demo_pjanind": "eurostat_demo_pjanind_el_cy.json",
+    "eurostat_demo_gind": "eurostat_demo_gind_el_cy.json",
+    "eurostat_demo_find": "eurostat_demo_find_el_cy.json",
+    "eurostat_demo_frate": "eurostat_demo_frate_el_cy.json",
+    "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
+    "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
 }
 
 
@@ -59,6 +66,20 @@ def test_indicator_agrees_with_official_value(name):
     compared = ours.join(indicators.read_official(ind, d), on=indicators.KEY)
     assert compared.height > 0, "nothing to compare"
     assert indicators.disagreements(ind, ours, d).filter(~pl.col("known")).is_empty()
+
+
+@pytest.mark.parametrize("name", list(indicators.SERIES))
+def test_series_passes_the_contract(name):
+    series = indicators.SERIES[name]
+    obs = validate_observations(series.read(data({series.source_id})))
+    assert obs.filter(pl.col("geo_code") == "EL")["value"].is_not_null().any()
+
+
+def test_inputs_from_several_sources_are_rejected():
+    ind = indicators.INDICATORS["old_age_dependency_ratio"]
+    two = dataclasses.replace(ind, inputs={**ind.inputs, "x": indicators.SERIES["net_migration"]})
+    with pytest.raises(ValueError, match="one source"):
+        indicators.compute(two, data(sources(two)))
 
 
 def test_disagreement_is_reported():

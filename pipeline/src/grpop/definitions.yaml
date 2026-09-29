@@ -63,3 +63,83 @@
     The age that divides persons of known age into two equal halves on 1 January,
     interpolated linearly within the single year of age. As Eurostat demo_pjanind
     MEDAGEPOP, MMEDAGEPOP and FMEDAGEPOP.
+
+- id: population_change@v1
+  metric: population_change
+  unit: persons
+  title: Total population change
+  description: >-
+    Population on 1 January of the next year minus population on 1 January of the
+    reference year, as Eurostat demo_gind GROW (natural change plus net migration
+    and statistical adjustment).
+
+- id: average_population@v1
+  metric: average_population
+  unit: persons
+  title: Average population
+  description: >-
+    Average population of the reference year, as Eurostat demo_gind AVG.
+
+- id: population_growth_rate@v1
+  metric: population_growth_rate
+  unit: per 1000 average population
+  title: Crude rate of population change
+  description: >-
+    Total population change during the year per 1000 of the average population. The
+    same rate as Eurostat demo_gind GROWRT.
+
+- id: natural_change@v1
+  metric: natural_change
+  unit: persons
+  title: Natural change
+  description: >-
+    Live births minus deaths during the reference year, as Eurostat demo_gind NATGROW.
+
+- id: net_migration@v1
+  metric: net_migration
+  unit: persons
+  title: Net migration plus statistical adjustment
+  description: >-
+    Total population change minus natural change during the reference year, as
+    Eurostat demo_gind CNMIGRAT. It is a residual, not a count of migrants: it also
+    absorbs statistical adjustments.
+
+- id: fertility_rate@v1
+  metric: fertility_rate
+  unit: live births per woman
+  title: Age-specific fertility rate
+  description: >-
+    Live births to women of the age (the age column) per woman of that age, as
+    Eurostat demo_frate. Age is age in completed years; 10-14 and 50+ are open classes.
+
+- id: total_fertility_rate@v1
+  metric: total_fertility_rate
+  unit: live births per woman
+  title: Total fertility rate
+  description: >-
+    Sum of the age-specific fertility rates of the reference year: the mean number of
+    children a woman would have at those rates. As Eurostat demo_find TOTFERRT.
+
+- id: mean_age_first_birth@v1
+  metric: mean_age_first_birth
+  unit: years
+  title: Mean age of women at birth of first child
+  description: >-
+    As Eurostat demo_find AGEMOTH1.
+
+- id: life_expectancy@v1
+  metric: life_expectancy
+  unit: years
+  title: Life expectancy
+  description: >-
+    Mean number of further years a person of the exact age (the age column; 0 is at
+    birth) would live at the mortality rates of the reference year, as Eurostat
+    demo_mlexpec.
+
+- id: infant_mortality_rate@v1
+  metric: infant_mortality_rate
+  unit: per 1000 live births
+  title: Infant mortality rate
+  description: >-
+    Deaths of children under one year of age per 1000 live births in the reference
+    year, as Eurostat demo_minfind INFMORRT.

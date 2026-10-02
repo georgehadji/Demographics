@@ -39,7 +39,7 @@ Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, st
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipeline/`, `design/` and `charts/`. The site and the reports are planned (ADR 0005) and don't exist yet.
+Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipeline/`, `design/`, `charts/` and the `site/` skeleton. The reports are planned (ADR 0005) and don't exist yet.
 
 - Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check . && uv run mypy` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
@@ -74,6 +74,12 @@ Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipelin
 - Chart types: `line` (with interval bounds it is the fan chart), `pyramid`, `lexis`, `tiles` (layout in `data/reference/el_nuts2_tiles.csv`), and the maps `choropleth` (rates only) and `symbols` (counts), which take the data product's geometry as `spec.geometry` and put its attribution in every footer. Interval bounds (ADR 0007) are drawn as bands, never as lines, labels or alt text.
 - Numbers go through `design/src/format.js`; colours, widths and dashes come from `tokens`. Install `design/` (`npm ci`) before running `npm test` here.
 - `npm run visual` runs `visual/charts.spec.js`: every type in light, dark and print against baseline screenshots, plus axe (WCAG 2.2 A/AA). Committed baselines are Linux only, made by the `Visual` workflow run with `update`; locally set `PW_CHANNEL=chrome` and look at the screenshots, which git ignores. Look at the Linux baselines before every release.
+
+## Working in `site/` (Quarto website)
+
+- The site reads the data product and computes nothing (ADR 0005, L6). Values go in only as `{{< fact name geo period [sex] [age] >}}`, where `name` is a data product file (a step of `build.STEPS`); charts only as `{{< chart spec.json >}}`, a JSON spec of a `charts/` type plus `data` and `geo`. Both run `src/cli.js` on `$KOHORTES_DATA`.
+- `src/product.js` is the gateway: a file must be in `manifest.json` with a matching sha256, its rows must carry their provenance, and a `fact` must match exactly one central value. Any failure stops the render; never work around it in a page.
+- `npm test` runs the gateway's tests. The `Build` workflow renders the site from the product it just built and checks that `test/missing.qmd` and `test/unprovenanced.qmd` fail. Quarto needs the brand files inside the project: the pre-render step writes `_brand/` from `design/tokens.json` (not committed).
 
 ## Environment notes
 

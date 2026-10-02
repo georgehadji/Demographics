@@ -1,0 +1,7 @@
+---
+title: Deliberately wrong page, a value that is missing
+---
+
+The data product has no population for 1800, so this render must fail (Build workflow).
+
+{{< fact population EL 1800 >}}

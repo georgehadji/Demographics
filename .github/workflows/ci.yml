@@ -56,3 +56,20 @@ jobs:
         working-directory: charts
       - run: npm test
         working-directory: charts
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            design/package-lock.json
+            charts/package-lock.json
+            site/package-lock.json
+      # site imports the charts and the design tokens; Quarto renders it in the Build workflow.
+      - run: for p in design charts site; do (cd $p && npm ci); done
+      - run: npm test
+        working-directory: site

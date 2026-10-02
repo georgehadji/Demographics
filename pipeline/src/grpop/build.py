@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -159,6 +160,6 @@ def main(argv: list[str] | None = None) -> int:
         else:
             build(args.store, args.out)
     except ValueError as e:
-        print(e)
+        print(e, file=sys.stderr)
         return 1
     return 0

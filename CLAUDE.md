@@ -64,7 +64,7 @@ Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipelin
 
 - `tokens.json` is the only home of design values (ADR 0006): colours in OKLCH per mode (`light`, `dark`, `print`; print falls back to light), palettes, stroke widths and dash patterns of the epistemic grammar, fonts, spacing. Change a value there, never in a generated file.
 - `npm run build` generates `dist/` (not committed): `tokens.css` (CSS variables, dark mode under `prefers-color-scheme` and `[data-theme]`, print under `@media print`), `tokens.js` (per-mode values with colours as hex, for chart scales) and Quarto's `_brand.yml` / `_brand-dark.yml`.
-- `npm test` (`node --test`) runs the validators in `test/`: every colour inside the sRGB gamut, WCAG 2.2 AA contrast in every mode, palettes monotone in lightness and distinct step by step under protan/deutan/tritan simulation, a neutral diverging centre, and the number format. CI runs it on every push.
+- `npm test` (`node --test`) runs the validators in `test/`: every colour inside the sRGB gamut; WCAG 2.2 AA contrast in every mode; accent, comparator and scenario apart in lightness (grayscale) and in colour under protan/deutan/tritan simulation; no map class close to the accent; palettes monotone in lightness and distinct step by step under each simulation, with a neutral diverging centre; uncertainty bands visible; region boundaries at 3:1 against faint map classes; the number format. CI runs it on every push.
 - `src/format.js` `formatNumber` is the one number formatter: `Intl.NumberFormat` plus the true minus sign. Never format a number another way.
 
 ## Environment notes

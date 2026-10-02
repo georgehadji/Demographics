@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
+from functools import cache
 from importlib import resources
 from typing import Literal
 
@@ -57,6 +58,7 @@ class SourceEntry(BaseModel):
     verification: Verification
 
 
+@cache  # parsed once per process; callers must not mutate the result
 def load_registry(text: str | None = None) -> list[SourceEntry]:
     """Load and validate the registry. Pass ``text`` to validate other YAML (tests).
 

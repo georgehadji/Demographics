@@ -4,3 +4,5 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 probe-report.*
+node_modules/
+design/dist/

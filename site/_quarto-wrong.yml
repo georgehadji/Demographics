@@ -1,0 +1,6 @@
+# Profile `wrong` (quarto render --profile wrong): adds the deliberately wrong pages, whose
+# render must fail (Build workflow). Quarto renders only pages in the render list.
+project:
+  render:
+    - test/missing.qmd
+    - test/unprovenanced.qmd

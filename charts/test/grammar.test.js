@@ -8,8 +8,9 @@ import { TEXT } from "../src/chart.js";
 
 const CONTRACT = readFileSync(new URL("../../pipeline/src/grpop/provenance.py", import.meta.url), "utf8");
 const enumValues = (name) => {
-  const body = CONTRACT.split(`class ${name}(StrEnum):`)[1].split("\nclass ")[0];
-  return [...body.matchAll(/^\s+[A-Z_]+ = "([a-z_]+)"/gm)].map((m) => m[1]).sort();
+  // The class body: the lines after its header up to the first unindented one.
+  const body = CONTRACT.split(`class ${name}(StrEnum):`)[1].split(/\n(?=\S)/)[0];
+  return [...body.matchAll(/^\s+[A-Z_0-9]+ = "([a-z_0-9]+)"/gm)].map((m) => m[1]).sort();
 };
 
 test("the grammar covers exactly the nature and status vocabularies of the contract", () => {
@@ -17,10 +18,12 @@ test("the grammar covers exactly the nature and status vocabularies of the contr
   assert.deepEqual([...STATUSES].sort(), enumValues("Status"));
 });
 
-test("every locale labels every nature and status", () => {
+test("every locale labels every nature, status, sex and interval bound of the contract", () => {
   for (const [lang, t] of Object.entries(TEXT)) {
     assert.deepEqual(Object.keys(t.nature).sort(), [...NATURES].sort(), lang);
     assert.deepEqual(Object.keys(t.status).sort(), [...STATUSES].sort(), lang);
+    assert.deepEqual(Object.keys(t.sex).sort(), enumValues("Sex"), lang);
+    assert.deepEqual(Object.keys(t.interval).sort(), enumValues("Interval"), lang);
   }
 });
 

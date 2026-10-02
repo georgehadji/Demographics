@@ -41,7 +41,7 @@ zenodo.org
 | `design/` | Design tokens (`tokens.json`), οι γεννήτριες για CSS, JS και Quarto `_brand.yml`, και οι έλεγχοι αντίθεσης, αχρωματοψίας και αριθμητικής μορφής |
 | `charts/` | Βιβλιοθήκη γραφημάτων πάνω στο Observable Plot: η επιστημική γραμματική `(nature, status) → στυλ` και γραφήματα που επιστρέφουν σχήμα, πίνακα δεδομένων, alt text και CSV |
 | `data/reference/` | Μικρά αρχεία αναφοράς (CSV): οι ελληνικοί κωδικοί NUTS 2024, η αλλαγή κωδικών NUTS 2010 → 2024 σε NUTS 2, οι ετικέτες περιφερειών της ELSTAT |
-| `.github/workflows/` | `CI` (lint, τύποι, tests), `Source probe` (έλεγχος των πηγών), `Ingest` (λήψη των datasets σε snapshots, αποθηκευμένα στο release `snapshots`) και `Build` (δύο builds του data product από το μηδέν, που πρέπει να συμπίπτουν) |
+| `.github/workflows/` | `CI` (lint, τύποι, tests), `Source probe` (έλεγχος των πηγών), `Ingest` (λήψη των datasets σε snapshots, αποθηκευμένα στο release `snapshots`) `Build` (δύο builds του data product από το μηδέν, που πρέπει να συμπίπτουν) και `Visual` (screenshots και έλεγχοι προσβασιμότητας των γραφημάτων) |
 
 ## Άδειες
 

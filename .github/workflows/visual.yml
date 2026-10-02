@@ -1,0 +1,55 @@
+# Visual regression and accessibility (axe) tests of every chart type in light, dark and
+# print. Screenshots are compared with the Linux baselines in charts/visual/snapshots.
+# Run by hand with "update" to write new or changed baselines and commit them to the
+# branch with the checkout's token (it fails on a protected branch, or if the branch moved
+# during the run). A commit by this workflow does not start other workflows, so push again
+# afterwards.
+name: Visual
+
+on:
+  push:
+    branches: [main]
+    paths: [charts/**, design/**, data/reference/**, .github/workflows/visual.yml]
+  pull_request:
+    paths: [charts/**, design/**, data/reference/**, .github/workflows/visual.yml]
+  workflow_dispatch:
+    inputs:
+      update:
+        description: Rewrite the baseline screenshots and commit them to the branch
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # only an update run pushes
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    # Fixed browser and fonts, so screenshots are comparable between runs.
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    steps:
+      - run: apt-get update && apt-get install -y --no-install-recommends git fonts-noto-core
+      - uses: actions/checkout@v4
+      - run: npm ci
+        working-directory: design
+      - run: npm ci
+        working-directory: charts
+      - run: npx playwright test ${{ inputs.update && '--update-snapshots' || '' }}
+        working-directory: charts
+        env:
+          HOME: /root
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            charts/playwright-report
+            charts/test-results
+      - if: inputs.update
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add charts/visual/snapshots/*-linux.png
+          git diff --cached --quiet || git commit -m "Update visual baselines"
+          git push

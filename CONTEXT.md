@@ -11,7 +11,8 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 ├── .github/workflows/      CI and scheduled workflows
 ├── charts/                 chart library on Observable Plot (Node)
 │   ├── src/
-│   └── test/
+│   ├── test/
+│   └── visual/         screenshot and accessibility tests
 ├── data/reference/         small reference CSVs (NUTS codes and recodes, ELSTAT labels)
 ├── design/                 design tokens, generators and validators (Node)
 │   ├── src/
@@ -33,6 +34,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | `charts` | [`charts/CONTEXT.md`](charts/CONTEXT.md) |
 | `charts/src` | [`charts/src/CONTEXT.md`](charts/src/CONTEXT.md) |
 | `charts/test` | [`charts/test/CONTEXT.md`](charts/test/CONTEXT.md) |
+| `charts/visual` | [`charts/visual/CONTEXT.md`](charts/visual/CONTEXT.md) |
 | `data/reference` | [`data/reference/CONTEXT.md`](data/reference/CONTEXT.md) |
 | `design` | [`design/CONTEXT.md`](design/CONTEXT.md) |
 | `design/src` | [`design/src/CONTEXT.md`](design/src/CONTEXT.md) |
@@ -72,5 +74,6 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | Build the data product | `pipeline/src/grpop/build.py` (`grpop-build`) |
 | Change a colour, font, spacing or line style | `design/tokens.json` |
 | Draw a chart, or change how nature and status look | `charts/src/` (`grammar.js` for the epistemic grammar) |
+| Check how the charts look, or update the screenshots | `charts/visual/` and the `Visual` workflow |
 | Format a number for display | `design/src/format.js` |
 | Why something was decided | `docs/decisions/` |

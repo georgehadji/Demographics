@@ -376,7 +376,7 @@ sources:
     notes: >-
       Listed under geojson in the file index of gisco_nuts_2024 (checked 2026-10-02).
       parse/gisco.py keeps the 13 Greek regions for the maps (step Γ3b).
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-02, evidence: 'Source probe run 37054893913: HTTP 200, application/geo+json, 3904132 bytes. Confirms the URL only; the contents are checked by parse/gisco.py at each build'}
 
   - id: elstat_population_estimate_2025
     provider: ELSTAT

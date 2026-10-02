@@ -5,7 +5,7 @@ import { expect, test } from "@playwright/test";
 import { CHARTS, page as gallery } from "./gallery.js";
 
 // Axe reads every table cell; the default 30 s is too short for the full page.
-test.setTimeout(120_000);
+test.setTimeout(300_000);
 const pages = new Map();
 const html = (mode) => pages.get(mode) ?? pages.set(mode, gallery(mode)).get(mode);
 

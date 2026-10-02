@@ -67,3 +67,21 @@ def test_ingest_refuses_non_dataset(tmp_path):
     with pytest.raises(ValueError, match="not a non-empty JSON-stat dataset"):
         eurostat.ingest(tmp_path, [ENTRY], c, backoff=0)
     assert not (tmp_path / "manifest.jsonl").exists()
+
+
+GEO = get_source("gisco_nuts2_2024_geo")
+# Hand-written, not GISCO data (see the fixture's _comment).
+GEOJSON = (Path(__file__).parent / "fixtures" / "gisco_nuts2_handwritten.geojson").read_bytes()
+
+
+def test_ingest_stores_a_file_entry_from_its_probe_url(tmp_path):
+    c, seen = client([httpx.Response(200, content=GEOJSON)])
+    [snap] = eurostat.ingest(tmp_path, [GEO], c, backoff=0)
+    assert str(seen[0].url) == GEO.probe_url == snap.source_url
+    assert snapshots.read(tmp_path, snap.sha256) == GEOJSON
+
+
+def test_ingest_refuses_a_file_that_is_not_geojson(tmp_path):
+    c, _ = client([httpx.Response(200, json={"type": "Feature"})])
+    with pytest.raises(ValueError, match="not a non-empty GeoJSON FeatureCollection"):
+        eurostat.ingest(tmp_path, [GEO], c, backoff=0)

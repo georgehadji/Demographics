@@ -7,7 +7,9 @@ counterpart without explanation (``indicators.check``) stops the build. Every ou
 validated, written as Parquet and CSV with its rows in key order, and listed in
 ``manifest.json`` with the sha256 of each file, its sources and the hash of its inputs
 (snapshots, code, reference data). An output whose inputs are unchanged and whose files
-are intact is not rebuilt. Two builds from the same inputs give the same bytes.
+are intact is not rebuilt. Two builds from the same inputs give the same bytes. Map
+geometry (``GEOMETRY``) is written as GeoJSON with its licence inside: it is not under
+CC BY (LICENSE-CONTENT.md).
 """
 
 from __future__ import annotations
@@ -24,6 +26,7 @@ from typing import Any
 import polars as pl
 
 from grpop import harmonize, indicators, snapshots
+from grpop.parse import gisco
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
 from grpop.snapshots import Snapshot
 
@@ -33,7 +36,7 @@ COLUMNS = list(ObservationSchema.to_schema().columns)
 @dataclass(frozen=True)
 class Step:
     sources: frozenset[str]
-    run: Callable[[indicators.Data], pl.DataFrame]
+    run: Callable[[indicators.Data], pl.DataFrame | dict[str, Any]]  # observations or GeoJSON
 
 
 def _indicator(indicator: indicators.Indicator) -> Step:
@@ -59,9 +62,16 @@ def _series(series: indicators.Series) -> Step:
 
 if indicators.INDICATORS.keys() & indicators.SERIES.keys():
     raise ValueError("an indicator and a series share a name")
+GEOMETRY = {
+    "geometry_el_nuts2": Step(
+        frozenset({"gisco_nuts2_2024_geo"}),
+        lambda data: gisco.greek_regions(*data["gisco_nuts2_2024_geo"], level=2),
+    ),
+}
 STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},
     **{name: _series(s) for name, s in indicators.SERIES.items()},
+    **GEOMETRY,
 }
 
 
@@ -90,7 +100,11 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _write(df: pl.DataFrame, out: Path, name: str) -> dict[str, str]:
+def _write(df: pl.DataFrame | dict[str, Any], out: Path, name: str) -> dict[str, str]:
+    if isinstance(df, dict):
+        text = json.dumps(df, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+        (out / f"{name}.geojson").write_bytes(text.encode())
+        return {f"{name}.geojson": _sha256(out / f"{name}.geojson")}
     df = validate_observations(df.select(COLUMNS).sort(OBSERVATION_KEY, nulls_last=True))
     df.write_parquet(out / f"{name}.parquet")
     df.write_csv(out / f"{name}.csv")
@@ -129,9 +143,10 @@ def build(store: Path, out: Path) -> list[str]:
             ):
                 df = step.run({s.source_id: (s, snapshots.read(store, s.sha256)) for s in used})
                 files = _write(df, out, name)
-                entry = {"inputs": inputs, "rows": df.height, "sources": sources, "files": files}
+                rows = len(df["features"]) if isinstance(df, dict) else df.height
+                entry = {"inputs": inputs, "rows": rows, "sources": sources, "files": files}
                 rebuilt.append(name)
-                print(f"{name}: {df.height} rows", flush=True)
+                print(f"{name}: {rows} rows", flush=True)
             manifest[name] = entry
     finally:
         # Also after a failed step, so the manifest matches the files already rewritten.

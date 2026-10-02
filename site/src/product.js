@@ -51,6 +51,7 @@ export function load(dir, name) {
   const bytes = readFileSync(join(dir, file));
   if (sha256(bytes) !== manifest[name].files[file]) throw new Error(`${file}: sha256 differs from the manifest`);
   return csvParse(bytes.toString("utf8"), typed).map((r) => {
+    if (Number.isNaN(r.value)) throw new Error(`${name} ${r.geo_code} ${r.period}: value is not a number`);
     const missing = PROVENANCE.filter((k) => !r[k]);
     if (missing.length) throw new Error(`${name} ${r.geo_code} ${r.period}: no ${missing.join(", ")}`);
     return r;

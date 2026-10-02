@@ -3,8 +3,8 @@ name: Build
 # Builds the data product (grpop-build) from the latest snapshot of each source in the
 # `snapshots` release, twice from scratch, and fails unless both give the same files
 # (Phase 1 criterion). The build itself fails on any difference from Eurostat that is
-# neither listed nor corroborated. A full build is slow (all countries, all ages), so
-# it runs after each Ingest run and on demand, not on every push.
+# neither listed nor corroborated. Runs after each Ingest run, on demand, and on every
+# push that changes the code or the reference data.
 on:
   workflow_dispatch:
   workflow_run:
@@ -13,6 +13,9 @@ on:
   push:
     paths:
       - .github/workflows/build.yml
+      - pipeline/src/**
+      - pipeline/uv.lock
+      - data/reference/**
 
 permissions:
   contents: read

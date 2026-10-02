@@ -362,6 +362,22 @@ sources:
       codes and names; its 70 Greek rows are data/reference/nuts2024_el.csv.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
+  - id: gisco_nuts2_2024_geo
+    provider: Eurostat GISCO
+    dataset_code: NUTS_RG_03M_2024_4326_LEVL_2
+    title: NUTS 2024 regions, level 2, scale 1:3 million, WGS 84 (GeoJSON)
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_03M_2024_4326_LEVL_2.geojson
+    ingest: geojson
+    licence: gisco_geodata
+    used_for: [maps]
+    phase: 1
+    notes: >-
+      Listed under geojson in the file index of gisco_nuts_2024 (checked 2026-10-02).
+      parse/gisco.py keeps the 13 Greek regions for the maps (step Γ3b).
+    verification: {status: unverified}
+
   - id: elstat_population_estimate_2025
     provider: ELSTAT
     dataset_code: estimated population 1.1.2025 and migration flows 2024

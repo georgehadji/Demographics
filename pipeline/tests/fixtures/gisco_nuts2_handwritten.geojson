@@ -1,0 +1,510 @@
+{
+ "_comment": "Hand-written, not recorded: one square per Greek NUTS 2 region placed by data/reference/el_nuts2_tiles.csv, and one Cypriot region. Same fields as GISCO's NUTS_RG_*_LEVL_2.geojson.",
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL53",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL53"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       21.123456,
+       41.654321
+      ],
+      [
+       21.123456,
+       40.754321000000004
+      ],
+      [
+       22.023456,
+       40.754321000000004
+      ],
+      [
+       22.023456,
+       41.654321
+      ],
+      [
+       21.123456,
+       41.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL52",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL52"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       22.123456,
+       41.654321
+      ],
+      [
+       22.123456,
+       40.754321000000004
+      ],
+      [
+       23.023456,
+       40.754321000000004
+      ],
+      [
+       23.023456,
+       41.654321
+      ],
+      [
+       22.123456,
+       41.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL51",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL51"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       23.123456,
+       41.654321
+      ],
+      [
+       23.123456,
+       40.754321000000004
+      ],
+      [
+       24.023456,
+       40.754321000000004
+      ],
+      [
+       24.023456,
+       41.654321
+      ],
+      [
+       23.123456,
+       41.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL54",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL54"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       20.123456,
+       40.654321
+      ],
+      [
+       20.123456,
+       39.754321000000004
+      ],
+      [
+       21.023456,
+       39.754321000000004
+      ],
+      [
+       21.023456,
+       40.654321
+      ],
+      [
+       20.123456,
+       40.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL61",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL61"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       21.123456,
+       40.654321
+      ],
+      [
+       21.123456,
+       39.754321000000004
+      ],
+      [
+       22.023456,
+       39.754321000000004
+      ],
+      [
+       22.023456,
+       40.654321
+      ],
+      [
+       21.123456,
+       40.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL41",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL41"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       23.123456,
+       40.654321
+      ],
+      [
+       23.123456,
+       39.754321000000004
+      ],
+      [
+       24.023456,
+       39.754321000000004
+      ],
+      [
+       24.023456,
+       40.654321
+      ],
+      [
+       23.123456,
+       40.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL62",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL62"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       20.123456,
+       39.654321
+      ],
+      [
+       20.123456,
+       38.754321000000004
+      ],
+      [
+       21.023456,
+       38.754321000000004
+      ],
+      [
+       21.023456,
+       39.654321
+      ],
+      [
+       20.123456,
+       39.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL63",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL63"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       21.123456,
+       39.654321
+      ],
+      [
+       21.123456,
+       38.754321000000004
+      ],
+      [
+       22.023456,
+       38.754321000000004
+      ],
+      [
+       22.023456,
+       39.654321
+      ],
+      [
+       21.123456,
+       39.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL64",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL64"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       22.123456,
+       39.654321
+      ],
+      [
+       22.123456,
+       38.754321000000004
+      ],
+      [
+       23.023456,
+       38.754321000000004
+      ],
+      [
+       23.023456,
+       39.654321
+      ],
+      [
+       22.123456,
+       39.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL65",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL65"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       21.123456,
+       38.654321
+      ],
+      [
+       21.123456,
+       37.754321000000004
+      ],
+      [
+       22.023456,
+       37.754321000000004
+      ],
+      [
+       22.023456,
+       38.654321
+      ],
+      [
+       21.123456,
+       38.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL30",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL30"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       22.123456,
+       38.654321
+      ],
+      [
+       22.123456,
+       37.754321000000004
+      ],
+      [
+       23.023456,
+       37.754321000000004
+      ],
+      [
+       23.023456,
+       38.654321
+      ],
+      [
+       22.123456,
+       38.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL42",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL42"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       23.123456,
+       38.654321
+      ],
+      [
+       23.123456,
+       37.754321000000004
+      ],
+      [
+       24.023456,
+       37.754321000000004
+      ],
+      [
+       24.023456,
+       38.654321
+      ],
+      [
+       23.123456,
+       38.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "EL43",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "EL",
+    "NAME_LATN": "Region EL43"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       22.123456,
+       37.654321
+      ],
+      [
+       22.123456,
+       36.754321000000004
+      ],
+      [
+       23.023456,
+       36.754321000000004
+      ],
+      [
+       23.023456,
+       37.654321
+      ],
+      [
+       22.123456,
+       37.654321
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "NUTS_ID": "CY00",
+    "LEVL_CODE": 2,
+    "CNTR_CODE": "CY",
+    "NAME_LATN": "Kypros"
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       25.123456,
+       36.654321
+      ],
+      [
+       25.123456,
+       35.754321000000004
+      ],
+      [
+       26.023456,
+       35.754321000000004
+      ],
+      [
+       26.023456,
+       36.654321
+      ],
+      [
+       25.123456,
+       36.654321
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

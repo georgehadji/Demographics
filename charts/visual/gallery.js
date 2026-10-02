@@ -6,6 +6,7 @@ import { JSDOM } from "jsdom";
 import { hexTokens } from "../../design/src/build.js";
 import { line } from "../src/line.js";
 import { lexis } from "../src/lexis.js";
+import { choropleth, symbols } from "../src/map.js";
 import { pyramid } from "../src/pyramid.js";
 import { tiles } from "../src/tiles.js";
 
@@ -84,9 +85,9 @@ const PYRAMID = [2001, 2024].flatMap((year) =>
   }),
 );
 
-const LEXIS = range(2004, 2024).flatMap((year) =>
+const LEXIS = range(2012, 2024).flatMap((year) =>
   range(15, 49).map((age) => {
-    const mean = 27 + (year - 2004) * 0.2;
+    const mean = 28 + (year - 2012) * 0.25;
     return row("EL", year, Math.round(1200 * Math.exp(-(((age - mean) / 5.5) ** 2))) / 10000, {
       age: String(age),
       unit: "γεννήσεις ανά γυναίκα",
@@ -99,10 +100,31 @@ const TILES = ["EL", ...LAYOUT.map((t) => t.geo_code)].flatMap((geo, i) =>
   range(2011, 2024).map((y) => row(geo, y, 100 - (y - 2011) * (0.2 + (i % 5) * 0.15), { unit: "δείκτης, 2011 = 100" })),
 );
 
+/** Illustrative map: one square "region" per tile of the layout, not GISCO geometry. */
+export const GEOMETRY = {
+  type: "FeatureCollection",
+  attribution: "Γεωμετρία: σχηματική, όχι πραγματικά όρια",
+  features: LAYOUT.map(({ geo_code, row: r, col: c }) => {
+    const [x, y] = [20 + +c, 41 - +r];
+    return {
+      type: "Feature",
+      id: geo_code,
+      properties: { geo_code },
+      geometry: { type: "Polygon", coordinates: [[[x, y], [x, y - 0.9], [x + 0.9, y - 0.9], [x + 0.9, y], [x, y]]] },
+    };
+  }),
+};
+const RATES = LAYOUT.map(({ geo_code }, i) =>
+  row(geo_code, 2024, 9 + ((i * 7) % 13) / 2, { unit: "per 1000 average population", ...(geo_code === "EL43" ? { status: "provisional" } : {}) }),
+);
+const COUNTS = LAYOUT.map(({ geo_code }, i) => row(geo_code, 2024, geo_code === "EL30" ? 3800000 : 180000 + ((i * 5) % 13) * 110000, { unit: "persons" }));
+
 export const CHARTS = {
   line: [line, LINE, { title: "Η εξάρτηση των ηλικιωμένων αυξάνεται ταχύτερα από την Πορτογαλία", subtitle: "Δείκτης εξάρτησης ηλικιωμένων, %", format: { maximumFractionDigits: 0 } }],
   pyramid: [pyramid, PYRAMID, { title: "Η μεγαλύτερη ομάδα μετακινήθηκε 15 χρόνια μεγαλύτερη", subtitle: "Πληθυσμός κατά φύλο και ηλικία" }],
   lexis: [lexis, LEXIS, { title: "Η γονιμότητα μετατοπίζεται σε μεγαλύτερες ηλικίες", subtitle: "Γεννήσεις ανά γυναίκα, κατά ηλικία και έτος", format: { maximumFractionDigits: 2 } }],
+  choropleth: [choropleth, RATES, { title: "Η θνησιμότητα είναι υψηλότερη στις αγροτικές περιφέρειες", subtitle: "Θάνατοι ανά 1.000 κατοίκους, 2024", focus: "EL30", geometry: GEOMETRY, format: { maximumFractionDigits: 1 } }],
+  symbols: [symbols, COUNTS, { title: "Η Αττική συγκεντρώνει πάνω από το ένα τρίτο του πληθυσμού", subtitle: "Πληθυσμός, 2024", focus: "EL30", geometry: GEOMETRY }],
   tiles: [tiles, TILES, { title: "Όλες οι περιφέρειες χάνουν πληθυσμό", subtitle: "Πληθυσμός, 2011 = 100", layout: LAYOUT, format: { maximumFractionDigits: 0 } }],
 };
 

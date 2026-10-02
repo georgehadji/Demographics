@@ -16,7 +16,13 @@ from grpop.provenance import validate_observations
 @pytest.fixture(scope="module", autouse=True)
 def steps():
     """A few steps of each kind; tests/test_indicators.py covers each step's output."""
-    names = ["old_age_dependency_ratio", "median_age", "net_migration", "population_regional"]
+    names = [
+        "old_age_dependency_ratio",
+        "median_age",
+        "net_migration",
+        "population_regional",
+        "geometry_el_nuts2",
+    ]
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(build, "STEPS", {name: build.STEPS[name] for name in names})
         yield
@@ -25,7 +31,9 @@ def steps():
 @pytest.fixture(scope="module")
 def store(tmp_path_factory):
     root = tmp_path_factory.mktemp("store")
-    for source_id, fixture in RECORDED.items():
+    # The GISCO fixture is hand-written (see its _comment).
+    files = {**RECORDED, "gisco_nuts2_2024_geo": "gisco_nuts2_handwritten.geojson"}
+    for source_id, fixture in files.items():
         snapshots.put(
             root,
             (FIXTURES / fixture).read_bytes(),
@@ -56,8 +64,13 @@ def test_every_file_is_in_the_manifest_and_every_value_passes_the_contract(produ
     listed = {f for entry in manifest.values() for f in entry["files"]}
     assert listed | {"manifest.json"} == {p.name for p in product.iterdir()}
     for name, entry in manifest.items():
-        df = validate_observations(pl.read_parquet(product / f"{name}.parquet"))
-        assert df.height == entry["rows"] > 0
+        if name in build.GEOMETRY:
+            doc = json.loads((product / f"{name}.geojson").read_bytes())
+            assert len(doc["features"]) == entry["rows"] > 0
+            assert doc["attribution"]
+        else:
+            df = validate_observations(pl.read_parquet(product / f"{name}.parquet"))
+            assert df.height == entry["rows"] > 0
         assert {s["source_id"] for s in entry["sources"]} == build.STEPS[name].sources
 
 

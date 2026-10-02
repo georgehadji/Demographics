@@ -2,7 +2,9 @@
 
 Only bytes are fetched and stored; parsing happens in ``grpop.parse``. The download
 URL is the registry's probe URL without its filters, i.e. the whole dataset as
-JSON-stat. Run by the Ingest workflow, which keeps the store as release assets.
+JSON-stat. Registry entries with ``ingest`` set (e.g. GISCO boundaries) are files
+stored as they are, from their probe URL. Run by the Ingest workflow, which keeps the
+store as release assets.
 """
 
 from __future__ import annotations
@@ -25,7 +27,18 @@ RETRY_STATUS = {429, 500, 502, 503, 504}
 
 
 def dataset_url(entry: SourceEntry) -> str:
+    if entry.ingest:
+        return entry.probe_url
     return entry.probe_url.split("?")[0] + "?format=JSON&lang=EN"
+
+
+def _check(entry: SourceEntry, data: bytes) -> None:
+    doc = json.loads(data)
+    if entry.ingest == "geojson":
+        if doc.get("type") != "FeatureCollection" or not doc.get("features"):
+            raise ValueError(f"{entry.id}: response is not a non-empty GeoJSON FeatureCollection")
+    elif doc.get("class") != "dataset" or jsonstat.summarize(doc)["n_values"] == 0:
+        raise ValueError(f"{entry.id}: response is not a non-empty JSON-stat dataset")
 
 
 def fetch(client: httpx.Client, url: str, *, attempts: int = 4, backoff: float = 5.0) -> bytes:
@@ -55,9 +68,7 @@ def ingest(
     for entry in entries:
         url = dataset_url(entry)
         data = fetch(client, url, backoff=backoff)
-        doc = json.loads(data)
-        if doc.get("class") != "dataset" or jsonstat.summarize(doc)["n_values"] == 0:
-            raise ValueError(f"{entry.id}: response is not a non-empty JSON-stat dataset")
+        _check(entry, data)
         out.append(
             snapshots.put(
                 root, data, source_id=entry.id, source_url=url, retrieved_at=datetime.now(UTC)
@@ -73,7 +84,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     entries = [
-        e for e in load_registry() if e.probe_kind == "eurostat_jsonstat" and e.phase <= args.phase
+        e
+        for e in load_registry()
+        if (e.probe_kind == "eurostat_jsonstat" or e.ingest) and e.phase <= args.phase
     ]
     with httpx.Client(
         timeout=300, follow_redirects=True, headers={"User-Agent": USER_AGENT}

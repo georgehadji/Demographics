@@ -5,7 +5,7 @@ The package, in layers (ADR 0005): sources and snapshots (L1), parse (L2), harmo
 | File | What it does |
 |---|---|
 | `__init__.py` | Package marker |
-| `build.py` | `grpop-build`: the data product. One step per indicator or series, validated, written as Parquet and CSV, listed in `manifest.json` with hashes; memoized; stops on unexplained differences from Eurostat |
+| `build.py` | `grpop-build`: the data product. One step per indicator or series, validated, written as Parquet and CSV, listed in `manifest.json` with hashes; memoized; stops on unexplained differences from Eurostat. Also writes the map geometry (`GEOMETRY`) as GeoJSON with its licence |
 | `definitions.py` | Typed, cached access to `definitions.yaml` (`get_definition`) |
 | `definitions.yaml` | Every `definition_id`: meaning, metric, unit, version |
 | `harmonize.py` | Greek NUTS codes: NUTS 2010 recodes, rejection of unknown codes, hierarchy check |

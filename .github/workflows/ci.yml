@@ -37,3 +37,22 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+
+  charts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            design/package-lock.json
+            charts/package-lock.json
+      # charts imports the tokens and the number formatter from design/.
+      - run: npm ci
+        working-directory: design
+      - run: npm ci
+        working-directory: charts
+      - run: npm test
+        working-directory: charts

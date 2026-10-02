@@ -1,6 +1,6 @@
 # CONTEXT.md: project map
 
-Kohortes (Κοόρτες) is an open, non-commercial research and publication project on the demography of Greece. A Python pipeline turns official statistics (mainly Eurostat) into a validated data product with full provenance. A design system and, later, a chart library, a Quarto site and reports present it. The plan is [`docs/PROPOSAL.md`](docs/PROPOSAL.md); the order of work is [`docs/IMPLEMENTATION-PLAN.md`](docs/IMPLEMENTATION-PLAN.md); the working rules are [`CLAUDE.md`](CLAUDE.md).
+Kohortes (Κοόρτες) is an open, non-commercial research and publication project on the demography of Greece. A Python pipeline turns official statistics (mainly Eurostat) into a validated data product with full provenance. A design system and a chart library, and later a Quarto site and reports, present it. The plan is [`docs/PROPOSAL.md`](docs/PROPOSAL.md); the order of work is [`docs/IMPLEMENTATION-PLAN.md`](docs/IMPLEMENTATION-PLAN.md); the working rules are [`CLAUDE.md`](CLAUDE.md).
 
 Every tracked folder that holds files has its own `CONTEXT.md`, with one line per file. This file maps the folders and the root files. `pipeline/tests/test_context.py` fails when a file is missing from its folder's map, or a map lists a file that does not exist.
 
@@ -9,6 +9,9 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 ```
 .
 ├── .github/workflows/      CI and scheduled workflows
+├── charts/                 chart library on Observable Plot (Node)
+│   ├── src/
+│   └── test/
 ├── data/reference/         small reference CSVs (NUTS codes and recodes, ELSTAT labels)
 ├── design/                 design tokens, generators and validators (Node)
 │   ├── src/
@@ -27,6 +30,9 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | Folder | Map |
 |---|---|
 | `.github/workflows` | [`.github/workflows/CONTEXT.md`](.github/workflows/CONTEXT.md) |
+| `charts` | [`charts/CONTEXT.md`](charts/CONTEXT.md) |
+| `charts/src` | [`charts/src/CONTEXT.md`](charts/src/CONTEXT.md) |
+| `charts/test` | [`charts/test/CONTEXT.md`](charts/test/CONTEXT.md) |
 | `data/reference` | [`data/reference/CONTEXT.md`](data/reference/CONTEXT.md) |
 | `design` | [`design/CONTEXT.md`](design/CONTEXT.md) |
 | `design/src` | [`design/src/CONTEXT.md`](design/src/CONTEXT.md) |
@@ -65,5 +71,6 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | Greek NUTS codes and regional checks | `pipeline/src/grpop/harmonize.py` and `data/reference/` |
 | Build the data product | `pipeline/src/grpop/build.py` (`grpop-build`) |
 | Change a colour, font, spacing or line style | `design/tokens.json` |
+| Draw a chart, or change how nature and status look | `charts/src/` (`grammar.js` for the epistemic grammar) |
 | Format a number for display | `design/src/format.js` |
 | Why something was decided | `docs/decisions/` |

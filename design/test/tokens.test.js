@@ -9,6 +9,7 @@ import {
   filterDeficiencyProt,
   filterDeficiencyTrit,
   formatHex,
+  interpolate,
   oklch,
   wcagContrast,
 } from "culori";
@@ -26,6 +27,7 @@ const VISION = {
 // Contrast is measured on the hex colour that is rendered, not the exact OKLCH value.
 const contrast = (a, b) => wcagContrast(formatHex(a), formatHex(b));
 const MIN_DISTANCE = 0.08; // OKLab ΔE; about four times a just-noticeable difference
+const MIN_LIGHTNESS_GAP = 0.08; // OKLCH L; for grayscale print and achromatopsia
 
 const colors = (flat) =>
   Object.entries(flat).flatMap(([k, v]) =>
@@ -62,6 +64,41 @@ for (const mode of MODES) {
   test(`${mode}: scenarios use another hue family than the accent`, () => {
     const gap = Math.abs(oklch(t["color-accent"]).h - oklch(t["color-scenario"]).h) % 360;
     assert.ok(Math.min(gap, 360 - gap) >= 90, `hue gap ${gap}`);
+  });
+
+  test(`${mode}: accent, comparator and scenario differ in lightness, so they hold in grayscale`, () => {
+    const names = ["color-accent", "color-comparator", "color-scenario"];
+    for (const [i, a] of names.entries())
+      for (const b of names.slice(i + 1)) {
+        const gap = Math.abs(oklch(t[a]).l - oklch(t[b]).l);
+        assert.ok(gap >= MIN_LIGHTNESS_GAP, `${a} vs ${b}: ΔL ${gap}`);
+      }
+  });
+
+  test(`${mode}: no map class can be mistaken for the accent`, () => {
+    for (const p of ["palette-sequential", "palette-diverging"])
+      for (const c of t[p]) {
+        const d = deltaE(c, t["color-accent"]);
+        assert.ok(d >= MIN_DISTANCE, `${p} ${c}: ${d}`);
+      }
+  });
+
+  test(`${mode}: uncertainty bands stay visible and ordered`, () => {
+    const band = (k) => interpolate([t["color-background"], t["color-accent"]], "rgb")(t[k]);
+    const inner = contrast(band("opacity-band-80"), t["color-background"]);
+    const outer = contrast(band("opacity-band-95"), t["color-background"]);
+    assert.ok(outer >= 1.3, `95% band: ${outer}`);
+    assert.ok(inner >= 1.6 && inner > outer, `80% band: ${inner}`);
+    assert.ok(t["stroke-width-band-edge"] > 0, "bands have an edge line in the accent colour");
+  });
+
+  test(`${mode}: region boundaries have 3:1 where a map class alone does not`, () => {
+    const bg = t["color-background"];
+    const faint = [...t["palette-sequential"], ...t["palette-diverging"]].filter((c) => contrast(c, bg) < 3);
+    for (const c of [bg, t["color-surface"], ...faint]) {
+      const r = contrast(t["color-boundary"], c);
+      assert.ok(r >= 3, `boundary on ${c}: ${r}`);
+    }
   });
 
   test(`${mode}: sequential palette is monotone in lightness and distinct step by step`, () => {

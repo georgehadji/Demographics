@@ -41,8 +41,9 @@ for (const mode of MODES) {
     for (const [name, c] of colors(t)) assert.ok(displayable(c), `${name} ${c}`);
   });
 
-  test(`${mode}: text has AA contrast (4.5:1) on background and surface`, () => {
-    for (const fg of ["color-text", "color-text-muted"])
+  test(`${mode}: text and line labels have AA contrast (4.5:1) on background and surface`, () => {
+    // Charts label the focus and scenario lines in the line's colour (charts/src/line.js).
+    for (const fg of ["color-text", "color-text-muted", "color-accent", "color-scenario"])
       for (const bg of ["color-background", "color-surface"])
         assert.ok(contrast(t[fg], t[bg]) >= 4.5, `${fg} on ${bg}: ${contrast(t[fg], t[bg])}`);
   });

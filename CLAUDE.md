@@ -39,7 +39,7 @@ Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, st
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipeline/` and `design/`. The charts, the site and the reports are planned (ADR 0005) and don't exist yet.
+Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipeline/`, `design/` and `charts/`. The site and the reports are planned (ADR 0005) and don't exist yet.
 
 - Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check . && uv run mypy` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
@@ -66,6 +66,12 @@ Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipelin
 - `npm run build` generates `dist/` (not committed): `tokens.css` (CSS variables, dark mode under `prefers-color-scheme` and `[data-theme]`, print under `@media print`), `tokens.js` (per-mode values with colours as hex, for chart scales) and Quarto's `_brand.yml` / `_brand-dark.yml`.
 - `npm test` (`node --test`) runs the validators in `test/`: every colour inside the sRGB gamut; WCAG 2.2 AA contrast in every mode; accent, comparator and scenario apart in lightness (grayscale) and in colour under protan/deutan/tritan simulation; no map class close to the accent; palettes monotone in lightness and distinct step by step under each simulation, with a neutral diverging centre; uncertainty bands visible; region boundaries at 3:1 against faint map classes; the number format. CI runs it on every push.
 - `src/format.js` `formatNumber` is the one number formatter: `Intl.NumberFormat` plus the true minus sign. Never format a number another way.
+
+## Working in `charts/` (Node package, chart library)
+
+- Every chart type is `compose(figure)` from `src/chart.js`: `f(rows, spec, {tokens, document})` returns `{figure, table, alt, csv}`. Rows are observations of the data product, checked on entry; `spec.title` states the finding; the footer is built from the rows. `tokens` is one mode of `design/dist/tokens.js`.
+- `src/grammar.js` `style(nature, status)` is the only place the epistemic grammar lives. It returns token names, never values. `test/grammar.test.js` checks it for every `nature` × `status` and against the vocabularies of `provenance.py`.
+- Numbers go through `design/src/format.js`; colours, widths and dashes come from `tokens`. Install `design/` (`npm ci`) before running `npm test` here.
 
 ## Environment notes
 

@@ -37,13 +37,17 @@ export function css(modes = resolve()) {
   ].join("\n\n");
 }
 
-export function js(modes = resolve()) {
-  const values = Object.fromEntries(
+/** Per-mode tokens with colours as hex, the form chart scales take. */
+export function hexTokens(modes = resolve()) {
+  return Object.fromEntries(
     MODES.map((m) => [m, Object.fromEntries(Object.entries(modes[m]).map(([k, v]) => [k, hex(v)]))]),
   );
+}
+
+export function js(modes = resolve()) {
   return (
     "// Generated from design/tokens.json by src/build.js. Do not edit.\n" +
-    `export const tokens = ${JSON.stringify(values, null, 2)};\n`
+    `export const tokens = ${JSON.stringify(hexTokens(modes), null, 2)};\n`
   );
 }
 

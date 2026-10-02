@@ -73,8 +73,17 @@ def hierarchy_gaps(obs: pl.DataFrame, *, tolerance: float = 0.5) -> pl.DataFrame
     child still counts towards a final parent. Returns the offending rows; an empty
     frame means every level adds up.
     """
-    keys = [k for k in OBSERVATION_KEY if k not in ("geo_code", "geo_vintage", "scenario_id")]
-    el = obs.filter(pl.col("geo_code").str.starts_with("EL") & pl.col("value").is_not_null())
+    keys = [
+        k
+        for k in OBSERVATION_KEY
+        if k not in ("geo_code", "geo_vintage", "scenario_id", "interval")
+    ]
+    # Interval bounds do not add up across regions; only central values are compared.
+    el = obs.filter(
+        pl.col("geo_code").str.starts_with("EL")
+        & pl.col("value").is_not_null()
+        & pl.col("interval").is_null()
+    )
     expected = (
         pl.DataFrame({"code": sorted(greek_nuts())})
         .group_by(geo_code=pl.col("code").str.head(-1))

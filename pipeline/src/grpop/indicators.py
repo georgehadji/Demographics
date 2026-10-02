@@ -528,6 +528,7 @@ def compute(indicator: Indicator, data: Data) -> pl.DataFrame:
             .otherwise(pl.lit(Status.FINAL.value)),
             break_in_series=pl.col("break_in_series"),
             scenario_id=pl.lit(None, dtype=pl.String),
+            interval=pl.lit(None, dtype=pl.String),
         )
     )
 

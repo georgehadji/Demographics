@@ -36,6 +36,16 @@ class Status(StrEnum):
     # a break together with a status (Eurostat "bp" = break + provisional).
 
 
+class Interval(StrEnum):
+    """Bound of an uncertainty interval. A value with a null ``interval`` is the central
+    value; each bound is its own row, with its own provenance."""
+
+    LOWER_80 = "80_lower"
+    UPPER_80 = "80_upper"
+    LOWER_95 = "95_lower"
+    UPPER_95 = "95_upper"
+
+
 class Sex(StrEnum):
     """Sex breakdown of a value. Totals are explicit, never null."""
 
@@ -65,6 +75,7 @@ OBSERVATION_KEY = (
     "dataset_code",
     "vintage",
     "scenario_id",
+    "interval",
 )
 
 # Format of a definition id, e.g. "population_1jan@v1". The definitions themselves
@@ -94,6 +105,7 @@ class ObservationSchema(pa.DataFrameModel):
     status: str = pa.Field(isin=[s.value for s in Status])
     break_in_series: bool = pa.Field()  # the series is not comparable across this period
     scenario_id: str = pa.Field(nullable=True)
+    interval: str = pa.Field(nullable=True, isin=[i.value for i in Interval])  # null = central
 
     class Config:
         strict = True  # no undeclared columns
@@ -112,6 +124,50 @@ class ObservationSchema(pa.DataFrameModel):
         return data.lazyframe.select(
             pl.col("scenario_id").is_not_null() == (pl.col("nature") == Nature.SCENARIO.value)
         )
+
+    @pa.dataframe_check(
+        error="an interval bound needs its central value and its other bound, lower <= upper"
+    )
+    @classmethod
+    def interval_bounds_paired(cls, data: PolarsData) -> pl.LazyFrame:
+        lf = data.lazyframe
+        key = [k for k in OBSERVATION_KEY if k != "interval"]
+        level = pl.col("interval").str.head(2)
+        central = lf.filter(pl.col("interval").is_null()).select(*key, central=pl.lit(True))
+
+        def side(name: str) -> pl.LazyFrame:
+            bounds = lf.filter(pl.col("interval").str.ends_with(f"_{name}"))
+            return bounds.select(*key, level=level, **{name: pl.col("value"), f"has_{name}": True})
+
+        joined = (
+            lf.with_columns(level=level)
+            .join(central, on=key, how="left", nulls_equal=True, maintain_order="left")
+            .join(
+                side("lower"),
+                on=[*key, "level"],
+                how="left",
+                nulls_equal=True,
+                maintain_order="left",
+            )
+            .join(
+                side("upper"),
+                on=[*key, "level"],
+                how="left",
+                nulls_equal=True,
+                maintain_order="left",
+            )
+        )
+        ordered = (
+            pl.col("lower").is_null()
+            | pl.col("upper").is_null()
+            | (pl.col("lower") <= pl.col("upper"))
+        )
+        paired = (
+            pl.col("central").fill_null(False)
+            & pl.col("has_lower").fill_null(False)
+            & pl.col("has_upper").fill_null(False)
+        )
+        return joined.select(pl.col("interval").is_null() | (paired & ordered))
 
     @pa.dataframe_check(error="age band must run from lower to higher age")
     @classmethod

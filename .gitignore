@@ -6,3 +6,9 @@ __pycache__/
 probe-report.*
 node_modules/
 design/dist/
+
+# Playwright output; only Linux baselines (made in CI) are committed
+charts/playwright-report/
+charts/test-results/
+charts/visual/snapshots/*-win32.png
+charts/visual/snapshots/*-darwin.png

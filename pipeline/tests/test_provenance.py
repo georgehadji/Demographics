@@ -28,6 +28,7 @@ BASE_ROW = {
     "status": Status.FINAL.value,
     "break_in_series": False,
     "scenario_id": None,
+    "interval": None,
 }
 
 SCHEMA = {
@@ -50,6 +51,7 @@ SCHEMA = {
     "status": pl.String,
     "break_in_series": pl.Boolean,
     "scenario_id": pl.String,
+    "interval": pl.String,
 }
 
 
@@ -162,3 +164,42 @@ def test_row_must_match_its_definition(override):
 
 def test_break_is_independent_of_status():
     validate_observations(frame({"status": Status.PROVISIONAL.value, "break_in_series": True}))
+
+
+def test_interval_bounds_are_separate_rows_of_the_vocabulary():
+    projected = {"nature": Nature.PROJECTED.value}
+    validate_observations(
+        frame(
+            projected,
+            {**projected, "interval": "80_lower", "value": 0.5},
+            {**projected, "interval": "80_upper", "value": 2.0},
+        )
+    )
+    with pytest.raises(pandera.errors.SchemaErrors):
+        validate_observations(frame({"interval": "90_lower"}))
+
+
+@pytest.mark.parametrize(
+    "bounds",
+    [
+        [("80_lower", 0.5)],  # no upper bound
+        [("95_lower", 0.5), ("80_upper", 2.0)],  # bounds of different levels
+        [("80_lower", 2.0), ("80_upper", 0.5)],  # swapped
+    ],
+)
+def test_interval_bounds_must_pair_and_be_ordered(bounds):
+    projected = {"nature": Nature.PROJECTED.value}
+    rows = [{**projected, "interval": i, "value": v} for i, v in bounds]
+    with pytest.raises(pandera.errors.SchemaErrors, match="interval bound"):
+        validate_observations(frame(projected, *rows))
+
+
+def test_interval_bound_needs_its_central_value():
+    projected = {"nature": Nature.PROJECTED.value}
+    with pytest.raises(pandera.errors.SchemaErrors, match="interval bound"):
+        validate_observations(
+            frame(
+                {**projected, "interval": "80_lower", "value": 0.5},
+                {**projected, "interval": "80_upper", "value": 2.0},
+            )
+        )

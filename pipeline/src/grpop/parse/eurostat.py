@@ -162,4 +162,5 @@ def to_observations(
         .otherwise(pl.lit(Status.FINAL.value)),
         break_in_series=brk,
         scenario_id=pl.lit(None, dtype=pl.String),
+        interval=pl.lit(None, dtype=pl.String),
     )

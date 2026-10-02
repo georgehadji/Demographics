@@ -145,4 +145,5 @@ def read_population_1jan(
         nature=pl.lit("official_estimate"),
         break_in_series=pl.lit(False),  # ponytail: break footnotes are not read yet
         scenario_id=pl.lit(None, dtype=pl.String),
+        interval=pl.lit(None, dtype=pl.String),
     )

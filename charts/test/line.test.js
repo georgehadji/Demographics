@@ -1,32 +1,10 @@
 // The line chart and the composite every chart returns: figure, table, alt text, CSV.
 // The rows are hand-written, not data.
 import assert from "node:assert/strict";
-import { after, test } from "node:test";
-import { JSDOM } from "jsdom";
-import { hexTokens } from "../../design/src/build.js";
+import { test } from "node:test";
 import { line } from "../src/line.js";
 import { NATURES, STATUSES, style } from "../src/grammar.js";
-
-const { window } = new JSDOM("");
-const { document } = window;
-after(() => window.close()); // an open window keeps the test process alive
-const MODES = hexTokens();
-const tokens = MODES.light;
-
-const row = (geo_code, period, value, extra = {}) => ({
-  geo_code,
-  period,
-  value,
-  unit: "persons",
-  nature: "observed",
-  status: "final",
-  break_in_series: false,
-  scenario_id: null,
-  source: "eurostat",
-  dataset_code: "demo_gind",
-  vintage: "2026-09-15",
-  ...extra,
-});
+import { MODES, document, marks, row, tokens } from "./rows.js";
 
 const ROWS = [
   row("EL", "2011", 11123392),
@@ -41,8 +19,6 @@ const ROWS = [
 const SPEC = { title: "Ο πληθυσμός μειώνεται", labels: { EL: "Ελλάδα", PT: "Πορτογαλία" } };
 const chart = (rows = ROWS, spec = SPEC) => line(rows, spec, { tokens, document });
 
-// Plot puts a mark's constant styles on its group.
-const marks = (fig, kind) => [...fig.querySelectorAll(`g[aria-label="${kind}"]`)];
 const paths = (fig) => marks(fig, "line");
 
 test("every token the grammar names exists in every mode", () => {
@@ -54,12 +30,12 @@ test("every token the grammar names exists in every mode", () => {
     }
 });
 
-test("the figure carries the finding as title and source, dataset, vintage and nature in the footer", () => {
+test("the figure carries the finding as title; the footer gives source, dataset, vintage, nature and breaks", () => {
   const { figure } = chart();
   assert.equal(figure.querySelector("h2").textContent, SPEC.title);
   assert.equal(
     figure.querySelector("figcaption").textContent,
-    "Πηγή: eurostat · demo_gind · έκδοση 2026-09-15 · παρατήρηση, προβολή, σενάριο",
+    "Πηγή: eurostat · demo_gind · έκδοση 2026-09-15 · παρατήρηση, προβολή, σενάριο · * διακοπή σειράς: Ελλάδα 2012",
   );
 });
 
@@ -143,7 +119,7 @@ test("alt text is derived from the data, focus first, scenarios named as such", 
     chart().alt,
     "Ο πληθυσμός μειώνεται. Ελλάδα: από 11.123.392 (2011) σε 11.000.000 (2015, προβολή); " +
       "Ελλάδα (σενάριο: low): από 10.900.000 (2016) σε 10.900.000 (2016); " +
-      "Πορτογαλία: από 10.557.560 (2011) σε 10.401.062 (2014); προσωρινές τιμές: 2014.",
+      "Πορτογαλία: από 10.557.560 (2011) σε 10.401.062 (2014); προσωρινές τιμές: 2014; διακοπή σειράς: Ελλάδα 2012.",
   );
   const high = row("EL", "2016", 11500000, { nature: "scenario", scenario_id: "high" });
   assert.ok(chart([...ROWS, high]).alt.includes("Ελλάδα (σενάριο: high): από 11.500.000 (2016)"));
@@ -153,8 +129,8 @@ test("the CSV holds the raw values of every row and column", () => {
   const lines = chart().csv.trimEnd().split("\n");
   assert.equal(lines[0], Object.keys(ROWS[0]).join(","));
   assert.equal(lines.length, ROWS.length + 1);
-  assert.equal(lines[4].split(",")[2], "-1234.5");
-  assert.equal(lines[3].split(",")[2], "");
+  assert.equal(lines[4].split(",")[4], "-1234.5");
+  assert.equal(lines[3].split(",")[4], "");
   const quoted = line([row("EL", "2011", 1, { source: 'a, "b"' })], SPEC, { tokens, document }).csv;
   assert.ok(quoted.includes('"a, ""b"""'));
 });
@@ -175,4 +151,68 @@ test("bad input fails loudly", () => {
   const { source, ...partial } = row("EL", "2011", 1);
   assert.throws(() => chart([partial]), /lacks source/);
   assert.throws(() => line(ROWS, SPEC, { document }), /tokens/);
+});
+
+const FAN = [
+  row("EL", "2023", 100),
+  row("EL", "2024", 101),
+  ...["2030", "2040"].flatMap((p, i) => [
+    row("EL", p, 102 + i, { nature: "projected" }),
+    ...[["95", 6], ["80", 3]].flatMap(([level, w]) => [
+      row("EL", p, 102 + i - w * (i + 1), { nature: "projected", interval: `${level}_lower` }),
+      row("EL", p, 102 + i + w * (i + 1), { nature: "projected", interval: `${level}_upper` }),
+    ]),
+  ]),
+];
+
+test("a projection with interval bounds is a fan: 95% and 80% bands opening at the last observation", () => {
+  const { figure } = chart(FAN);
+  const areas = marks(figure, "area");
+  assert.deepEqual(
+    areas.map((g) => g.getAttribute("fill-opacity")),
+    [String(tokens["opacity-band-95"]), String(tokens["opacity-band-80"])],
+  );
+  for (const g of areas) {
+    assert.equal(g.getAttribute("fill"), tokens["color-accent"]);
+    // three points: the 2024 observation and two projected periods
+    assert.equal((g.querySelector("path").getAttribute("d").match(/L/g) ?? []).length, 5);
+  }
+  const edges = paths(figure).filter((g) => g.getAttribute("stroke-width") === String(tokens["stroke-width-band-edge"]));
+  assert.equal(edges.length, 2, "the 95% band has edge lines");
+});
+
+test("interval bounds are bands, never lines or labels; alt text names the 95% interval", () => {
+  const { figure, alt, table } = chart(FAN);
+  const accentLines = paths(figure).filter((g) => g.getAttribute("stroke-width") === String(tokens["stroke-width-focus"]));
+  assert.equal(accentLines.length, 2, "observed and projected segments only");
+  assert.ok(alt.includes("από 100 (2023) σε 103 (2040, προβολή, 95%: 91–115)"), alt);
+  assert.equal(table.querySelectorAll("tbody tr").length, FAN.length);
+  const cells = [...table.querySelectorAll("td")].map((td) => td.textContent);
+  assert.ok(cells.includes("κάτω όριο 95%"));
+  assert.ok(cells.includes("κεντρική τιμή"));
+});
+
+test("the last observation before a projection is marked with its date", () => {
+  const texts = marks(chart(FAN).figure, "text").map((g) => g.textContent);
+  assert.ok(texts.includes("τελευταία παρατήρηση 2024"), texts.join("|"));
+  assert.equal(marks(chart(FAN).figure, "rule").length, 1);
+  assert.equal(marks(chart(ROWS.filter((r) => r.nature === "observed")).figure, "rule").length, 0);
+});
+
+test("a break in series carries the footnote mark on the figure", () => {
+  const texts = marks(chart().figure, "text").map((g) => g.textContent);
+  assert.ok(texts.includes("*"));
+});
+
+test("bands open at the last central value when bounds start later than the projection", () => {
+  const sparse = FAN.filter((r) => !(r.interval && r.period === "2030"));
+  const [band95] = marks(chart(sparse).figure, "area");
+  // 2030 (projected, no bounds) then 2040
+  assert.equal((band95.querySelector("path").getAttribute("d").match(/L/g) ?? []).length, 3);
+});
+
+test("a new nature continues from the last available value, not from a gap", () => {
+  const rows = [row("EL", "2023", 100), row("EL", "2024", null, { status: "not_available" }), row("EL", "2030", 102, { nature: "projected" })];
+  const dashed = paths(chart(rows).figure).filter((g) => g.getAttribute("stroke-dasharray") === tokens["stroke-dash-projected"]);
+  assert.match(dashed[0].querySelector("path").getAttribute("d"), /^M[^M]+L[^M]+$/);
 });

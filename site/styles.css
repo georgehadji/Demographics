@@ -4,6 +4,6 @@ body:not(.quarto-dark) .kh-dark {
   display: none;
 }
 .kh-chart figure svg {
-  max-width: 100%;
+  width: 100%; /* the column's width, at any screen size */
   height: auto;
 }

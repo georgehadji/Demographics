@@ -1,7 +1,8 @@
 // Line chart over time: the focus area in the accent, comparators neutral, labels on
-// the lines (PROPOSAL §7A). Each series is cut into segments where its nature changes
-// or the source flags a break in series, so the grammar styles each part and a break
-// leaves a gap. A scenario is its own series (an area's scenarios share colour and dash
+// the lines (PROPOSAL §7A). Each series is cut into segments where its nature changes,
+// so the grammar styles each part. A break in series leaves a gap in the focus' line;
+// a comparator runs through it, since aggregates such as the EU-27 inherit the breaks
+// of every member state and would fall apart. Every break carries the footnote mark. A scenario is its own series (an area's scenarios share colour and dash
 // and are told apart by their labels) and starts at the area's last value before it.
 // Where the grammar asks for bands and the rows carry interval bounds, the chart is a
 // fan chart: 95% and 80% bands open from the last value before them, and a thin rule
@@ -27,17 +28,18 @@ export function date(period) {
 }
 
 /**
- * Rows of one series (area and scenario) split where the nature changes or a break
- * starts. A new nature continues from the last value before it (a projection starts at
- * the last observation); a break does not.
+ * Rows of one series (area and scenario) split where the nature changes or, with `gaps`,
+ * a break starts. A new nature continues from the last value before it (a projection
+ * starts at the last observation); a break does not.
  */
-function segments(rows) {
+function segments(rows, gaps) {
   const out = [];
   for (const row of byPeriod(rows)) {
     const last = out.at(-1);
     const from = last?.rows.findLast((r) => r.value !== null);
-    if (last && last.nature === row.nature && !row.break_in_series) last.rows.push(row);
-    else if (from && !row.break_in_series) out.push({ nature: row.nature, rows: [from, row] });
+    const cut = gaps && row.break_in_series;
+    if (last && last.nature === row.nature && !cut) last.rows.push(row);
+    else if (from && !cut) out.push({ nature: row.nature, rows: [from, row] });
     else out.push({ nature: row.nature, rows: [row] });
   }
   return out;
@@ -46,12 +48,13 @@ function segments(rows) {
 /**
  * The marks of one series: a line per segment (a scenario starting at its area's last
  * value before it), hollow markers and break marks. `rows` are all central rows, for
- * that start; `facet` adds fx/fy channels in small multiples.
+ * that start; `facet` adds fx/fy channels in small multiples; `gaps` cuts the line at a
+ * break in series (the focus' line, not a comparator's).
  */
-export function seriesMarks(part, rows, { color, width, tokens, facet = {} }) {
-  const parts = segments(part);
+export function seriesMarks(part, rows, { color, width, tokens, facet = {}, gaps = true }) {
+  const parts = segments(part, gaps);
   const start = byPeriod(part)[0];
-  if (start.scenario_id && !start.break_in_series) {
+  if (start.scenario_id && !(gaps && start.break_in_series)) {
     const before = rows.filter(
       (r) => r.geo_code === start.geo_code && !r.scenario_id && r.value !== null && r.period < start.period,
     );
@@ -128,7 +131,7 @@ function draw(all, s, options) {
     const width = tokens[focus ? "stroke-width-focus" : "stroke-width-context"];
     const color = (nature) => tokens[style(nature, "final").color] ?? base;
     under.push(...bands(part, all.filter((r) => r.interval && seriesKey(r) === key), color, tokens));
-    marks.push(...seriesMarks(part, rows, { color, width, tokens }));
+    marks.push(...seriesMarks(part, rows, { color, width, tokens, gaps: part[0].geo_code === s.focus }));
     const end = byPeriod(part.filter((r) => r.value !== null)).at(-1);
     if (end) {
       const name = s.label(end.geo_code) + (end.scenario_id ? ` (${end.scenario_id})` : "");

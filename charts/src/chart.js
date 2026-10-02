@@ -70,6 +70,17 @@ export const TEXT = {
     status: { final: "οριστική", revised: "αναθεωρημένη", provisional: "προσωρινή", not_available: "μη διαθέσιμη" },
     sex: { total: "σύνολο", male: "άνδρες", female: "γυναίκες" },
     interval: { "80_lower": "κάτω όριο 80%", "80_upper": "άνω όριο 80%", "95_lower": "κάτω όριο 95%", "95_upper": "άνω όριο 95%" },
+    // the units of pipeline/src/grpop/definitions.yaml (test/grammar.test.js checks them all)
+    units: {
+      "% of persons of known age": "% των ατόμων γνωστής ηλικίας",
+      "live births per woman": "γεννήσεις ζώντων ανά γυναίκα",
+      "per 100 persons aged 0-14": "ανά 100 άτομα 0–14 ετών",
+      "per 100 persons aged 15-64": "ανά 100 άτομα 15–64 ετών",
+      "per 1000 average population": "ανά 1.000 κατοίκους (μέσος πληθυσμός)",
+      "per 1000 live births": "ανά 1.000 γεννήσεις ζώντων",
+      persons: "άτομα",
+      years: "έτη",
+    },
   },
   en: {
     source: "Source",
@@ -135,7 +146,8 @@ export function settings(rows, spec) {
   if (!spec.title) throw new Error("the title states the finding (PROPOSAL §7A)");
   const label = (geo) => spec.labels?.[geo] ?? geo;
   const format = (v) => (v === null ? text.missing : formatNumber(v, spec.format, locale));
-  return { ...spec, locale, text, focus, label, format, unit: units[0] };
+  // the unit in the chart's language; units in that language already (or English) as given
+  return { ...spec, locale, text, focus, label, format, unit: text.units?.[units[0]] ?? units[0] };
 }
 
 /** "Source: Eurostat · demo_gind · vintage 2026-09-15 · observed", plus the breaks in series. */
@@ -143,7 +155,7 @@ export function footer(rows, s) {
   const parts = [
     `${s.text.source}: ${unique(rows, "source").join(", ")}`,
     unique(rows, "dataset_code").join(", "),
-    `${s.text.vintage} ${unique(rows, "vintage").join(", ")}`,
+    `${s.text.vintage} ${unique(rows.map((r) => ({ v: vintageDate(r.vintage) })), "v").join(", ")}`,
     unique(rows, "nature")
       .map((n) => s.text.nature[n])
       .join(", "),
@@ -214,7 +226,7 @@ export function table(rows, s, document) {
       sex: s.text.sex[r.sex],
       age: r.age,
       value: s.format(r.value),
-      unit: r.unit,
+      unit: s.unit,
       nature: s.text.nature[r.nature],
       status: s.text.status[r.status],
       scenario_id: r.scenario_id ?? "",
@@ -284,6 +296,9 @@ const breaksIn = (rows, s) => [
 
 /** ", προβολή" after a value that is projected or a scenario, so it is never read as observed. */
 export const natureNote = (s, r) => (style(r.nature, "final").dash ? `, ${s.text.nature[r.nature]}` : "");
+
+/** A vintage that is a timestamp ("2026-09-30T23:00:00+0200") as its date; others as given. */
+export const vintageDate = (v) => (/^\d{4}-\d{2}-\d{2}T/.test(v) ? v.slice(0, 10) : v);
 
 // Marks a break in series on the figure and in the footer.
 export const BREAK_MARK = "*";

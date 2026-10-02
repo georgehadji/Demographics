@@ -76,7 +76,9 @@ jobs:
         working-directory: site
         env:
           KOHORTES_DATA: ${{ github.workspace }}/pipeline/product
-        run: quarto render
+        run: |
+          quarto render
+          grep -q 'class="fact"' _site/index.html || { echo "::error::no value from the data product in index.html"; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: site
@@ -87,10 +89,11 @@ jobs:
           KOHORTES_DATA: ${{ github.workspace }}/pipeline/product
         run: |
           check() {
-            if quarto render "$1" > render.log 2>&1; then
-              echo "::error::$1 rendered, but it must fail"; exit 1
+            if quarto render "$1" --profile wrong > render.log 2>&1; then
+              cat render.log; echo "::error::$1 rendered, but it must fail"; exit 1
             fi
-            grep -q "kohortes: .*$2" render.log || { cat render.log; echo "::error::$1 failed for another reason"; exit 1; }
+            cat render.log
+            grep -q "kohortes: .*$2" render.log || { echo "::error::$1 failed for another reason"; exit 1; }
           }
           check test/missing.qmd "0 values in the data product"
           check test/unprovenanced.qmd "not in the data product manifest"

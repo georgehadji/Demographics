@@ -5,6 +5,7 @@ Quarto website (ADR 0005, layer L6): it reads the data product and computes noth
 | File | What it does |
 |---|---|
 | `_quarto.yml` | Quarto project: website, Greek, brand files made by the pre-render step, the shortcodes, the pages to render |
+| `_quarto-wrong.yml` | Profile `wrong`: adds the deliberately wrong pages of `test/` to the render list, for the `Build` workflow |
 | `fertility.json` | Chart spec of the sample page: total fertility rate, Greece and the EU-27 |
 | `index.qmd` | Sample page with its review tier, two values and a chart from the data product |
 | `kohortes.lua` | The `fact` and `chart` shortcodes: run `src/cli.js`, and fail the render when it fails |

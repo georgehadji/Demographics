@@ -2,7 +2,7 @@
 -- values). A missing or unprovenanced value makes node exit non-zero, pandoc.pipe raises,
 -- and the render fails.
 --   {{< fact population EL 2024 >}}            optional sex and age after the period
---   {{< chart figures/fertility.json >}}
+--   {{< chart fertility.json >}}       a spec relative to site/
 local cli = quarto.utils.resolve_path("src/cli.js")
 
 local function run(command, args)

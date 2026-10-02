@@ -12,3 +12,9 @@ charts/playwright-report/
 charts/test-results/
 charts/visual/snapshots/*-win32.png
 charts/visual/snapshots/*-darwin.png
+
+# Quarto output and the brand files made from design/tokens.json
+site/_site/
+site/.quarto/
+site/_brand/
+site/render.log

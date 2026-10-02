@@ -1,0 +1,22 @@
+project:
+  type: website
+  # brand files are made from design/tokens.json (Quarto needs them inside the project)
+  pre-render: node src/cli.js brand
+  render:
+    - index.qmd
+
+website:
+  title: Κοόρτες
+
+lang: el
+
+brand:
+  light: _brand/light.yml
+  dark: _brand/dark.yml
+
+shortcodes:
+  - kohortes.lua
+
+format:
+  html:
+    css: styles.css

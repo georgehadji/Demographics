@@ -1,6 +1,6 @@
 # CONTEXT.md: project map
 
-Kohortes (Κοόρτες) is an open, non-commercial research and publication project on the demography of Greece. A Python pipeline turns official statistics (mainly Eurostat) into a validated data product with full provenance. A design system and a chart library, and later a Quarto site and reports, present it. The plan is [`docs/PROPOSAL.md`](docs/PROPOSAL.md); the order of work is [`docs/IMPLEMENTATION-PLAN.md`](docs/IMPLEMENTATION-PLAN.md); the working rules are [`CLAUDE.md`](CLAUDE.md).
+Kohortes (Κοόρτες) is an open, non-commercial research and publication project on the demography of Greece. A Python pipeline turns official statistics (mainly Eurostat) into a validated data product with full provenance. A design system, a chart library and a Quarto site (later also reports) present it. The plan is [`docs/PROPOSAL.md`](docs/PROPOSAL.md); the order of work is [`docs/IMPLEMENTATION-PLAN.md`](docs/IMPLEMENTATION-PLAN.md); the working rules are [`CLAUDE.md`](CLAUDE.md).
 
 Every tracked folder that holds files has its own `CONTEXT.md`, with one line per file. This file maps the folders and the root files. `pipeline/tests/test_context.py` fails when a file is missing from its folder's map, or a map lists a file that does not exist.
 
@@ -20,12 +20,15 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 ├── docs/                   proposal, plan, review, landscape scan
 │   ├── decisions/          ADRs
 │   └── spikes/             time-boxed investigations
-└── pipeline/               Python package grpop: sources → snapshots → observations → indicators → data product
-    ├── src/grpop/
-    │   ├── parse/
-    │   └── sources/
-    └── tests/
-        └── fixtures/       responses recorded from the live sources
+├── pipeline/               Python package grpop: sources → snapshots → observations → indicators → data product
+│   ├── src/grpop/
+│   │   ├── parse/
+│   │   └── sources/
+│   └── tests/
+│       └── fixtures/       responses recorded from the live sources
+└── site/                   Quarto website: reads the data product through fact() and chart()
+    ├── src/
+    └── test/
 ```
 
 | Folder | Map |
@@ -49,6 +52,9 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | `pipeline/src/grpop/sources` | [`pipeline/src/grpop/sources/CONTEXT.md`](pipeline/src/grpop/sources/CONTEXT.md) |
 | `pipeline/tests` | [`pipeline/tests/CONTEXT.md`](pipeline/tests/CONTEXT.md) |
 | `pipeline/tests/fixtures` | [`pipeline/tests/fixtures/CONTEXT.md`](pipeline/tests/fixtures/CONTEXT.md) |
+| `site` | [`site/CONTEXT.md`](site/CONTEXT.md) |
+| `site/src` | [`site/src/CONTEXT.md`](site/src/CONTEXT.md) |
+| `site/test` | [`site/test/CONTEXT.md`](site/test/CONTEXT.md) |
 
 ## Root files
 
@@ -77,4 +83,5 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | Draw a chart, or change how nature and status look | `charts/src/` (`grammar.js` for the epistemic grammar) |
 | Check how the charts look, or update the screenshots | `charts/visual/` and the `Visual` workflow |
 | Format a number for display | `design/src/format.js` |
+| Quote a value or show a chart on the site | `site/` (`{{< fact >}}`, `{{< chart >}}`; gateway in `site/src/product.js`) |
 | Why something was decided | `docs/decisions/` |

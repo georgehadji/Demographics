@@ -1,0 +1,16 @@
+{
+  "name": "@kohortes/site",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "dependencies": {
+    "d3-dsv": "3.0.1",
+    "jsdom": "29.1.1"
+  }
+}

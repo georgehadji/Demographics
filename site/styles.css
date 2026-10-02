@@ -1,0 +1,9 @@
+/* Each chart is drawn in the light and the dark mode; show the one Quarto is in. */
+body.quarto-dark .kh-light,
+body:not(.quarto-dark) .kh-dark {
+  display: none;
+}
+.kh-chart figure svg {
+  max-width: 100%;
+  height: auto;
+}

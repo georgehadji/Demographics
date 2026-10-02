@@ -1,0 +1,7 @@
+---
+title: Deliberately wrong page, a value without provenance
+---
+
+No file of this name is in the data product manifest, so this render must fail (Build workflow).
+
+{{< fact not_in_the_manifest EL 2024 >}}

@@ -3,8 +3,10 @@ name: Build
 # Builds the data product (grpop-build) from the latest snapshot of each source in the
 # `snapshots` release, twice from scratch, and fails unless both give the same files
 # (Phase 1 criterion). The build itself fails on any difference from Eurostat that is
-# neither listed nor corroborated. Runs after each Ingest run, on demand, and on every
-# push that changes the code or the reference data.
+# neither listed nor corroborated. Then renders the Quarto site from the product, and
+# checks that the deliberately wrong pages in site/test/ fail to render (a value that is
+# missing or has no provenance). Runs after each Ingest run, on demand, and on every push
+# that changes the code, the reference data, the site, the charts or the design tokens.
 on:
   workflow_dispatch:
   workflow_run:
@@ -16,6 +18,12 @@ on:
       - pipeline/src/**
       - pipeline/uv.lock
       - data/reference/**
+      - site/**
+      - charts/src/**
+      - charts/package-lock.json
+      - design/src/**
+      - design/tokens.json
+      - design/package-lock.json
 
 permissions:
   contents: read
@@ -49,3 +57,41 @@ jobs:
         run: |
           diff -r product product-again
           echo "Two builds from scratch are identical." >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            design/package-lock.json
+            charts/package-lock.json
+            site/package-lock.json
+      # site/ imports the charts and the design tokens.
+      - name: Install the Node packages
+        working-directory: .
+        run: for p in design charts site; do (cd $p && npm ci); done
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.11.5
+      - name: Render the site from the data product
+        working-directory: site
+        env:
+          KOHORTES_DATA: ${{ github.workspace }}/pipeline/product
+        run: quarto render
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site/_site
+      - name: Deliberately wrong pages fail the render
+        working-directory: site
+        env:
+          KOHORTES_DATA: ${{ github.workspace }}/pipeline/product
+        run: |
+          check() {
+            if quarto render "$1" > render.log 2>&1; then
+              echo "::error::$1 rendered, but it must fail"; exit 1
+            fi
+            grep -q "kohortes: .*$2" render.log || { cat render.log; echo "::error::$1 failed for another reason"; exit 1; }
+          }
+          check test/missing.qmd "0 values in the data product"
+          check test/unprovenanced.qmd "not in the data product manifest"
+          echo "The site renders; pages with a missing or unprovenanced value fail." >> "$GITHUB_STEP_SUMMARY"

@@ -4,22 +4,19 @@ Each indicator is one ``Indicator`` entry in ``INDICATORS``: its definition (mea
 and unit, in definitions.yaml), its input series, a Polars formula and, where an
 official source publishes the same indicator, that series. Acceptance tests are
 generated from ``INDICATORS`` (tests/test_indicators.py): every indicator with an
-official counterpart must agree with it within the official rounding.
-``grpop-check-indicators --store DIR`` runs the same comparison on every country and
-year in a snapshot store. ``SERIES`` lists the official series published as the source
-gives them.
+official counterpart must agree with it within the official rounding. ``grpop-build``
+runs the same comparison (``check``) on every country and year in a snapshot store.
+``SERIES`` lists the official series published as the source gives them.
 """
 
 from __future__ import annotations
 
-import argparse
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from pathlib import Path
 
 import polars as pl
 
-from grpop import harmonize, snapshots
+from grpop import harmonize
 from grpop.definitions import get_definition
 from grpop.parse import eurostat
 from grpop.provenance import Nature, Status, validate_observations
@@ -374,14 +371,14 @@ def _structure(
 # Known differences: cells where the official structure indicators disagree with
 # Eurostat's own population tables and no broad-group table can corroborate ours
 # (checked 2026-09-29 on the tables of that date; corroborated differences are found by
-# `grpop-check-indicators` itself). 80+ share: VERIFIED that demo_pjangroup (five-year
+# `grpop-build` itself). 80+ share: VERIFIED that demo_pjangroup (five-year
 # groups) equals ours to every digit, except MD 2014, where demo_pjan, demo_pjangroup and
 # demo_pjanind give three different values (2.1, 2.7, 2.4, the last flagged "e"; cause
 # UNKNOWN). Median age: for AM 2024 demo_pjangroup gives 39.1 (ours 39.1, demo_pjanind
 # 33.7); the other differences (at most 0.16) are in country-years whose ratios are
 # corroborated, and five-year groups are too coarse to settle them. INFERENCE: the
 # indicator tables were not recomputed after the populations were revised.
-# `grpop-check-indicators` fails if a listed difference goes away.
+# `grpop-build` fails if a listed difference goes away.
 _POPULATION = Series("eurostat_demo_pjan", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE)
 _POPULATION_REGIONAL = _regional(
     "eurostat_demo_r_d2jan", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE
@@ -582,37 +579,16 @@ def disagreements(indicator: Indicator, ours: pl.DataFrame, data: Data) -> pl.Da
     return rows
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Compare every indicator with its official counterpart, on the "
-        "latest snapshot of each source in a store. Fails on a difference that is "
-        "neither corroborated nor listed, and on a listed difference that is gone or "
-        "now corroborated."
-    )
-    parser.add_argument("--store", type=Path, required=True)
-    store = parser.parse_args(argv).store
-    failed = False
-    for name, indicator in INDICATORS.items():
-        if not indicator.official:
-            continue
-        data = {}
-        for source_id in sources(indicator):
-            snapshot = snapshots.history(store, source_id)[-1]
-            data[source_id] = (snapshot, snapshots.read(store, snapshot.sha256))
-        rows = disagreements(indicator, compute(indicator, data), data)
-        unexplained = rows.filter(~pl.col("known") & ~pl.col("corroborated"))
-        gone = indicator.known_differences - set(
-            rows.filter(pl.col("known") & ~pl.col("corroborated"))
-            .select("geo_code", "period")
-            .iter_rows()
-        )
-        print(
-            f"{name}: {rows['corroborated'].sum()} corroborated, {unexplained.height} "
-            f"unexplained, {len(gone)} listed but gone or corroborated"
-        )
-        if unexplained.height or gone:
-            failed = True
-            with pl.Config(tbl_rows=-1):
-                print(unexplained)
-            print(sorted(gone))
-    return 1 if failed else 0
+def check(
+    indicator: Indicator, ours: pl.DataFrame, data: Data
+) -> tuple[pl.DataFrame, list[tuple[str, str]]]:
+    """Differences from the official value that are neither listed nor corroborated, and
+    listed country-years that were compared but no longer differ or are now corroborated.
+    """
+    rows = disagreements(indicator, ours, data)
+    cells = ["geo_code", "period"]
+    official = read_official(indicator, data).filter(pl.col("value").is_not_null())
+    compared = set(ours.join(official, on=KEY).select(cells).iter_rows())
+    still = set(rows.filter(pl.col("known") & ~pl.col("corroborated")).select(cells).iter_rows())
+    gone = (indicator.known_differences & compared) - still
+    return rows.filter(~pl.col("known") & ~pl.col("corroborated")), sorted(gone)

@@ -1,0 +1,48 @@
+name: Build
+
+# Builds the data product (grpop-build) from the latest snapshot of each source in the
+# `snapshots` release, twice from scratch, and fails unless both give the same files
+# (Phase 1 criterion). The build itself fails on any difference from Eurostat that is
+# neither listed nor corroborated. A full build is slow (all countries, all ages), so
+# it runs after each Ingest run and on demand, not on every push.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Ingest]
+    types: [completed]
+  push:
+    paths:
+      - .github/workflows/build.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+        shell: bash
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Restore the latest snapshots
+        run: |
+          mkdir -p store/objects parts
+          gh release download snapshots -p 'manifest-*.jsonl' -D parts
+          cat $(ls parts/manifest-*.jsonl | sort) > store/manifest.jsonl
+          shas=$(uv run grpop-build --store store --list-snapshots) # fails the step on error
+          for sha in $shas; do
+            gh release download snapshots -p "$sha" -D store/objects
+          done
+      - run: uv run grpop-build --store store --out product
+      - run: uv run grpop-build --store store --out product-again
+      - name: Compare the two builds
+        run: |
+          diff -r product product-again
+          echo "Two builds from scratch are identical." >> "$GITHUB_STEP_SUMMARY"

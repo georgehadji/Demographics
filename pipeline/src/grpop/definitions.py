@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import cache
 from importlib import resources
 
 import yaml
@@ -20,6 +21,7 @@ class Definition(BaseModel):
     description: str
 
 
+@cache  # parsed once per process; callers must not mutate the result
 def load_definitions(text: str | None = None) -> dict[str, Definition]:
     """Load and validate the definitions. Pass ``text`` to validate other YAML (tests)."""
     if text is None:

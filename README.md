@@ -38,8 +38,9 @@ zenodo.org
 | Φάκελος | Περιεχόμενο |
 |---|---|
 | `pipeline/` | Python package `grpop`: συμβόλαιο προέλευσης, μητρώο πηγών, connectors, tests (βλ. [`pipeline/README.md`](pipeline/README.md)) |
+| `design/` | Design tokens (`tokens.json`), οι γεννήτριες για CSS, JS και Quarto `_brand.yml`, και οι έλεγχοι αντίθεσης, αχρωματοψίας και αριθμητικής μορφής |
 | `data/reference/` | Μικρά αρχεία αναφοράς (CSV): οι ελληνικοί κωδικοί NUTS 2024, η αλλαγή κωδικών NUTS 2010 → 2024 σε NUTS 2, οι ετικέτες περιφερειών της ELSTAT |
-| `.github/workflows/` | `CI` (lint, τύποι, tests), `Source probe` (έλεγχος των πηγών) και `Ingest` (λήψη των datasets σε snapshots, αποθηκευμένα στο release `snapshots`) |
+| `.github/workflows/` | `CI` (lint, τύποι, tests), `Source probe` (έλεγχος των πηγών), `Ingest` (λήψη των datasets σε snapshots, αποθηκευμένα στο release `snapshots`) και `Build` (δύο builds του data product από το μηδέν, που πρέπει να συμπίπτουν) |
 
 ## Άδειες
 

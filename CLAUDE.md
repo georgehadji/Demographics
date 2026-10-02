@@ -37,7 +37,7 @@ Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, st
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline/` is the only code. The site and the reports are planned (ADR 0005) and don't exist yet.
+Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); the code is `pipeline/` and `design/`. The charts, the site and the reports are planned (ADR 0005) and don't exist yet.
 
 - Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check . && uv run mypy` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.
@@ -57,6 +57,13 @@ Current state: Phase 1 (see `docs/IMPLEMENTATION-PLAN.md`); `pipeline/` is the o
   3. The probe never edits the registry. A person or Claude reads the report and records it.
   4. Set an entry to `verified` only with `checked_at` and `evidence` (the run id and the observed result) taken from that report.
 - Test fixtures that were hand-written rather than recorded from a real response must say so in a `_comment` field.
+
+## Working in `design/` (Node package, design tokens)
+
+- `tokens.json` is the only home of design values (ADR 0006): colours in OKLCH per mode (`light`, `dark`, `print`; print falls back to light), palettes, stroke widths and dash patterns of the epistemic grammar, fonts, spacing. Change a value there, never in a generated file.
+- `npm run build` generates `dist/` (not committed): `tokens.css` (CSS variables, dark mode under `prefers-color-scheme` and `[data-theme]`, print under `@media print`), `tokens.js` (per-mode values with colours as hex, for chart scales) and Quarto's `_brand.yml` / `_brand-dark.yml`.
+- `npm test` (`node --test`) runs the validators in `test/`: every colour inside the sRGB gamut, WCAG 2.2 AA contrast in every mode, palettes monotone in lightness and distinct step by step under protan/deutan/tritan simulation, a neutral diverging centre, and the number format. CI runs it on every push.
+- `src/format.js` `formatNumber` is the one number formatter: `Intl.NumberFormat` plus the true minus sign. Never format a number another way.
 
 ## Environment notes
 

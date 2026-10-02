@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Start every task with [`CONTEXT.md`](CONTEXT.md):** what the project does, a map of every folder, and a link to each folder's `CONTEXT.md`, which describes every file in it. Find files there before searching. When you add, remove, rename or repurpose a file, update its folder's `CONTEXT.md` in the same change (`pipeline/tests/test_context.py` enforces it). Other agents enter through `AGENTS.md`, which points here.
+
 **Κοόρτες / Kohortes** (open demographic analysis of Greece; see ADR 0003): a non-commercial research and publication project on the demography of Greece. Goal: public credibility.
 Claude builds everything (code, analysis, text, design). The responsible editor is **Georgios-Chrysovalantis Chatzivantsidis**, who approves every publication.
 There is **no external reviewer yet**. Publications must carry their review tier (PROPOSAL §1B) and must never be presented as reviewed. See `AI_USE.md`.

@@ -4,6 +4,9 @@ Baseline screenshots for `charts.spec.js`, Linux only, written by the `Visual` w
 
 | File | What it does |
 |---|---|
+| `choropleth-dark-linux.png` | Baseline of the choropleth chart in dark mode |
+| `choropleth-light-linux.png` | Baseline of the choropleth chart in light mode |
+| `choropleth-print-linux.png` | Baseline of the choropleth chart in print mode |
 | `lexis-dark-linux.png` | Baseline of the lexis chart in dark mode |
 | `lexis-light-linux.png` | Baseline of the lexis chart in light mode |
 | `lexis-print-linux.png` | Baseline of the lexis chart in print mode |
@@ -13,6 +16,9 @@ Baseline screenshots for `charts.spec.js`, Linux only, written by the `Visual` w
 | `pyramid-dark-linux.png` | Baseline of the pyramid chart in dark mode |
 | `pyramid-light-linux.png` | Baseline of the pyramid chart in light mode |
 | `pyramid-print-linux.png` | Baseline of the pyramid chart in print mode |
+| `symbols-dark-linux.png` | Baseline of the symbols chart in dark mode |
+| `symbols-light-linux.png` | Baseline of the symbols chart in light mode |
+| `symbols-print-linux.png` | Baseline of the symbols chart in print mode |
 | `tiles-dark-linux.png` | Baseline of the tiles chart in dark mode |
 | `tiles-light-linux.png` | Baseline of the tiles chart in light mode |
 | `tiles-print-linux.png` | Baseline of the tiles chart in print mode |

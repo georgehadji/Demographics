@@ -27,6 +27,12 @@ test("every locale labels every nature, status, sex and interval bound of the co
   }
 });
 
+test("Greek labels every unit of definitions.yaml, and only those", () => {
+  const yaml = readFileSync(new URL("../../pipeline/src/grpop/definitions.yaml", import.meta.url), "utf8");
+  const units = [...new Set([...yaml.matchAll(/^\s+unit:\s*(.+?)\s*$/gm)].map((m) => m[1].replace(/^["']|["']$/g, "")))];
+  assert.deepEqual(Object.keys(TEXT.el.units).sort(), units.sort());
+});
+
 const LINE = {
   observed: { dash: null, band: false, color: null },
   official_estimate: { dash: null, band: false, color: null },

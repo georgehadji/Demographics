@@ -30,7 +30,7 @@ Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, st
 ## Design system (PROPOSAL §7A)
 
 - The chart title states the finding. The footer states source, dataset, vintage and `nature`.
-- Epistemic grammar: solid = observed/estimate/derived; dashed + bands = projected; dotted in a different hue family = scenario; hollow marker = provisional; line gap + note = break in series.
+- Epistemic grammar: solid = observed/estimate/derived; dashed + bands = projected; dotted in a different hue family = scenario; hollow marker = provisional; break in series = footnote mark and note, plus a line gap in the focus' line only (comparators such as the EU-27 inherit every member state's break).
 - Greece gets the single accent colour, comparators are neutral, labels go directly on the lines.
 - Choropleths show rates only and are paired with a cartogram or proportional symbols.
 - Greek: no accented all-caps; locale number formatting via `Intl.NumberFormat` (`10.372.335`, `−0,03%`); true minus sign.

@@ -9,7 +9,7 @@ import { csvParse } from "d3-dsv";
 import { JSDOM } from "jsdom";
 import { hexTokens } from "../../design/src/build.js";
 import { formatNumber } from "../../design/src/format.js";
-import { TEXT } from "../../charts/src/chart.js";
+import { TEXT, vintageDate } from "../../charts/src/chart.js";
 import { style } from "../../charts/src/grammar.js";
 import { line } from "../../charts/src/line.js";
 import { lexis } from "../../charts/src/lexis.js";
@@ -76,7 +76,7 @@ export function fact(dir, name, geo, period, sex = "total", age = "total", local
   const { dash, hollow } = style(r.nature, r.status);
   const notes = [dash && t.nature[r.nature], hollow && t.status[r.status]].filter(Boolean);
   const text = formatNumber(r.value, {}, locale) + (notes.length ? ` (${notes.join(", ")})` : "");
-  const title = `${t.source}: ${r.source} · ${r.dataset_code} · ${t.vintage} ${r.vintage}`;
+  const title = `${t.source}: ${r.source} · ${r.dataset_code} · ${t.vintage} ${vintageDate(r.vintage)}`;
   return `<span class="fact" title="${escape(title)}">${escape(text)}</span>`;
 }
 

@@ -31,7 +31,8 @@ function draw(rows, s, options) {
     const tile = at.get(geo);
     const facet = { fx: () => tile.col, fy: () => tile.row };
     const context = { width: tokens["stroke-width-context"], tokens, facet };
-    marks.push(...seriesMarks(reference, rows, { ...context, color: () => tokens["color-comparator"] }));
+    // the tile's region is its focus; the reference runs through its breaks
+    marks.push(...seriesMarks(reference, rows, { ...context, color: () => tokens["color-comparator"], gaps: false }));
     for (const part of Map.groupBy(rows.filter((r) => r.geo_code === geo), seriesKey).values()) {
       const color = (nature) => tokens[style(nature, "final").color] ?? tokens["color-accent"];
       marks.push(...seriesMarks(part, rows, { ...context, width: tokens["stroke-width-focus"], color }));

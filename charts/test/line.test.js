@@ -62,6 +62,14 @@ test("a break in series and a missing value leave gaps in the line", () => {
   assert.match(accent[2].querySelector("path").getAttribute("d"), /^M[^M]+L/, "the projection starts at the last value");
 });
 
+test("a comparator runs through its break in series, which keeps its mark", () => {
+  const rows = [...ROWS, row("PT", "2012", 10500000, { break_in_series: true })];
+  const comparator = paths(chart(rows).figure).filter((p) => p.getAttribute("stroke") === tokens["color-comparator"]);
+  assert.equal(comparator.length, 1);
+  assert.equal((comparator[0].querySelector("path").getAttribute("d").match(/M/g) ?? []).length, 1);
+  assert.equal(marks(chart(rows).figure, "text").filter((g) => g.textContent === "*").length, 2);
+});
+
 test("a provisional value gets a hollow marker", () => {
   const dots = marks(chart().figure, "dot");
   assert.equal(dots.length, 1);

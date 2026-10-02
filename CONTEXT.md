@@ -35,6 +35,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | `charts/src` | [`charts/src/CONTEXT.md`](charts/src/CONTEXT.md) |
 | `charts/test` | [`charts/test/CONTEXT.md`](charts/test/CONTEXT.md) |
 | `charts/visual` | [`charts/visual/CONTEXT.md`](charts/visual/CONTEXT.md) |
+| `charts/visual/snapshots` | [`charts/visual/snapshots/CONTEXT.md`](charts/visual/snapshots/CONTEXT.md) |
 | `data/reference` | [`data/reference/CONTEXT.md`](data/reference/CONTEXT.md) |
 | `design` | [`design/CONTEXT.md`](design/CONTEXT.md) |
 | `design/src` | [`design/src/CONTEXT.md`](design/src/CONTEXT.md) |

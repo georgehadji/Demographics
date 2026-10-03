@@ -20,6 +20,7 @@
 | Ορισμοί μετρικών (σημασία, μονάδα, έκδοση `@vN`) | `pipeline/src/grpop/definitions.yaml` |
 | Contract προέλευσης (στήλες, λεξιλόγιο `nature`/`status`, κλειδί παρατήρησης) | `pipeline/src/grpop/provenance.py` |
 | Γεωγραφικές αντιστοιχίσεις (NUTS, Καλλικράτης → Κλεισθένης, ετικέτες πηγών) | αρχεία CSV αναφοράς στο `data/reference/` |
+| Βιβλιογραφία (κλειδί, DOI, αναμενόμενος τίτλος και συγγραφείς) | `data/bibliography/references.csv`· το CSL-JSON παράγεται από το `grpop-bib` |
 | Τιμές σχεδιασμού (χρώματα, τυπογραφία, διαστήματα) | `design/tokens.json` |
 | Κάθε αριθμός σε δημοσίευση ή γράφημα | το data product (L5), μέσω `fact()` (ADR 0005) |
 | Αποφάσεις | `docs/decisions/` (ADR) |

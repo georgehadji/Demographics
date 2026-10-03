@@ -5,6 +5,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | File | What it does |
 |---|---|
 | `fixtures` | Recorded source responses: see `fixtures/CONTEXT.md` |
+| `test_bibliography.py` | DOI resolution: citation fields only, a different title or author order is refused, an unresolved DOI fails, normalisation, the reference list |
 | `test_build.py` | Two builds give the same bytes; manifest complete; only changed outputs rebuilt; unexplained or stale differences stop the build |
 | `test_context.py` | Every tracked file is listed in its folder's `CONTEXT.md`, every listed file exists, and the root map links every folder map |
 | `test_definitions.py` | `definitions.yaml` loads; duplicate or malformed ids are rejected |

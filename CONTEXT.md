@@ -13,6 +13,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 │   ├── src/
 │   ├── test/
 │   └── visual/         screenshot and accessibility tests
+├── data/bibliography/      the cited works: key, DOI, expected title and authors
 ├── data/reference/         small reference CSVs (NUTS codes and recodes, ELSTAT labels)
 ├── design/                 design tokens, generators and validators (Node)
 │   ├── src/
@@ -39,6 +40,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | `charts/test` | [`charts/test/CONTEXT.md`](charts/test/CONTEXT.md) |
 | `charts/visual` | [`charts/visual/CONTEXT.md`](charts/visual/CONTEXT.md) |
 | `charts/visual/snapshots` | [`charts/visual/snapshots/CONTEXT.md`](charts/visual/snapshots/CONTEXT.md) |
+| `data/bibliography` | [`data/bibliography/CONTEXT.md`](data/bibliography/CONTEXT.md) |
 | `data/reference` | [`data/reference/CONTEXT.md`](data/reference/CONTEXT.md) |
 | `design` | [`design/CONTEXT.md`](design/CONTEXT.md) |
 | `design/src` | [`design/src/CONTEXT.md`](design/src/CONTEXT.md) |

@@ -11,3 +11,4 @@ Architecture decision records (ADR), dated. A new decision is a new file.
 | `0005-software-architecture.md` | Layers L1-L6, the paradigm and patterns per module, Quarto for site and reports |
 | `0006-single-source-of-truth.md` | Every fact has exactly one home; the table of homes |
 | `0007-uncertainty-intervals.md` | Interval bounds as rows: the `interval` column of the provenance contract |
+| `0008-europop-variants.md` | EUROPOP2025: the baseline is `projected`, each sensitivity test a `scenario` with its `scenario_id` |

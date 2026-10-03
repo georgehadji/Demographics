@@ -76,21 +76,27 @@ def _with_median(step: Step) -> Step:
 
 def _adds_up(step: Step) -> Step:
     """Stops the build where ages do not add up to the total or regions to their parent,
-    except the cells in ``AGE_KNOWN_GAPS``, which must still be off."""
+    beyond the bounds in ``KNOWN_GAPS``. A listed (period, sex) with no gap left also
+    stops it, if it was compared."""
 
     def run(data: indicators.Data) -> pl.DataFrame:
         df = step.run(data)
         assert isinstance(df, pl.DataFrame)
-        cells = ["geo_code", "period", "sex"]
-        ages = harmonize.age_gaps(df)
-        gone = AGE_KNOWN_GAPS - set(ages.select(cells).iter_rows())
-        gone &= set(df.select(cells).iter_rows())
-        known = pl.DataFrame(list(AGE_KNOWN_GAPS), schema=cells, orient="row")
-        for name, gaps in (
-            ("age_gaps", ages.join(known, on=cells, how="anti")),
-            ("hierarchy_gaps", harmonize.hierarchy_gaps(df)),
-        ):
-            if gaps.height or (name == "age_gaps" and gone):
+        known = pl.DataFrame(
+            [(p, s, b) for (p, s), b in KNOWN_GAPS.items()],
+            schema=["period", "sex", "bound"],
+            orient="row",
+        )
+        ages = harmonize.age_gaps(df).with_columns(off=pl.col("total") - pl.col("sum"))
+        regions = harmonize.hierarchy_gaps(df)
+        regions = regions.with_columns(off=pl.col("value") - pl.col("children"))
+        found = set(pl.concat([g.select("period", "sex") for g in (ages, regions)]).iter_rows())
+        gone = (set(KNOWN_GAPS) & set(df.select("period", "sex").iter_rows())) - found
+        for name, gaps in (("age_gaps", ages), ("hierarchy_gaps", regions)):
+            gaps = gaps.join(known, on=["period", "sex"], how="left").filter(
+                pl.col("bound").is_null() | (pl.col("off").abs() > pl.col("bound"))
+            )
+            if gaps.height or gone:
                 with pl.Config(tbl_rows=20):
                     raise ValueError(f"{name}:\n{gaps}\nlisted gaps that are gone: {sorted(gone)}")
         return df
@@ -99,12 +105,12 @@ def _adds_up(step: Step) -> Step:
 
 
 ADDS_UP = {"population_by_age_group_regional"}
-# demo_r_pjangrp3 (updated 2026-08-28): the age groups of these cells sum to 3 persons
-# less than their total. VERIFIED 2026-10-03 that the totals equal demo_r_pjanaggr3's
-# and male + female; the missing persons are in no published age group. Cause UNKNOWN.
-AGE_KNOWN_GAPS = frozenset(
-    {("EL645", "2018", "total"), ("EL527", "2018", "total"), ("EL422", "2018", "female")}
-)
+# demo_r_pjangrp3 (updated 2026-08-28), 2018, total and female: in 19 cells the age
+# groups or the regions add up to 3 persons more or less than the published value
+# (e.g. EL645 total 37,978, its age groups 37,975; EL 85-89 242,204, its regions
+# 242,207). VERIFIED 2026-10-03 that the regional totals equal demo_r_pjanaggr3 and male
+# + female. Cause UNKNOWN. (period, sex) -> the largest difference allowed, in persons.
+KNOWN_GAPS = {("2018", "total"): 3, ("2018", "female"): 3}
 # National rates and means get the EU-27 median as a comparator; counts do not.
 _national = {
     **{n: i.definition_id for n, i in indicators.INDICATORS.items()},

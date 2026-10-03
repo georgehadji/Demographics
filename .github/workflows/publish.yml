@@ -55,8 +55,10 @@ jobs:
           path: pipeline/release
       - name: GitHub Release
         if: inputs.target == 'zenodo'
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
           doi=$(sed -n 's/^DOI: //p' publish.log)
-          gh release create "data-v${{ inputs.version }}" release/*.zip \
-            --title "Data release ${{ inputs.version }}" \
+          gh release create "data-v$VERSION" release/*.zip \
+            --title "Data release $VERSION" \
             --notes "DOI: https://doi.org/$doi. Changes: publish/CHANGELOG.md."

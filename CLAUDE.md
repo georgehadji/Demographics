@@ -39,7 +39,7 @@ Decided in [ADR 0001](docs/decisions/0001-project-scope-and-stack.md) (scope, st
 
 ## Working in `pipeline/` (Python package `grpop`)
 
-Current state: Phase 1 closed on 2026-10-03 (PROPOSAL §10); Phase 2 has no implementation plan yet. Read both before starting it; the code is `pipeline/`, `design/`, `charts/` and the `site/` skeleton. The reports are planned (ADR 0005) and don't exist yet.
+Current state: Phase 1 closed on 2026-10-03 (PROPOSAL §10); Phase 2 is planned in parts Δ–Ζ of `docs/IMPLEMENTATION-PLAN.md`; the code is `pipeline/`, `design/`, `charts/` and the `site/` skeleton. The reports are planned (ADR 0005) and don't exist yet.
 
 - Before every push, run `cd pipeline && uv sync && uv run pytest -q && uv run ruff check . && uv run ruff format --check . && uv run mypy` and make sure it passes. CI (`.github/workflows/ci.yml`) runs the same steps with `uv sync --locked`; lint settings are in `pyproject.toml`.
 - To run a single test: `uv run pytest tests/test_provenance.py::test_duplicate_key_fails`.

@@ -22,7 +22,7 @@ from typing import Any
 import polars as pl
 
 from grpop.harmonize import REFERENCE
-from grpop.provenance import Nature, Status
+from grpop.provenance import OBSERVATION_KEY, Nature, Status
 
 GROUPS = pl.read_csv(REFERENCE / "peer_groups.csv", schema_overrides={"version": pl.String})
 RULE: dict[str, Any] = {"group": "very_low_fertility", "below": 1.3, "period": "2024"}
@@ -39,20 +39,22 @@ def members(group: str) -> list[str]:
 
 def median(df: pl.DataFrame) -> pl.DataFrame:
     """The median of the eu27 members' values, as ``derived`` rows with geo_code
-    ``MEDIAN_GEO``; only where every member has a value. ``df`` is one data product
+    ``MEDIAN_GEO``; only where every member has a value. Provisional if any member's
+    value is, final otherwise (a revised value is final). ``df`` is one data product
     step, so all its rows share one definition_id (PROPOSAL §6: compare only those)."""
     if df["definition_id"].n_unique() > 1:
         raise ValueError("a median mixes definitions")
     eu = members("eu27")
-    key = ["period", "sex", "age", "interval"]
-    first = [
-        c for c in df.columns if c not in {*key, "geo_code", "value", "status", "break_in_series"}
-    ]
+    # Central values only: a median of interval bounds is not a bound of the median.
+    rows = df.filter(
+        pl.col("geo_code").is_in(eu) & pl.col("value").is_not_null() & pl.col("interval").is_null()
+    )
+    key = [k for k in OBSERVATION_KEY if k != "geo_code"]  # one source, vintage, ...
     return (
-        df.filter(pl.col("geo_code").is_in(eu) & pl.col("value").is_not_null())
-        .group_by(key)
+        rows.group_by(key)
         .agg(
-            pl.col(first).first(),
+            pl.col("unit", "source_url").first(),  # functions of the key
+            pl.col("retrieved_at").max(),
             n=pl.len(),
             value=pl.col("value").median(),
             provisional=(pl.col("status") == Status.PROVISIONAL.value).any(),

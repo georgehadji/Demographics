@@ -101,3 +101,14 @@ def test_check_finds_missing_members_and_a_broken_rule():
 def test_the_median_is_added_to_national_rates_only():
     assert {"total_fertility_rate", "life_expectancy_0", "median_age"} <= build.MEDIAN
     assert not {"population", "net_migration", "total_fertility_rate_regional"} & build.MEDIAN
+
+
+def test_median_keeps_vintages_apart_and_skips_bounds():
+    values = {g: 1.5 for g in EU}
+    two = pl.concat([rows(values), rows(values).with_columns(vintage=pl.lit("2025-01-01"))])
+    assert sorted(groups.median(two)["vintage"]) == ["2025-01-01", "2026-09-25"]
+    bounds = rows(values).with_columns(interval=pl.lit("80_lower"))
+    assert groups.median(bounds).height == 0
+    assert (
+        groups.median(rows(values).with_columns(status=pl.lit("revised")))["status"][0] == "final"
+    )

@@ -8,6 +8,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 
 ```
 .
+├── .github/scripts/        shell steps shared by workflows
 ├── .github/workflows/      CI and scheduled workflows
 ├── charts/                 chart library on Observable Plot (Node)
 │   ├── src/
@@ -27,6 +28,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 │   │   └── sources/
 │   └── tests/
 │       └── fixtures/       responses recorded from the live sources
+├── publish/                data releases: changelog (Zenodo DOI via the Publish workflow)
 └── site/                   Quarto website: reads the data product through fact() and chart()
     ├── src/
     └── test/
@@ -34,6 +36,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 
 | Folder | Map |
 |---|---|
+| `.github/scripts` | [`.github/scripts/CONTEXT.md`](.github/scripts/CONTEXT.md) |
 | `.github/workflows` | [`.github/workflows/CONTEXT.md`](.github/workflows/CONTEXT.md) |
 | `charts` | [`charts/CONTEXT.md`](charts/CONTEXT.md) |
 | `charts/src` | [`charts/src/CONTEXT.md`](charts/src/CONTEXT.md) |
@@ -54,6 +57,7 @@ Every tracked folder that holds files has its own `CONTEXT.md`, with one line pe
 | `pipeline/src/grpop/sources` | [`pipeline/src/grpop/sources/CONTEXT.md`](pipeline/src/grpop/sources/CONTEXT.md) |
 | `pipeline/tests` | [`pipeline/tests/CONTEXT.md`](pipeline/tests/CONTEXT.md) |
 | `pipeline/tests/fixtures` | [`pipeline/tests/fixtures/CONTEXT.md`](pipeline/tests/fixtures/CONTEXT.md) |
+| `publish` | [`publish/CONTEXT.md`](publish/CONTEXT.md) |
 | `site` | [`site/CONTEXT.md`](site/CONTEXT.md) |
 | `site/src` | [`site/src/CONTEXT.md`](site/src/CONTEXT.md) |
 | `site/test` | [`site/test/CONTEXT.md`](site/test/CONTEXT.md) |

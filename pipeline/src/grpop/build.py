@@ -25,7 +25,8 @@ from typing import Any
 
 import polars as pl
 
-from grpop import harmonize, indicators, snapshots
+from grpop import groups, harmonize, indicators, snapshots
+from grpop.definitions import get_definition
 from grpop.parse import gisco
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
 from grpop.snapshots import Snapshot
@@ -62,17 +63,48 @@ def _series(series: indicators.Series) -> Step:
 
 if indicators.INDICATORS.keys() & indicators.SERIES.keys():
     raise ValueError("an indicator and a series share a name")
+
+
+def _with_median(step: Step) -> Step:
+    def run(data: indicators.Data) -> pl.DataFrame:
+        df = step.run(data)
+        assert isinstance(df, pl.DataFrame)
+        return groups.with_median(df)
+
+    return Step(step.sources, run)
+
+
+# National rates and means get the EU-27 median as a comparator; counts do not.
+_national = {
+    **{n: i.definition_id for n, i in indicators.INDICATORS.items()},
+    **{n: s.definition_id for n, s in indicators.SERIES.items()},
+}
+MEDIAN = {
+    n
+    for n, d in _national.items()
+    if not n.endswith("_regional") and get_definition(d).unit != "persons"
+}
+_POPULATION, _FERTILITY = (
+    indicators.SERIES["population"],
+    indicators.INDICATORS["total_fertility_rate"].official[0],
+)
+PEER_GROUPS = Step(
+    frozenset({_POPULATION.source_id, _FERTILITY.source_id}),
+    lambda data: groups.check(_POPULATION.read(data), _FERTILITY.read(data)),
+)
 GEOMETRY = {
     "geometry_el_nuts2": Step(
         frozenset({"gisco_nuts2_2024_geo"}),
         lambda data: gisco.greek_regions(*data["gisco_nuts2_2024_geo"], level=2),
     ),
 }
-STEPS = {
+_STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},
     **{name: _series(s) for name, s in indicators.SERIES.items()},
     **GEOMETRY,
+    "peer_groups": PEER_GROUPS,
 }
+STEPS = {name: _with_median(step) if name in MEDIAN else step for name, step in _STEPS.items()}
 
 
 def latest(store: Path) -> dict[str, Snapshot]:
@@ -102,9 +134,10 @@ def _sha256(path: Path) -> str:
 
 def _write(df: pl.DataFrame | dict[str, Any], out: Path, name: str) -> dict[str, str]:
     if isinstance(df, dict):
+        file = f"{name}.geojson" if df.get("type") == "FeatureCollection" else f"{name}.json"
         text = json.dumps(df, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
-        (out / f"{name}.geojson").write_bytes(text.encode())
-        return {f"{name}.geojson": _sha256(out / f"{name}.geojson")}
+        (out / file).write_bytes(text.encode())
+        return {file: _sha256(out / file)}
     df = validate_observations(df.select(COLUMNS).sort(OBSERVATION_KEY, nulls_last=True))
     df.write_parquet(out / f"{name}.parquet")
     df.write_csv(out / f"{name}.csv")
@@ -143,7 +176,11 @@ def build(store: Path, out: Path) -> list[str]:
             ):
                 df = step.run({s.source_id: (s, snapshots.read(store, s.sha256)) for s in used})
                 files = _write(df, out, name)
-                rows = len(df["features"]) if isinstance(df, dict) else df.height
+                rows = (
+                    len(df["features"] if "features" in df else df["groups"])
+                    if isinstance(df, dict)
+                    else df.height
+                )
                 entry = {"inputs": inputs, "rows": rows, "sources": sources, "files": files}
                 rebuilt.append(name)
                 print(f"{name}: {rows} rows", flush=True)

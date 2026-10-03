@@ -103,6 +103,6 @@ def test_a_listed_age_gap_that_is_gone_stops_the_build(monkeypatch):
     from grpop import build
 
     step = build.STEPS["population_by_age_group_regional"]
-    monkeypatch.setattr(build, "AGE_KNOWN_GAPS", frozenset({("EL52", "2024", "total")}))
-    with pytest.raises(ValueError, match=r"gone: \[\('EL52', '2024', 'total'\)\]"):
+    monkeypatch.setattr(build, "KNOWN_GAPS", {("2024", "total"): 3})
+    with pytest.raises(ValueError, match=r"gone: \[\('2024', 'total'\)\]"):
         step.run(data(sorted(step.sources)))

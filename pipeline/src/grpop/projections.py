@@ -1,4 +1,4 @@
-"""EUROPOP2025 national projections (proj_25np) as observations (ADR 0008).
+"""Official projections: EUROPOP2025 (proj_25np, ADR 0008) and UN WPP 2024.
 
 The baseline is ``projected``. Eurostat's sensitivity tests change one assumption of
 the baseline each, so they are ``scenario`` rows with a ``scenario_id`` per test. A
@@ -81,3 +81,45 @@ def totals(projections: pl.DataFrame, observed: pl.DataFrame) -> pl.DataFrame:
             f"{sorted(unexplained)}, listed differences gone {sorted(gone)}"
         )
     return projections.filter(total)
+
+
+# UN WPP 2024 against demo_pjan: the WPP population on 1 July of a year against the mean
+# of demo_pjan on 1 January of that year and the next (checked 2026-10-03 for 2024).
+# Every peer within 6% (Greece -3.1%, the widest PL +5.4% and MT -5.1%), except CY:
+# WPP covers the whole island, Eurostat the area under government control (+39%).
+# INFERENCE for the rest: other reference date and population concept, and the UN's
+# own estimates of the base population and of migration. The build fails on a larger
+# difference not listed here, and on a listed one that is gone.
+WPP_TOLERANCE = 0.06
+WPP_KNOWN_DIFFERENCES = frozenset({"CY"})
+
+
+def wpp_checked(wpp: pl.DataFrame, observed: pl.DataFrame) -> pl.DataFrame:
+    """``wpp`` after checking its medians against the observed population."""
+    jan = observed.filter((pl.col("sex") == Sex.TOTAL.value) & (pl.col("age") == AGE_TOTAL))
+    mid = (
+        jan.select("geo_code", "period", a="value")
+        .join(
+            jan.select(
+                "geo_code", period=(pl.col("period").cast(pl.Int32) - 1).cast(pl.String), b="value"
+            ),
+            on=["geo_code", "period"],
+        )
+        .select("geo_code", "period", observed=(pl.col("a") + pl.col("b")) / 2)
+    )
+    compared = (
+        wpp.filter(pl.col("interval").is_null())
+        .join(mid, on=["geo_code", "period"])
+        .with_columns(off=(pl.col("value") / pl.col("observed") - 1).abs() > WPP_TOLERANCE)
+        .group_by("geo_code")
+        .agg(pl.col("off").any())
+    )
+    differ = set(compared.filter("off")["geo_code"])
+    unexplained = differ - WPP_KNOWN_DIFFERENCES
+    gone = (WPP_KNOWN_DIFFERENCES & set(compared["geo_code"])) - differ
+    if unexplained or gone:
+        raise ValueError(
+            f"WPP 2024 against the observed population: more than {WPP_TOLERANCE:.0%} off "
+            f"{sorted(unexplained)}, listed differences gone {sorted(gone)}"
+        )
+    return wpp

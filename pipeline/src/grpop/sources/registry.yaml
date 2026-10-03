@@ -408,6 +408,23 @@ sources:
       The next edition was postponed to 2027.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200. Confirms the URL only; data access, format and licence not yet checked'}
 
+  - id: un_wpp_2024_ppp_poptot
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 PPP/POPTOT
+    title: World Population Prospects 2024, probabilistic projection of total population, 2024-2100 (median and 80/95% intervals)
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/2_Indicators%20(Probabilistic)/EXCEL_FILES/2_Population/UN_PPP2024_Output_PopTot.xlsx
+    ingest: xlsx
+    licence: un_wpp
+    used_for: [official_projections, r7_projection_uncertainty]
+    phase: 2
+    notes: >-
+      Listed on the WPP downloads page under Probabilistic Projections, Population
+      (checked 2026-10-03). One sheet per quantile; thousands, as of 1 July. The
+      licence line inside the file says CC BY 3.0 IGO. parse/un_wpp.py reads it.
+    verification: {status: unverified}
+
   - id: hmd_grc
     provider: Human Mortality Database
     dataset_code: GRC

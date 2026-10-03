@@ -468,6 +468,10 @@ SERIES = {
     # The demo_r_frate2 rates sum to demo_r_find2 TOTFERRT except in 406 of 11,862 cells
     # (up to 0.26), and demo_r_frate2's own TOTAL matches neither in 367 of them.
     "population_regional": _POPULATION_REGIONAL,
+    # Five-year age groups of Greece and its NUTS 1-3 regions, for regional pyramids.
+    "population_by_age_group_regional": _regional(
+        "eurostat_demo_r_pjangrp3", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE
+    ),
     "population_growth_rate_regional": _regional(
         "eurostat_demo_r_gind3",
         "population_growth_rate@v1",

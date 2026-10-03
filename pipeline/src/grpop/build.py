@@ -74,6 +74,23 @@ def _with_median(step: Step) -> Step:
     return Step(step.sources, run)
 
 
+def _adds_up(step: Step) -> Step:
+    """Stops the build where ages do not add up to the total or regions to their parent."""
+
+    def run(data: indicators.Data) -> pl.DataFrame:
+        df = step.run(data)
+        assert isinstance(df, pl.DataFrame)
+        for check in (harmonize.age_gaps, harmonize.hierarchy_gaps):
+            gaps = check(df)
+            if gaps.height:
+                with pl.Config(tbl_rows=20):
+                    raise ValueError(f"{check.__name__}:\n{gaps}")
+        return df
+
+    return Step(step.sources, run)
+
+
+ADDS_UP = {"population_by_age_group_regional"}
 # National rates and means get the EU-27 median as a comparator; counts do not.
 _national = {
     **{n: i.definition_id for n, i in indicators.INDICATORS.items()},
@@ -125,7 +142,10 @@ _STEPS = {
     "peer_groups": PEER_GROUPS,
     **PROJECTIONS,
 }
-STEPS = {name: _with_median(step) if name in MEDIAN else step for name, step in _STEPS.items()}
+STEPS = {
+    name: _with_median(step) if name in MEDIAN else _adds_up(step) if name in ADDS_UP else step
+    for name, step in _STEPS.items()
+}
 
 
 def latest(store: Path) -> dict[str, Snapshot]:

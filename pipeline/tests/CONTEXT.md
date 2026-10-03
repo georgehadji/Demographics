@@ -14,7 +14,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_eurostat_parse.py` | Eurostat flags, sex and age codes, select guard, on recorded responses |
 | `test_gisco.py` | The Greek map geometry: regions kept and sorted, licence and attribution, rounding, a missing region fails |
 | `test_groups.py` | Peer groups: versions, the EU-27 median against `statistics.median`, its completeness and status, the members and rule check; hand-written rows |
-| `test_harmonize.py` | NUTS recodes, unknown codes, hierarchy sums on real regional data |
+| `test_harmonize.py` | NUTS recodes, unknown codes, hierarchy sums on real regional data; age groups of `demo_r_pjangrp3` add up, and a broken group stops the build |
 | `test_indicators.py` | Acceptance tests generated from `INDICATORS` and `SERIES`: contract and agreement with Eurostat; `RECORDED` maps sources to fixtures |
 | `test_jsonstat.py` | JSON-stat to long format, including unpublished cells |
 | `test_probe.py` | The probe: JSON-stat check on a fixture, HTTP and network errors reported, report escaping |

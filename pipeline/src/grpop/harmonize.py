@@ -101,3 +101,42 @@ def hierarchy_gaps(obs: pl.DataFrame, *, tolerance: float = 0.5) -> pl.DataFrame
         .filter((pl.col("value") - pl.col("children")).abs() > tolerance)
         .select("geo_code", *keys, "value", "children")
     )
+
+
+def age_gaps(obs: pl.DataFrame, *, tolerance: float = 0.5) -> pl.DataFrame:
+    """Totals that differ from the sum of their age groups.
+
+    For each open age group N+ (e.g. 85+ and 90+), the bands below N that cover ages
+    0 to N-1 without a gap, plus N+, plus unknown age, must add up to the total.
+    Bands are assumed not to overlap (five-year groups). Central values only. Returns
+    the offending totals with the open group and the sum; empty means all add up.
+    """
+    keys = [k for k in OBSERVATION_KEY if k not in ("age", "interval")]
+    rows = obs.filter(pl.col("value").is_not_null() & pl.col("interval").is_null())
+    bounds = pl.col("age").str.extract_groups(r"^(\d+)(?:-(\d+)|(\+))$")
+    bands = rows.with_columns(
+        lo=bounds.struct[0].cast(pl.Int32), hi=bounds.struct[1].cast(pl.Int32)
+    ).filter(pl.col("lo").is_not_null())
+    closed = bands.filter(pl.col("hi").is_not_null())
+    opens = bands.filter(pl.col("hi").is_null()).select(*keys, open="lo", open_value="value")
+    below = (
+        opens.join(closed, on=keys, nulls_equal=True)
+        .filter(pl.col("hi") < pl.col("open"))
+        .group_by(*keys, "open")
+        .agg(
+            bands=pl.col("value").sum(),
+            width=(pl.col("hi") - pl.col("lo") + 1).sum(),
+            start=pl.col("lo").min(),
+        )
+    )
+    unknown = rows.filter(pl.col("age") == "unknown").select(*keys, unknown="value")
+    total = rows.filter(pl.col("age") == "total").select(*keys, total="value")
+    return (
+        opens.join(below, on=[*keys, "open"], nulls_equal=True)
+        .filter((pl.col("start") == 0) & (pl.col("width") == pl.col("open")))
+        .join(unknown, on=keys, how="left", nulls_equal=True)
+        .join(total, on=keys, nulls_equal=True)  # scenario_id is null
+        .with_columns(sum=pl.col("bands") + pl.col("open_value") + pl.col("unknown").fill_null(0))
+        .filter((pl.col("total") - pl.col("sum")).abs() > tolerance)
+        .select(*keys, "open", "total", "sum")
+    )

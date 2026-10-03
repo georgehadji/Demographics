@@ -15,7 +15,8 @@ from grpop.snapshots import Snapshot
 FIXTURES = Path(__file__).parent / "fixtures"
 # Recorded extract per source id. National: Greece and Cyprus, 2023 onwards for
 # demo_pjan, demo_pjanind and demo_pjanbroad, 2021 onwards for the others. Regional:
-# EL, EL5 and EL51-EL54, 2024 onwards for the population tables, 2023 for the others.
+# EL, EL5 and EL51-EL54, 2024 onwards for the population tables, 2023 for the others;
+# demo_r_pjangrp3 also EL511, from 2023.
 # An indicator or series whose sources have no entry here fails its tests until one is
 # recorded.
 RECORDED = {
@@ -30,7 +31,16 @@ RECORDED = {
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
     **{
         f"eurostat_demo_r_{code}": f"eurostat_demo_r_{code}_el5.json"
-        for code in ("d2jan", "pjanind2", "pjanaggr3", "gind3", "find2", "mlifexp", "minfind")
+        for code in (
+            "d2jan",
+            "pjanind2",
+            "pjanaggr3",
+            "pjangrp3",
+            "gind3",
+            "find2",
+            "mlifexp",
+            "minfind",
+        )
     },
 }
 

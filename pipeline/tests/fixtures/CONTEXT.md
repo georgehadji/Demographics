@@ -25,4 +25,5 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `gisco_nuts2_handwritten.geojson` | Hand-written GISCO-like GeoJSON (squares, not boundaries): `test_gisco.py`, `test_eurostat.py`, `test_build.py` |
 | `eurostat_proj_25np_el_cy_pl.json` | Eurostat `proj_25np` (EUROPOP2025), Greece, Cyprus and Poland, 2025-2026, every projection type: input of `test_projections.py` |
 | `un_wpp2024_ppp_poptot.xlsx` | UN WPP 2024 probabilistic total population (PPP/POPTOT), the published workbook (CC BY 3.0 IGO): input of `test_un_wpp.py` |
+| `eurostat_demo_r_pjangrp3_el5.json` | Eurostat `demo_r_pjangrp3`, EL, EL5, EL51-EL54 and EL511, 2023 onwards: input of `test_indicators.py` and `test_harmonize.py` |
 | `jsonstat_sparse.json` | Hand-written JSON-stat with unpublished cells: `test_jsonstat.py`, `test_probe.py` |

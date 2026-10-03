@@ -73,3 +73,25 @@ def test_nuts_2010_codes_are_recoded_or_dropped(population):
 
 def test_parent_with_a_missing_child_is_not_compared(population):
     assert harmonize.hierarchy_gaps(population.filter(pl.col("geo_code") != "EL301")).is_empty()
+
+
+def test_age_groups_add_up_to_the_total():
+    from test_indicators import data
+
+    from grpop import build
+    from grpop.indicators import SERIES
+
+    obs = SERIES["population_by_age_group_regional"].read(data(["eurostat_demo_r_pjangrp3"]))
+    assert {"85+", "85-89", "90+", "unknown"} <= set(obs["age"])
+    assert harmonize.age_gaps(obs).is_empty()
+    assert set(harmonize.age_gaps(obs, tolerance=-1)["open"]) == {85, 90}  # it compares
+    assert harmonize.hierarchy_gaps(obs).is_empty()
+    broken = obs.with_columns(
+        value=pl.when((pl.col("age") == "90+") & (pl.col("geo_code") == "EL52"))
+        .then(pl.col("value") + 7)
+        .otherwise("value")
+    )
+    assert set(harmonize.age_gaps(broken)["open"]) == {90}
+    step = build.STEPS["population_by_age_group_regional"]
+    with pytest.raises(ValueError, match="age_gaps"):
+        build._adds_up(build.Step(step.sources, lambda _: broken)).run({})

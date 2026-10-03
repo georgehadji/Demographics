@@ -1,6 +1,6 @@
 name: Ingest
 
-# Downloads the Phase 1 Eurostat datasets into the snapshot store (grpop-ingest).
+# Downloads the Eurostat datasets of Phases 1-2 into the snapshot store (grpop-ingest).
 # The store lives as assets of the `snapshots` release and is never overwritten:
 # each object is uploaded once under its sha256, and each run that stores something
 # adds a manifest-<UTC time>.jsonl with only its new lines. The full manifest is
@@ -44,7 +44,7 @@ jobs:
       - name: Download sources
         run: |
           before=$( [ -f store/manifest.jsonl ] && wc -l < store/manifest.jsonl || echo 0 )
-          uv run grpop-ingest --store store | tee -a "$GITHUB_STEP_SUMMARY"
+          uv run grpop-ingest --store store --phase 2 | tee -a "$GITHUB_STEP_SUMMARY"
           tail -n +$((before + 1)) store/manifest.jsonl > new-lines.jsonl
       - name: Upload new objects, then their manifest lines
         run: |

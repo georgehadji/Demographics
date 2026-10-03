@@ -25,7 +25,7 @@ from typing import Any
 
 import polars as pl
 
-from grpop import groups, harmonize, indicators, snapshots
+from grpop import groups, harmonize, indicators, projections, snapshots
 from grpop.definitions import get_definition
 from grpop.parse import gisco
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
@@ -98,11 +98,24 @@ GEOMETRY = {
         lambda data: gisco.greek_regions(*data["gisco_nuts2_2024_geo"], level=2),
     ),
 }
+# EUROPOP2025 (ADR 0008): Greece in full detail; totals of every area, whose baseline
+# is checked against the observed population in its base year.
+PROJECTIONS = {
+    "population_projection": Step(
+        frozenset({projections.SOURCE}),
+        lambda data: projections.read(data).filter(pl.col("geo_code") == "EL"),
+    ),
+    "population_projection_totals": Step(
+        frozenset({projections.SOURCE, _POPULATION.source_id}),
+        lambda data: projections.totals(projections.read(data), _POPULATION.read(data)),
+    ),
+}
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},
     **{name: _series(s) for name, s in indicators.SERIES.items()},
     **GEOMETRY,
     "peer_groups": PEER_GROUPS,
+    **PROJECTIONS,
 }
 STEPS = {name: _with_median(step) if name in MEDIAN else step for name, step in _STEPS.items()}
 

@@ -27,6 +27,7 @@ RECORDED = {
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
     "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",
+    "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
     **{
         f"eurostat_demo_r_{code}": f"eurostat_demo_r_{code}_el5.json"
         for code in ("d2jan", "pjanind2", "pjanaggr3", "gind3", "find2", "mlifexp", "minfind")

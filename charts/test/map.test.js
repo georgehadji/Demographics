@@ -17,7 +17,7 @@ test("a choropleth fills each region from the palette and names the classificati
   const fills = [...figure.querySelectorAll('g[data-mark="geo"] path[fill]')].map((p) => p.getAttribute("fill"));
   assert.equal(fills.length, CODES.length);
   for (const f of fills) assert.ok(tokens["palette-sequential"].includes(f), f);
-  assert.ok(figure.textContent.includes("ανά 1.000 κατοίκους (μέσος πληθυσμός) (ίσα διαστήματα)"));
+  assert.ok(figure.textContent.includes("ανά 1.000 κατοίκους (μέσος πληθυσμός) · ίσα διαστήματα"));
 });
 
 test("every map credits the geometry's source in its footer", () => {

@@ -47,8 +47,8 @@ test("provisional cells are outlined, projections marked by a rule", () => {
 });
 
 test("the legend names the unit and the classification", () => {
-  assert.ok(chart().figure.textContent.includes("births per woman (ίσα διαστήματα)"));
-  assert.ok(chart(ROWS, { ...SPEC, classes: "quantile" }).figure.textContent.includes("(ποσοστημόρια)"));
+  assert.ok(chart().figure.textContent.includes("births per woman · ίσα διαστήματα"));
+  assert.ok(chart(ROWS, { ...SPEC, classes: "quantile" }).figure.textContent.includes("· ποσοστημόρια"));
 });
 
 test("alt text gives the highest and lowest value with age and year", () => {

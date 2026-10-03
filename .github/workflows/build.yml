@@ -15,6 +15,7 @@ on:
   push:
     paths:
       - .github/workflows/build.yml
+      - .github/scripts/restore-snapshots.sh
       - pipeline/src/**
       - pipeline/uv.lock
       - data/reference/**
@@ -43,14 +44,7 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - run: uv sync --locked
       - name: Restore the latest snapshots
-        run: |
-          mkdir -p store/objects parts
-          gh release download snapshots -p 'manifest-*.jsonl' -D parts
-          cat $(ls parts/manifest-*.jsonl | sort) > store/manifest.jsonl
-          shas=$(uv run grpop-build --store store --list-snapshots) # fails the step on error
-          for sha in $shas; do
-            gh release download snapshots -p "$sha" -D store/objects
-          done
+        run: bash ../.github/scripts/restore-snapshots.sh
       - run: uv run grpop-build --store store --out product
       - run: uv run grpop-build --store store --out product-again
       - name: Compare the two builds

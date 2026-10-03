@@ -1,0 +1,62 @@
+name: Publish
+
+# A data release (IMPLEMENTATION-PLAN Δ6), by hand only. Builds the data product from the
+# latest snapshots twice and fails unless both builds are identical, packages it with
+# grpop-publish (zip with manifest, sources and their terms, snapshots.txt, changelog)
+# and deposits it on Zenodo, which gives the DOI. On zenodo.org it also makes the
+# GitHub Release data-v<version> with the same zip; the sandbox target is a dry run.
+# Rebuild a release: grpop-build --pin snapshots.txt on the snapshots it lists.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "semver, the newest entry of publish/CHANGELOG.md"
+        required: true
+      target:
+        type: choice
+        options: [sandbox, zenodo]
+        default: sandbox
+      concept:
+        description: "Zenodo concept record id, for a new version of an earlier release"
+        required: false
+
+permissions:
+  contents: write # the GitHub Release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+        shell: bash
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Restore the latest snapshots
+        run: bash ../.github/scripts/restore-snapshots.sh
+      - run: uv run grpop-build --store store --out product
+      - run: uv run grpop-build --store store --out product-again
+      - run: diff -r product product-again
+      - name: Package and deposit
+        env:
+          ZENODO_TOKEN: ${{ inputs.target == 'zenodo' && secrets.ZENODO_TOKEN || secrets.ZENODO_SANDBOX_TOKEN }}
+          API: ${{ inputs.target == 'zenodo' && 'https://zenodo.org/api' || 'https://sandbox.zenodo.org/api' }}
+        run: |
+          uv run grpop-publish --product product --version "${{ inputs.version }}" --out release \
+            --zenodo "$API" ${{ inputs.concept && format('--concept {0}', inputs.concept) || '' }} | tee publish.log
+          cat publish.log >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: data-release
+          path: pipeline/release
+      - name: GitHub Release
+        if: inputs.target == 'zenodo'
+        run: |
+          doi=$(sed -n 's/^DOI: //p' publish.log)
+          gh release create "data-v${{ inputs.version }}" release/*.zip \
+            --title "Data release ${{ inputs.version }}" \
+            --notes "DOI: https://doi.org/$doi. Changes: publish/CHANGELOG.md."

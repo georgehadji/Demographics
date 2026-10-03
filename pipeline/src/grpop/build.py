@@ -168,11 +168,12 @@ STEPS = {
 }
 
 
-def latest(store: Path) -> dict[str, Snapshot]:
-    """The latest snapshot of every source the build reads."""
+def latest(store: Path, pin: set[str] | None = None) -> dict[str, Snapshot]:
+    """The latest snapshot of every source the build reads; with ``pin`` (sha256s, e.g.
+    a release's snapshots.txt), the latest among those only."""
     out = {}
     for source_id in sorted(set().union(*(step.sources for step in STEPS.values()))):
-        history = snapshots.history(store, source_id)
+        history = [s for s in snapshots.history(store, source_id) if not pin or s.sha256 in pin]
         if not history:
             raise ValueError(f"no snapshot of {source_id} in {store}")
         out[source_id] = history[-1]
@@ -205,9 +206,9 @@ def _write(df: pl.DataFrame | dict[str, Any], out: Path, name: str) -> dict[str,
     return {f: _sha256(out / f) for f in (f"{name}.parquet", f"{name}.csv")}
 
 
-def build(store: Path, out: Path) -> list[str]:
+def build(store: Path, out: Path, pin: set[str] | None = None) -> list[str]:
     """Build every step into ``out``; returns the names of the steps that were rebuilt."""
-    snaps, code = latest(store), _code_hash()
+    snaps, code = latest(store, pin), _code_hash()
     manifest_path = out / "manifest.json"
     old = json.loads(manifest_path.read_bytes()) if manifest_path.exists() else {}
     out.mkdir(parents=True, exist_ok=True)
@@ -264,14 +265,18 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="print the sha256 of every snapshot the build reads, and exit",
     )
+    parser.add_argument(
+        "--pin", type=Path, help="build from the snapshots listed in this file (sha256 per line)"
+    )
     args = parser.parse_args(argv)
     if args.out is None and not args.list_snapshots:
         parser.error("--out is required")
+    pin = set(args.pin.read_text().split()) if args.pin else None
     try:
         if args.list_snapshots:
-            print("\n".join(sorted({s.sha256 for s in latest(args.store).values()})))
+            print("\n".join(sorted({s.sha256 for s in latest(args.store, pin).values()})))
         else:
-            build(args.store, args.out)
+            build(args.store, args.out, pin)
     except ValueError as e:
         print(e, file=sys.stderr)
         return 1

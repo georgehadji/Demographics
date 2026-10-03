@@ -6,6 +6,7 @@ The package, in layers (ADR 0005): sources and snapshots (L1), parse (L2), harmo
 |---|---|
 | `__init__.py` | Package marker |
 | `bibliography.py` | `grpop-bib`: resolves every DOI of `data/bibliography/references.csv` by content negotiation, checks title and authors, writes CSL-JSON with citation fields only |
+| `publish.py` | `grpop-publish`: packages the data product as a reproducible zip (files whose sources allow commercial reuse, manifest, `SOURCES.md`, `snapshots.txt`, changelog entry) and deposits it on Zenodo |
 | `build.py` | `grpop-build`: the data product. One step per indicator or series, validated, written as Parquet and CSV, listed in `manifest.json` with hashes; memoized; stops on unexplained differences from Eurostat. Also writes the map geometry (`GEOMETRY`) as GeoJSON with its licence, the peer groups as `peer_groups.json`, and adds the EU-27 median to national rates (`MEDIAN`). `PROJECTIONS`: EUROPOP2025 for Greece in detail and totals for every area, UN WPP 2024 for Greece and the peers |
 | `definitions.py` | Typed, cached access to `definitions.yaml` (`get_definition`) |
 | `definitions.yaml` | Every `definition_id`: meaning, metric, unit, version |

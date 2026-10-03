@@ -29,6 +29,7 @@ grpop-probe = "grpop.sources.probe:main"
 grpop-ingest = "grpop.sources.eurostat:main"
 grpop-build = "grpop.build:main"
 grpop-bib = "grpop.bibliography:main"
+grpop-publish = "grpop.publish:main"
 
 [build-system]
 requires = ["hatchling"]

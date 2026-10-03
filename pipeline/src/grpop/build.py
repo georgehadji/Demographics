@@ -27,7 +27,7 @@ import polars as pl
 
 from grpop import groups, harmonize, indicators, projections, snapshots
 from grpop.definitions import get_definition
-from grpop.parse import gisco
+from grpop.parse import gisco, un_wpp
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
 from grpop.snapshots import Snapshot
 
@@ -104,6 +104,14 @@ PROJECTIONS = {
     "population_projection": Step(
         frozenset({projections.SOURCE}),
         lambda data: projections.read(data).filter(pl.col("geo_code") == "EL"),
+    ),
+    # UN WPP 2024, Greece and every peer group member, checked against demo_pjan.
+    "population_projection_wpp": Step(
+        frozenset({un_wpp.SOURCE_ID, _POPULATION.source_id}),
+        lambda data: projections.wpp_checked(
+            un_wpp.to_observations(*data[un_wpp.SOURCE_ID], set(groups.GROUPS["geo_code"])),
+            _POPULATION.read(data),
+        ),
     ),
     "population_projection_totals": Step(
         frozenset({projections.SOURCE, _POPULATION.source_id}),

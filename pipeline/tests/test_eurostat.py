@@ -85,3 +85,9 @@ def test_ingest_refuses_a_file_that_is_not_geojson(tmp_path):
     c, _ = client([httpx.Response(200, json={"type": "Feature"})])
     with pytest.raises(ValueError, match="not a non-empty GeoJSON FeatureCollection"):
         eurostat.ingest(tmp_path, [GEO], c, backoff=0)
+
+
+def test_ingest_refuses_a_file_that_is_not_xlsx(tmp_path):
+    c, _ = client([httpx.Response(200, content=b"<html>not found</html>")])
+    with pytest.raises(ValueError, match="not an xlsx file"):
+        eurostat.ingest(tmp_path, [get_source("un_wpp_2024_ppp_poptot")], c, backoff=0)

@@ -33,6 +33,10 @@ def dataset_url(entry: SourceEntry) -> str:
 
 
 def _check(entry: SourceEntry, data: bytes) -> None:
+    if entry.ingest == "xlsx":
+        if not data.startswith(b"PK"):  # an xlsx file is a zip archive
+            raise ValueError(f"{entry.id}: response is not an xlsx file")
+        return
     doc = json.loads(data)
     if entry.ingest == "geojson":
         if doc.get("type") != "FeatureCollection" or not doc.get("features"):

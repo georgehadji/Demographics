@@ -19,6 +19,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_jsonstat.py` | JSON-stat to long format, including unpublished cells |
 | `test_probe.py` | The probe: JSON-stat check on a fixture, HTTP and network errors reported, report escaping |
 | `test_projections.py` | EUROPOP2025: baseline and scenarios, Greece's base year equals `demo_pjan`, unexplained or vanished base-year differences, unknown projection types |
+| `test_un_wpp.py` | UN WPP 2024: Greece's median and ordered bounds, ISO2 mapping, years, the check against `demo_pjan` |
 | `test_provenance.py` | Every rule of the provenance contract |
 | `test_registry.py` | Registry validation: licence keys and terms, verification evidence, duplicate ids, unknown fields |
 | `test_snapshots.py` | Content addressing, no overwrite, revisions as history, corrupt objects detected |

@@ -51,7 +51,7 @@ class SourceEntry(BaseModel):
     probe_url: str = Field(pattern=r"^https://")
     # A file grpop-ingest stores as it is (the probe URL), checked as this format.
     # Eurostat datasets are ingested by their probe kind instead.
-    ingest: Literal["geojson"] | None = None
+    ingest: Literal["geojson", "xlsx"] | None = None
     # A new entry may start as "to_verify"; the shipped registry may not (test_registry).
     licence: Licence | Literal["to_verify"]
     licence_key: str  # key into the registry's `licences` section, or "to_verify"

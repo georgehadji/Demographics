@@ -47,7 +47,7 @@ function draw(rows, s, options) {
       range: tokens[diverging ? "palette-diverging" : "palette-sequential"],
       ...(diverging && (s.classes ?? "quantize") === "quantize" ? { domain: [-extent, extent] } : {}),
       legend: true,
-      label: `${s.unit} (${s.text.classes[s.classes ?? "quantize"]})`,
+      label: `${s.unit} · ${s.text.classes[s.classes ?? "quantize"]}`,
       tickFormat: s.format,
     },
     marks: [

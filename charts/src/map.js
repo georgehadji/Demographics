@@ -83,7 +83,7 @@ function drawChoropleth(rows, s, options) {
       range: tokens[diverging ? "palette-diverging" : "palette-sequential"],
       ...(diverging && classes === "quantize" ? { domain: [-extent, extent] } : {}),
       legend: true,
-      label: `${s.unit} (${s.text.classes[classes]})`,
+      label: `${s.unit} · ${s.text.classes[classes]}`,
       tickFormat: s.format,
     },
     marks: [

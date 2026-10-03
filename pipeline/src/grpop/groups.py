@@ -8,9 +8,11 @@ Members are in ``data/reference/peer_groups.csv``, one version per group:
   Eurostat's demography tables cover. Bosnia and Herzegovina and Kosovo are left out:
   demo_find has no total fertility rate for them from 2020 (checked 2026-10-03).
 - ``very_low_fertility``: EU-27 members whose total fertility rate (demo_find TOTFERRT)
-  is below ``RULE`` in its year. The list is pinned and the build checks it against the
-  rule, so a revision of the data that changes it stops the build until a new version
-  of the group is recorded.
+  is below ``RULE`` in its year. The term and the 1.3 level follow Kohler, Billari and
+  Ortega (2002), ``kohler2002`` in data/bibliography; whether their bound includes 1.3
+  itself is UNKNOWN (the text was not checked). The list is pinned and the build
+  checks it against the rule, so a revision of the data that changes it stops the
+  build until a new version of the group is recorded.
 
 A change of members bumps the group's version.
 """

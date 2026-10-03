@@ -15,7 +15,7 @@ The authoritative plan is `docs/PROPOSAL.md` (Greek). Decisions live in `docs/de
 - **Single source of truth ([ADR 0006](docs/decisions/0006-single-source-of-truth.md)).** Every fact has exactly one home (the table in ADR 0006). Code reads it and text links to it; never copy values (codes, URLs, numbers, licence terms, units, colours) into a second place. Derived files are generated, never hand-edited. When you find a duplicate, remove it or add it to step A5 of `docs/IMPLEMENTATION-PLAN.md`.
 - **No number without provenance.** Every value passes the contract in `pipeline/src/grpop/provenance.py`, which defines the fields, the `nature`/`status` vocabulary and the observation key. `retrieved_at` is set by the pipeline, never by hand. Official ≠ verified: ELSTAT net migration is an `official_estimate`.
 - **Never type a number into prose.** Publications are Quarto documents with inline computed values.
-- **Never write a citation from memory.** Every DOI is resolved and matched against title and authors before use.
+- **Never write a citation from memory.** Every cited work is a row of `data/bibliography/references.csv`; `grpop-bib` (the `Bibliography` workflow) resolves each DOI and fails unless title and authors match.
 - Never overwrite a source value silently. Snapshots are immutable, and revisions are stored as history.
 - Every `derived` indicator that an official source also publishes must match it within rounding, enforced by a test.
 - Every model must reproduce a published result before it produces a new one (e.g. the cohort-component engine must reproduce the EUROPOP2025 baseline).

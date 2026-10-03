@@ -4,6 +4,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 
 | File | What it does |
 |---|---|
+| `csl_kohler2002.json` | CSL-JSON of DOI 10.1111/j.1728-4457.2002.00641.x from doi.org, trimmed by hand (abstract and unread fields removed; see its `_comment`): input of `test_bibliography.py` |
 | `elstat_spo18_t10_2025.xlsx` | ELSTAT SPO18 table 10: input of `test_elstat_xlsx.py` |
 | `eurostat_demo_find_el.json` | Eurostat `demo_find`, Greece: connector and parser tests |
 | `eurostat_demo_find_el_cy.json` | Eurostat `demo_find`, Greece and Cyprus: input of `test_indicators.py` |

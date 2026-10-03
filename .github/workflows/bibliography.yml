@@ -1,0 +1,33 @@
+name: Bibliography
+
+# Resolves every DOI of data/bibliography/references.csv and fails unless each one
+# resolves and matches its expected title and authors (grpop-bib). Weekly too, so a
+# DOI that stops resolving or whose metadata changes is noticed.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 5 * * 1" # weekly, Monday 05:41 UTC
+  push:
+    paths:
+      - data/bibliography/**
+      - pipeline/src/grpop/bibliography.py
+      - .github/workflows/bibliography.yml
+
+permissions:
+  contents: read
+
+jobs:
+  bibliography:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run grpop-bib --out references.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: references
+          path: pipeline/references.json

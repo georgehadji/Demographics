@@ -1,0 +1,71 @@
+{
+ "_comment": "Recorded 2026-10-03 from https://doi.org/10.1111/j.1728-4457.2002.00641.x (Accept: CSL-JSON). Trimmed by hand: the abstract (publisher's text), the reference list and other fields the parser does not read were removed; indexed and is-referenced-by-count are kept to show they are dropped.",
+ "indexed": {
+  "date-parts": [
+   [
+    2026,
+    10,
+    1
+   ]
+  ],
+  "date-time": "2026-10-01T21:41:25Z",
+  "timestamp": 1790890885010,
+  "version": "4.1.0"
+ },
+ "publisher": "Wiley",
+ "issue": "4",
+ "DOI": "10.1111/j.1728-4457.2002.00641.x",
+ "type": "journal-article",
+ "page": "641-680",
+ "is-referenced-by-count": 840,
+ "title": "The Emergence of Lowest‐Low Fertility in Europe During the 1990s",
+ "volume": "28",
+ "author": [
+  {
+   "given": "Hans‐Peter",
+   "family": "Kohler",
+   "sequence": "first",
+   "affiliation": [],
+   "role": [
+    {
+     "vocabulary": "crossref",
+     "role": "author"
+    }
+   ]
+  },
+  {
+   "given": "Francesco C.",
+   "family": "Billari",
+   "sequence": "additional",
+   "affiliation": [],
+   "role": [
+    {
+     "vocabulary": "crossref",
+     "role": "author"
+    }
+   ]
+  },
+  {
+   "given": "José Antonio",
+   "family": "Ortega",
+   "sequence": "additional",
+   "affiliation": [],
+   "role": [
+    {
+     "vocabulary": "crossref",
+     "role": "author"
+    }
+   ]
+  }
+ ],
+ "container-title": "Population and Development Review",
+ "issued": {
+  "date-parts": [
+   [
+    2002,
+    12
+   ]
+  ]
+ },
+ "URL": "http://dx.doi.org/10.1111/j.1728-4457.2002.00641.x"
+}

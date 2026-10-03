@@ -417,10 +417,18 @@ docs/                # πρόταση, αποφάσεις (ADR), σχέδιο υ
 
 ### Φάση 1: Πυρήνας δεδομένων και design system
 
+**Κατάσταση: ολοκληρώθηκε (2026-10-03).** Τα βήματα B1–B8 και Γ1–Γ4 του [`IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md).
+
 - Connectors Eurostat για τα βασικά datasets, harmonization, 12 δείκτες (§4) με tests συμφωνίας.
 - Design tokens, παλέτες με validators, τυπογραφία, βιβλιοθήκη γραφημάτων: γραμμή με επιστημική γραμματική, πυραμίδα με overlay, fan chart, tile-grid small multiples, choropleth + cartogram, Lexis surface.
 - Visual regression tests για όλους τους τύπους σε light/dark/print.
 - **Κριτήρια ολοκλήρωσης:** όλοι οι `derived` δείκτες συμφωνούν με την Eurostat. Καμία τιμή χωρίς μεταδεδομένα. Το pipeline αναπαράγεται από το μηδέν. Όλοι οι τύποι γραφημάτων περνούν τους ελέγχους προσβασιμότητας και αντίθεσης.
+- **Έλεγχος (2026-10-03, commit `0b38376` στο `main`, GitHub Actions):**
+  - `derived` δείκτες: το build σταματά σε κάθε διαφορά με την Eurostat που δεν εξηγείται (`indicators.check`). Οι διαφορές που οφείλονται σε ασυμφωνίες της ίδιας της Eurostat είτε επαληθεύονται κελί προς κελί από άλλον πίνακά της (`corroboration`) είτε είναι στο `known_differences` με τεκμήρια (B7). Workflow `Build`, run 37106314595: πράσινο (VERIFIED).
+  - Καμία τιμή χωρίς μεταδεδομένα: κάθε αρχείο του data product περνά το `validate_observations` πριν γραφτεί και καταγράφεται στο manifest με sha256 (B8). Το site δέχεται τιμές μόνο από αρχεία του manifest με σωστό sha256 και με πλήρη προέλευση, και οι δύο σκόπιμα λάθος σελίδες αποτυγχάνουν στο render (Γ4). Ίδιο run (VERIFIED).
+  - Αναπαραγωγή: δύο builds από το μηδέν δίνουν ίδια αρχεία (βήμα «Compare the two builds» του ίδιου run, VERIFIED).
+  - Προσβασιμότητα και αντίθεση: axe (WCAG 2.2 A/AA) χωρίς παραβιάσεις για όλους τους τύπους σε light, dark και print, και screenshots ίδια με τα baselines: workflow `Visual`, run 37106314524 (VERIFIED). Αντίθεση WCAG 2.2 AA και διακρισιμότητα παλετών: job `design` του `CI`, run 37106315854 (VERIFIED).
+- **Μεταφέρονται στη Φάση 2:** `publish/` (semver, DOI)· χάρτες και tile grids στο site (τα δέχεται ήδη η βιβλιοθήκη)· πρόσβαση δικτύου του περιβάλλοντος ανάπτυξης (§12).
 
 ### Φάση 2: Πρώτη δημοσίευση
 

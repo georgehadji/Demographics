@@ -75,22 +75,36 @@ def _with_median(step: Step) -> Step:
 
 
 def _adds_up(step: Step) -> Step:
-    """Stops the build where ages do not add up to the total or regions to their parent."""
+    """Stops the build where ages do not add up to the total or regions to their parent,
+    except the cells in ``AGE_KNOWN_GAPS``, which must still be off."""
 
     def run(data: indicators.Data) -> pl.DataFrame:
         df = step.run(data)
         assert isinstance(df, pl.DataFrame)
-        for check in (harmonize.age_gaps, harmonize.hierarchy_gaps):
-            gaps = check(df)
-            if gaps.height:
+        cells = ["geo_code", "period", "sex"]
+        ages = harmonize.age_gaps(df)
+        gone = AGE_KNOWN_GAPS - set(ages.select(cells).iter_rows())
+        gone &= set(df.select(cells).iter_rows())
+        known = pl.DataFrame(list(AGE_KNOWN_GAPS), schema=cells, orient="row")
+        for name, gaps in (
+            ("age_gaps", ages.join(known, on=cells, how="anti")),
+            ("hierarchy_gaps", harmonize.hierarchy_gaps(df)),
+        ):
+            if gaps.height or (name == "age_gaps" and gone):
                 with pl.Config(tbl_rows=20):
-                    raise ValueError(f"{check.__name__}:\n{gaps}")
+                    raise ValueError(f"{name}:\n{gaps}\nlisted gaps that are gone: {sorted(gone)}")
         return df
 
     return Step(step.sources, run)
 
 
 ADDS_UP = {"population_by_age_group_regional"}
+# demo_r_pjangrp3 (updated 2026-08-28): the age groups of these cells sum to 3 persons
+# less than their total. VERIFIED 2026-10-03 that the totals equal demo_r_pjanaggr3's
+# and male + female; the missing persons are in no published age group. Cause UNKNOWN.
+AGE_KNOWN_GAPS = frozenset(
+    {("EL645", "2018", "total"), ("EL527", "2018", "total"), ("EL422", "2018", "female")}
+)
 # National rates and means get the EU-27 median as a comparator; counts do not.
 _national = {
     **{n: i.definition_id for n, i in indicators.INDICATORS.items()},

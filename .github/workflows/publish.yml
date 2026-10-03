@@ -45,9 +45,12 @@ jobs:
         env:
           ZENODO_TOKEN: ${{ inputs.target == 'zenodo' && secrets.ZENODO_TOKEN || secrets.ZENODO_SANDBOX_TOKEN }}
           API: ${{ inputs.target == 'zenodo' && 'https://zenodo.org/api' || 'https://sandbox.zenodo.org/api' }}
+          VERSION: ${{ inputs.version }}
+          CONCEPT: ${{ inputs.concept }}
         run: |
-          uv run grpop-publish --product product --version "${{ inputs.version }}" --out release \
-            --zenodo "$API" ${{ inputs.concept && format('--concept {0}', inputs.concept) || '' }} | tee publish.log
+          [[ -z "$CONCEPT" || "$CONCEPT" =~ ^[0-9]+$ ]] || { echo "::error::concept must be a record id"; exit 1; }
+          uv run grpop-publish --product product --version "$VERSION" --out release \
+            --zenodo "$API" ${CONCEPT:+--concept "$CONCEPT"} | tee publish.log
           cat publish.log >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:

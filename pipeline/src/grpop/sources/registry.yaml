@@ -423,7 +423,7 @@ sources:
       Listed on the WPP downloads page under Probabilistic Projections, Population
       (checked 2026-10-03). One sheet per quantile; thousands, as of 1 July. The
       licence line inside the file says CC BY 3.0 IGO. parse/un_wpp.py reads it.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-03, evidence: 'Source probe run 37126991773: HTTP 200, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 990684 bytes. Confirms the URL; the contents are checked by parse/un_wpp.py at each build (Build run 37127299989)'}
 
   - id: hmd_grc
     provider: Human Mortality Database

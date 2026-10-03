@@ -95,3 +95,14 @@ def test_age_groups_add_up_to_the_total():
     step = build.STEPS["population_by_age_group_regional"]
     with pytest.raises(ValueError, match="age_gaps"):
         build._adds_up(build.Step(step.sources, lambda _: broken)).run({})
+
+
+def test_a_listed_age_gap_that_is_gone_stops_the_build(monkeypatch):
+    from test_indicators import data
+
+    from grpop import build
+
+    step = build.STEPS["population_by_age_group_regional"]
+    monkeypatch.setattr(build, "AGE_KNOWN_GAPS", frozenset({("EL52", "2024", "total")}))
+    with pytest.raises(ValueError, match=r"gone: \[\('EL52', '2024', 'total'\)\]"):
+        step.run(data(sorted(step.sources)))

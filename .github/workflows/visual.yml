@@ -1,6 +1,7 @@
 # Visual regression and accessibility (axe) tests of every chart type in light, dark and
 # print. Screenshots are compared with the Linux baselines in charts/visual/snapshots.
-# Run by hand with "update" to write new or changed baselines and commit them to the
+# Run by hand with "update" to rewrite every baseline (also changes below the diff
+# tolerance) and commit the changed ones to the
 # branch with the checkout's token (it fails on a protected branch, or if the branch moved
 # during the run). A commit by this workflow does not start other workflows, so push again
 # afterwards.
@@ -34,7 +35,7 @@ jobs:
         working-directory: design
       - run: npm ci
         working-directory: charts
-      - run: npx playwright test ${{ inputs.update && '--update-snapshots' || '' }}
+      - run: npx playwright test ${{ inputs.update && '--update-snapshots=all' || '' }}
         working-directory: charts
         env:
           HOME: /root

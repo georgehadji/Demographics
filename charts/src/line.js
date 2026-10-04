@@ -134,7 +134,7 @@ function draw(all, s, options) {
     marks.push(...seriesMarks(part, rows, { color, width, tokens, gaps: part[0].geo_code === s.focus }));
     const end = byPeriod(part.filter((r) => r.value !== null)).at(-1);
     if (end) {
-      const name = s.label(end.geo_code) + (end.scenario_id ? ` (${end.scenario_id})` : "");
+      const name = s.label(end.geo_code) + (end.scenario_id ? ` (${s.label(end.scenario_id)})` : "");
       labels.push({ x: date(end.period), y: end.value, name, fill: focus ? color(end.nature) : tokens["color-text-muted"] });
     }
   }

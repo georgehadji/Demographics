@@ -23,7 +23,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_demo_r_pjanaggr3_el5.json` | Eurostat `demo_r_pjanaggr3`, EL, EL5 and some of its regions: input of `test_indicators.py` |
 | `eurostat_demo_r_pjanaggr3_el_2025.json` | Eurostat `demo_r_pjanaggr3`, all Greek regions, 2025: hierarchy test in `test_harmonize.py` |
 | `eurostat_demo_r_pjanind2_el5.json` | Eurostat `demo_r_pjanind2`, EL, EL5 and some of its regions: input of `test_indicators.py` |
-| `gisco_nuts2_handwritten.geojson` | Hand-written GISCO-like GeoJSON (squares, not boundaries): `test_gisco.py`, `test_eurostat.py`, `test_build.py` |
+| `gisco_nuts2_handwritten.geojson` | Hand-written GISCO-like GeoJSON (squares, not boundaries; GISCO's Greek names): `test_gisco.py`, `test_eurostat.py`, `test_build.py` |
 | `eurostat_proj_25np_el_cy_pl.json` | Eurostat `proj_25np` (EUROPOP2025), Greece, Cyprus and Poland, 2025-2026, every projection type: input of `test_projections.py` |
 | `un_wpp2024_ppp_poptot.xlsx` | UN WPP 2024 probabilistic total population (PPP/POPTOT), the published workbook (CC BY 3.0 IGO): input of `test_un_wpp.py` |
 | `eurostat_demo_r_pjangrp3_el5.json` | Eurostat `demo_r_pjangrp3`, EL, EL5, EL51-EL54 and EL511, 2023 onwards: input of `test_indicators.py` and `test_harmonize.py` |

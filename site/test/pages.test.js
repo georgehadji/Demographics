@@ -11,20 +11,28 @@ import { latest, pages } from "../src/pages.js";
 
 const HEADER =
   "metric,definition_id,geo_code,geo_vintage,period,sex,age,value,unit,source,dataset_code,source_url,vintage,retrieved_at,transform_version,nature,status,break_in_series,scenario_id,interval";
-const row = (geo, period, value, scenario = "") =>
-  `population,population_1jan@v1,${geo},NUTS2024,${period},total,total,${value},persons,Eurostat,demo_pjan,https://example.org/x,2026-09-15,2026-10-02T00:00:00.000000+0000,1,${scenario ? "scenario" : "official_estimate"},final,false,${scenario},`;
+const row = (geo, period, value, scenario = "", nature = "official_estimate", interval = "") =>
+  `population,population_1jan@v1,${geo},NUTS2024,${period},total,total,${value},persons,Eurostat,demo_pjan,https://example.org/x,2026-09-15,2026-10-02T00:00:00.000000+0000,1,${scenario ? "scenario" : nature},final,false,${scenario},${interval}`;
 const DIR = mkdtempSync(join(tmpdir(), "kohortes-pages-"));
-const text = [HEADER, row("EL", "2023", "10.0"), row("EL", "2024", "11.0"), row("EL", "2030", "9.0", "s1"), row("EU27_2020", "2023", "450.0")].join("\n") + "\n";
-writeFileSync(join(DIR, "population.csv"), text);
-const sha = createHash("sha256").update(text).digest("hex");
-writeFileSync(
-  join(DIR, "manifest.json"),
-  JSON.stringify({ population: { files: { "population.csv": sha }, sources: [{ source_id: "eurostat_demo_pjan", sha256: "1" }] } }),
-);
+const MANIFEST = {};
+const write = (file, text) => {
+  writeFileSync(join(DIR, file), text);
+  const name = file.replace(/\.[a-z]+$/, "");
+  MANIFEST[name] = { files: { [file]: createHash("sha256").update(text).digest("hex") }, sources: [{ source_id: "eurostat_demo_pjan", sha256: "1" }] };
+  writeFileSync(join(DIR, "manifest.json"), JSON.stringify(MANIFEST));
+};
+const csv = (...rows) => [HEADER, ...rows].join("\n") + "\n";
+write("population.csv", csv(row("EL", "2023", "10.0"), row("EL", "2024", "11.0"), row("EL", "2030", "9.0", "s1"), row("EU27_2020", "2023", "450.0")));
+write("population_regional.csv", csv(row("EL", "2024", "11.0"), row("EL30", "2024", "4.0"), row("EL30", "2023", "3.0")));
+write("geometry_el_nuts2.geojson", JSON.stringify({ features: [{ properties: { geo_code: "EL30", name: "Αττική" } }, { properties: { geo_code: "EL43", name: "Κρήτη" } }] }));
+write("projection.csv", csv(row("EL", "2025", "11.0", "", "projected"), row("EL", "2100", "8.0", "", "projected"), row("EL", "2100", "6.0", "s1")));
+write("wpp.csv", csv(row("EL", "2024", "11.0", "", "projected"), row("EL", "2100", "7.0", "", "projected"), row("EL", "2100", "5.0", "", "projected", "95_lower")));
 const CATALOG = {
   areas: { EL: "Ελλάδα", EU27_2020: "ΕΕ-27", EU27_2020_MEDIAN: "Διάμεσος ΕΕ-27" },
   home: ["population"],
   indicators: [{ name: "population", title: "Πληθυσμός" }],
+  regions: { geometry: "geometry_el_nuts2" },
+  projections: { europop: "projection", wpp: "wpp", scenarios: { s1: "χαμηλότερη γονιμότητα" } },
 };
 
 test("the latest period ignores scenarios and missing values", () => {
@@ -50,6 +58,28 @@ test("an indicator page quotes its values through fact() and compares only areas
   assert.match(files["definitions.qmd"], /\{#population-1jan-v1\}/);
   assert.match(files["sources.qmd"], /demo_pjan/);
   assert.doesNotMatch(files["sources.qmd"], /demo_find/); // only the sources the product reads
+});
+
+test("a region page compares the region with Greece, by its GISCO name; regions without data get no section", () => {
+  const files = pages(DIR, CATALOG);
+  const page = files["regions/EL30.qmd"];
+  assert.match(page, /title: "Αττική"/);
+  assert.match(page, /2024: \{\{< fact population_regional EL30 2024 total total >\}\}, Ελλάδα: \{\{< fact population_regional EL 2024/);
+  assert.match(page, /\{\{< chart regions\/EL30-population\.json >\}\}/);
+  const spec = JSON.parse(files["regions/EL30-population.json"]);
+  assert.deepEqual([spec.focus, spec.geo, spec.labels.EL30], ["EL30", ["EL30", "EL"], "Αττική"]);
+  assert.doesNotMatch(files["regions/EL43.qmd"], /fact/);
+  assert.match(files["regions/index.qmd"], /\[Αττική\]\(EL30\.qmd\)\n- \[Κρήτη\]\(EL43\.qmd\)/);
+});
+
+test("the projections page quotes the baseline and the WPP median, and names every scenario", () => {
+  const files = pages(DIR, CATALOG);
+  const page = files["projections.qmd"];
+  assert.match(page, /fact projection EL 2025 total total >\}\} \(2025\) σε \{\{< fact projection EL 2100/);
+  assert.match(page, /fact wpp EL 2024 total total >\}\} \(2024\) σε \{\{< fact wpp EL 2100/);
+  assert.match(page, /όχι προβλέψεις/);
+  assert.equal(JSON.parse(files["projections/europop.json"]).labels.s1, "χαμηλότερη γονιμότητα");
+  assert.throws(() => pages(DIR, { ...CATALOG, projections: { ...CATALOG.projections, scenarios: {} } }), /no Greek name for the scenarios s1/);
 });
 
 test("the link check finds a broken local link and ignores external ones", () => {

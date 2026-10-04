@@ -22,7 +22,11 @@ def test_keeps_the_greek_regions_sorted_with_provenance_and_licence():
     doc = gisco.greek_regions(SNAP, RAW, level=2)
     codes = [f["id"] for f in doc["features"]]
     assert codes == sorted(c for c in harmonize.greek_nuts() if len(c) == 4)
-    assert doc["features"][0]["properties"] == {"geo_code": "EL30", "name_latn": "Region EL30"}
+    assert doc["features"][0]["properties"] == {
+        "geo_code": "EL30",
+        "name_latn": "Region EL30",
+        "name": "Αττική",
+    }
     licence = get_source("gisco_nuts2_2024_geo").licence
     assert doc["attribution"] == licence.attribution
     assert doc["commercial_reuse"] is False
@@ -32,6 +36,12 @@ def test_keeps_the_greek_regions_sorted_with_provenance_and_licence():
 def test_rounds_coordinates_to_four_decimals():
     ring = gisco.greek_regions(SNAP, RAW, level=2)["features"][0]["geometry"]["coordinates"][0]
     assert ring[0] == [22.1235, 38.6543]
+
+
+def test_greek_names_lose_latin_lookalikes_and_other_latin_fails():
+    assert gisco.greek_name("Aνατολική Θράκη") == "Ανατολική Θράκη"  # noqa: RUF001 (Latin A)
+    with pytest.raises(ValueError, match="Latin letters"):
+        gisco.greek_name("Attiki")
 
 
 def test_a_missing_region_fails():

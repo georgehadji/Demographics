@@ -8,6 +8,8 @@ project:
   render:
     - index.qmd
     - indicators/*.qmd
+    - regions/*.qmd
+    - projections.qmd
     - definitions.qmd
     - sources.qmd
     - ai.qmd
@@ -22,6 +24,10 @@ website:
         text: Αρχική
       - href: indicators/index.qmd
         text: Δείκτες
+      - href: regions/index.qmd
+        text: Περιφέρειες
+      - href: projections.qmd
+        text: Προβολές
       - href: definitions.qmd
         text: Ορισμοί
       - href: sources.qmd

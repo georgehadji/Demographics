@@ -1,5 +1,5 @@
 {
- "_comment": "Hand-written, not recorded: one square per Greek NUTS 2 region placed by data/reference/el_nuts2_tiles.csv, and one Cypriot region. Same fields as GISCO's NUTS_RG_*_LEVL_2.geojson.",
+ "_comment": "Hand-written, not recorded: one square per Greek NUTS 2 region placed by data/reference/el_nuts2_tiles.csv, and one Cypriot region. Same fields as GISCO's NUTS_RG_*_LEVL_2.geojson. NUTS_NAME as GISCO gives it on 2026-10-04, including the Latin A that starts EL30 and EL51.",
  "type": "FeatureCollection",
  "features": [
   {
@@ -8,7 +8,8 @@
     "NUTS_ID": "EL53",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL53"
+    "NAME_LATN": "Region EL53",
+    "NUTS_NAME": "Δυτική Μακεδονία"
    },
    "geometry": {
     "type": "Polygon",
@@ -44,7 +45,8 @@
     "NUTS_ID": "EL52",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL52"
+    "NAME_LATN": "Region EL52",
+    "NUTS_NAME": "Κεντρική Μακεδονία"
    },
    "geometry": {
     "type": "Polygon",
@@ -80,7 +82,8 @@
     "NUTS_ID": "EL51",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL51"
+    "NAME_LATN": "Region EL51",
+    "NUTS_NAME": "Aνατολική Μακεδονία, Θράκη"
    },
    "geometry": {
     "type": "Polygon",
@@ -116,7 +119,8 @@
     "NUTS_ID": "EL54",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL54"
+    "NAME_LATN": "Region EL54",
+    "NUTS_NAME": "Ήπειρος"
    },
    "geometry": {
     "type": "Polygon",
@@ -152,7 +156,8 @@
     "NUTS_ID": "EL61",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL61"
+    "NAME_LATN": "Region EL61",
+    "NUTS_NAME": "Θεσσαλία"
    },
    "geometry": {
     "type": "Polygon",
@@ -188,7 +193,8 @@
     "NUTS_ID": "EL41",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL41"
+    "NAME_LATN": "Region EL41",
+    "NUTS_NAME": "Βόρειο Αιγαίο"
    },
    "geometry": {
     "type": "Polygon",
@@ -224,7 +230,8 @@
     "NUTS_ID": "EL62",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL62"
+    "NAME_LATN": "Region EL62",
+    "NUTS_NAME": "Ιόνια Νησιά"
    },
    "geometry": {
     "type": "Polygon",
@@ -260,7 +267,8 @@
     "NUTS_ID": "EL63",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL63"
+    "NAME_LATN": "Region EL63",
+    "NUTS_NAME": "Δυτική Ελλάδα"
    },
    "geometry": {
     "type": "Polygon",
@@ -296,7 +304,8 @@
     "NUTS_ID": "EL64",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL64"
+    "NAME_LATN": "Region EL64",
+    "NUTS_NAME": "Στερεά Ελλάδα"
    },
    "geometry": {
     "type": "Polygon",
@@ -332,7 +341,8 @@
     "NUTS_ID": "EL65",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL65"
+    "NAME_LATN": "Region EL65",
+    "NUTS_NAME": "Πελοπόννησος"
    },
    "geometry": {
     "type": "Polygon",
@@ -368,7 +378,8 @@
     "NUTS_ID": "EL30",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL30"
+    "NAME_LATN": "Region EL30",
+    "NUTS_NAME": "Aττική"
    },
    "geometry": {
     "type": "Polygon",
@@ -404,7 +415,8 @@
     "NUTS_ID": "EL42",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL42"
+    "NAME_LATN": "Region EL42",
+    "NUTS_NAME": "Νότιο Αιγαίο"
    },
    "geometry": {
     "type": "Polygon",
@@ -440,7 +452,8 @@
     "NUTS_ID": "EL43",
     "LEVL_CODE": 2,
     "CNTR_CODE": "EL",
-    "NAME_LATN": "Region EL43"
+    "NAME_LATN": "Region EL43",
+    "NUTS_NAME": "Κρήτη"
    },
    "geometry": {
     "type": "Polygon",
@@ -476,7 +489,8 @@
     "NUTS_ID": "CY00",
     "LEVL_CODE": 2,
     "CNTR_CODE": "CY",
-    "NAME_LATN": "Kypros"
+    "NAME_LATN": "Kypros",
+    "NUTS_NAME": "Κύπρος"
    },
    "geometry": {
     "type": "Polygon",

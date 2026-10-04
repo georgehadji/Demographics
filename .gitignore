@@ -21,6 +21,9 @@ site/render.log
 # pages made from the data product before each render (site/src/pages.js)
 site/index.qmd
 site/indicators/
+site/regions/
+site/projections/
+site/projections.qmd
 site/definitions.qmd
 site/sources.qmd
 site/ai.qmd

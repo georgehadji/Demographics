@@ -11,6 +11,7 @@ Coordinates are rounded to 4 decimals (about 10 m), far below the 1:3 million sc
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from grpop import harmonize
@@ -18,6 +19,17 @@ from grpop.snapshots import Snapshot
 from grpop.sources.registry import get_source
 
 DECIMALS = 4
+# GISCO writes some Greek names with a Latin capital that looks like a Greek one
+# (VERIFIED 2026-10-04: the Greek names of EL30 and EL51 start with a Latin A).
+_LOOKALIKES = str.maketrans("ABEZHIKMNOPTXY", "ΑΒΕΖΗΙΚΜΝΟΡΤΧΥ")  # noqa: RUF001
+
+
+def greek_name(name: str) -> str:
+    """GISCO's Greek name with Latin look-alike capitals written in Greek."""
+    out = name.translate(_LOOKALIKES)
+    if re.search("[A-Za-z]", out):
+        raise ValueError(f"{name!r}: Latin letters in a Greek name")
+    return out
 
 
 def _round(coords: Any) -> Any:
@@ -56,6 +68,7 @@ def greek_regions(snapshot: Snapshot, raw: bytes, *, level: int) -> dict[str, An
                 "properties": {
                     "geo_code": f["properties"]["NUTS_ID"],
                     "name_latn": f["properties"]["NAME_LATN"],
+                    "name": greek_name(f["properties"]["NUTS_NAME"]),
                 },
                 "geometry": {
                     "type": f["geometry"]["type"],

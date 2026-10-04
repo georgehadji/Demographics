@@ -144,7 +144,8 @@ export function settings(rows, spec) {
   const focus = spec.focus ?? "EL";
   if (!rows.some((r) => r.geo_code === focus)) throw new Error(`focus ${focus} is not in the data`);
   if (!spec.title) throw new Error("the title states the finding (PROPOSAL §7A)");
-  const label = (geo) => spec.labels?.[geo] ?? geo;
+  // names of areas and scenarios, by geo_code or scenario_id
+  const label = (key) => spec.labels?.[key] ?? key;
   const format = (v) => (v === null ? text.missing : formatNumber(v, spec.format, locale));
   // the unit in the chart's language; units in that language already (or English) as given
   return { ...spec, locale, text, focus, label, format, unit: text.units?.[units[0]] ?? units[0] };
@@ -177,7 +178,7 @@ export function seriesAlt(rows, s, { focusFirst = true } = {}) {
   );
   const parts = series.map((part) => {
     const id = part[0].scenario_id;
-    const name = s.label(part[0].geo_code) + (id ? ` (${s.text.nature.scenario}: ${id})` : "");
+    const name = s.label(part[0].geo_code) + (id ? ` (${s.text.nature.scenario}: ${s.label(id)})` : "");
     const drawn = byPeriod(part.filter((r) => r.value !== null));
     if (drawn.length === 0) return `${name}: ${s.text.missing}`;
     const [a, b] = [drawn[0], drawn.at(-1)];
@@ -229,7 +230,7 @@ export function table(rows, s, document) {
       unit: s.unit,
       nature: s.text.nature[r.nature],
       status: s.text.status[r.status],
-      scenario_id: r.scenario_id ?? "",
+      scenario_id: r.scenario_id ? s.label(r.scenario_id) : "",
       interval: r.interval ? s.text.interval[r.interval] : s.text.central,
       break_in_series: r.break_in_series ? s.text.yes : "",
     };

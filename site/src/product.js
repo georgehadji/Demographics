@@ -42,14 +42,22 @@ const typed = (r) => ({
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
-/** The rows of one data product file, after checking it against the manifest. */
-export function load(dir, name) {
+/** The bytes of one data product file, after checking it against the manifest. */
+function checked(dir, name, file) {
   if (!dir) throw new Error("KOHORTES_DATA must name the data product directory (grpop-build --out)");
   const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
-  const file = `${name}.csv`;
   if (!manifest[name]?.files?.[file]) throw new Error(`${name}: not in the data product manifest, so it has no provenance`);
   const bytes = readFileSync(join(dir, file));
   if (sha256(bytes) !== manifest[name].files[file]) throw new Error(`${file}: sha256 differs from the manifest`);
+  return bytes;
+}
+
+/** A map geometry of the data product (GeoJSON with its source and licence). */
+export const geometry = (dir, name) => JSON.parse(checked(dir, name, `${name}.geojson`).toString("utf8"));
+
+/** The rows of one data product file, after checking it against the manifest. */
+export function load(dir, name) {
+  const bytes = checked(dir, name, `${name}.csv`);
   return csvParse(bytes.toString("utf8"), typed).map((r) => {
     if (Number.isNaN(r.value)) throw new Error(`${name} ${r.geo_code} ${r.period}: value is not a number`);
     const missing = PROVENANCE.filter((k) => !r[k]);

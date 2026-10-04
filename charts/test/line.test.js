@@ -133,6 +133,13 @@ test("alt text is derived from the data, focus first, scenarios named as such", 
   assert.ok(chart([...ROWS, high]).alt.includes("Ελλάδα (σενάριο: high): από 11.500.000 (2016)"));
 });
 
+test("a scenario takes its name from the labels, in the alt text, the line label and the table", () => {
+  const named = chart(ROWS, { ...SPEC, labels: { ...SPEC.labels, low: "χαμηλή γονιμότητα" } });
+  assert.ok(named.alt.includes("Ελλάδα (σενάριο: χαμηλή γονιμότητα)"));
+  assert.ok(named.figure.textContent.includes("Ελλάδα (χαμηλή γονιμότητα)"));
+  assert.ok([...named.table.querySelectorAll("td")].some((td) => td.textContent === "χαμηλή γονιμότητα"));
+});
+
 test("the CSV holds the raw values of every row and column", () => {
   const lines = chart().csv.trimEnd().split("\n");
   assert.equal(lines[0], Object.keys(ROWS[0]).join(","));

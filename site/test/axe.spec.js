@@ -4,7 +4,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 const SITE = new URL("../_site/", import.meta.url);
-const PAGES = ["index.html", "indicators/index.html", "indicators/total_fertility_rate.html", "definitions.html", "sources.html", "ai.html", "errata.html"];
+const PAGES = ["index.html", "indicators/index.html", "indicators/total_fertility_rate.html", "regions/index.html", "regions/EL30.html", "projections.html", "definitions.html", "sources.html", "ai.html", "errata.html"];
 
 for (const scheme of ["light", "dark"])
   for (const page of PAGES)

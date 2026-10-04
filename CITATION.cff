@@ -7,6 +7,10 @@ authors:
 type: software
 license: MIT
 repository-code: "https://github.com/georgehadji/Demographics"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23139190
+    description: "Data releases, all versions (Zenodo concept DOI; concept record id 23139190 for grpop-publish --concept)"
 keywords:
   - demography
   - Greece

@@ -7,6 +7,9 @@ Baseline screenshots for `charts.spec.js`, Linux only, written by the `Visual` w
 | `choropleth-dark-linux.png` | Baseline of the choropleth chart in dark mode |
 | `choropleth-light-linux.png` | Baseline of the choropleth chart in light mode |
 | `choropleth-print-linux.png` | Baseline of the choropleth chart in print mode |
+| `dumbbell-dark-linux.png` | Baseline of the dumbbell chart in dark mode |
+| `dumbbell-light-linux.png` | Baseline of the dumbbell chart in light mode |
+| `dumbbell-print-linux.png` | Baseline of the dumbbell chart in print mode |
 | `lexis-dark-linux.png` | Baseline of the lexis chart in dark mode |
 | `lexis-light-linux.png` | Baseline of the lexis chart in light mode |
 | `lexis-print-linux.png` | Baseline of the lexis chart in print mode |
@@ -22,3 +25,6 @@ Baseline screenshots for `charts.spec.js`, Linux only, written by the `Visual` w
 | `tiles-dark-linux.png` | Baseline of the tiles chart in dark mode |
 | `tiles-light-linux.png` | Baseline of the tiles chart in light mode |
 | `tiles-print-linux.png` | Baseline of the tiles chart in print mode |
+| `waterfall-dark-linux.png` | Baseline of the waterfall chart in dark mode |
+| `waterfall-light-linux.png` | Baseline of the waterfall chart in light mode |
+| `waterfall-print-linux.png` | Baseline of the waterfall chart in print mode |

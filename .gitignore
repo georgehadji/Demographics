@@ -18,3 +18,11 @@ site/_site/
 site/.quarto/
 site/_brand/
 site/render.log
+# pages made from the data product before each render (site/src/pages.js)
+site/index.qmd
+site/indicators/
+site/definitions.qmd
+site/sources.qmd
+site/ai.qmd
+site/playwright-report/
+site/test-results/

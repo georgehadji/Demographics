@@ -5,10 +5,17 @@ name: Build
 # (Phase 1 criterion). The build itself fails on any difference from Eurostat that is
 # neither listed nor corroborated. Then renders the Quarto site from the product, and
 # checks that the deliberately wrong pages in site/test/ fail to render (a value that is
-# missing or has no provenance). Runs after each Ingest run, on demand, and on every push
+# missing or has no provenance), checks every local link and runs axe on each kind of page.
+# Runs after each Ingest run, on demand, and on every push
 # that changes the code, the reference data, the site, the charts or the design tokens.
+# Run by hand with `deploy` ticked, on main, it also publishes the site on GitHub Pages.
 on:
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Publish the rendered site on GitHub Pages (public; main only)"
+        type: boolean
+        default: false
   workflow_run:
     workflows: [Ingest]
     types: [completed]
@@ -73,9 +80,18 @@ jobs:
         run: |
           quarto render
           grep -q 'class="fact"' _site/index.html || { echo "::error::no value from the data product in index.html"; exit 1; }
+          node src/cli.js links
+      - name: Accessibility of each kind of page (axe)
+        working-directory: site
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test
       - uses: actions/upload-artifact@v4
         with:
           name: site
+          path: site/_site
+      - uses: actions/upload-pages-artifact@v3
+        with:
           path: site/_site
       - name: Deliberately wrong pages fail the render
         working-directory: site
@@ -92,3 +108,18 @@ jobs:
           check test/missing.qmd "0 values in the data product"
           check test/unprovenanced.qmd "not in the data product manifest"
           echo "The site renders; pages with a missing or unprovenanced value fail." >> "$GITHUB_STEP_SUMMARY"
+
+  # Publishing is a separate, deliberate act: by hand, from main, with deploy ticked.
+  deploy:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

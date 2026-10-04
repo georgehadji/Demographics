@@ -1,12 +1,39 @@
 project:
   type: website
-  # brand files are made from design/tokens.json (Quarto needs them inside the project)
-  pre-render: node src/cli.js brand
+  # brand files from design/tokens.json, then the pages made from the data product
+  # (src/pages.js); neither is committed
+  pre-render:
+    - node src/cli.js brand
+    - node src/cli.js pages
   render:
     - index.qmd
+    - indicators/*.qmd
+    - definitions.qmd
+    - sources.qmd
+    - ai.qmd
+    - errata.qmd
 
 website:
   title: Κοόρτες
+  site-url: https://georgehadji.github.io/Demographics/
+  navbar:
+    left:
+      - href: index.qmd
+        text: Αρχική
+      - href: indicators/index.qmd
+        text: Δείκτες
+      - href: definitions.qmd
+        text: Ορισμοί
+      - href: sources.qmd
+        text: Πηγές
+    right:
+      - href: ai.qmd
+        text: Χρήση AI
+      - href: errata.qmd
+        text: Errata
+      - icon: github
+        href: https://github.com/georgehadji/Demographics
+        aria-label: Κώδικας στο GitHub
 
 lang: el
 

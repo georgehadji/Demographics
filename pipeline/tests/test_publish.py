@@ -59,6 +59,7 @@ def test_the_zip_is_reproducible_and_leaves_out_non_commercial_files(product, ch
     assert z.read("CHANGELOG.md").decode().startswith("## 1.0.0 (2026-10-03)")
     assert "Old." not in z.read("CHANGELOG.md").decode()
     assert "Licence:" in z.read("SOURCES.md").decode()
+    assert "GISCO" not in z.read("SOURCES.md").decode()  # its file is left out
 
 
 def test_only_the_newest_changelog_entry_can_be_published(product, changelog, tmp_path):

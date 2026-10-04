@@ -6,9 +6,11 @@ import { JSDOM } from "jsdom";
 import { hexTokens } from "../../design/src/build.js";
 import { line } from "../src/line.js";
 import { lexis } from "../src/lexis.js";
+import { dumbbell } from "../src/dumbbell.js";
 import { choropleth, symbols } from "../src/map.js";
 import { pyramid } from "../src/pyramid.js";
 import { tiles } from "../src/tiles.js";
+import { waterfall } from "../src/waterfall.js";
 
 const row = (geo_code, period, value, extra = {}) => ({
   geo_code,
@@ -45,6 +47,11 @@ const LABELS = {
   EL63: "Δυτική Ελλάδα",
   EL64: "Στερεά Ελλάδα",
   EL65: "Πελοπόννησος",
+  ES: "Ισπανία",
+  births: "Γεννήσεις",
+  deaths: "Θάνατοι",
+  migration: "Καθαρή μετανάστευση",
+  change: "Μεταβολή",
 };
 const LAYOUT = (() => {
   const [head, ...lines] = readFileSync(new URL("../../data/reference/el_nuts2_tiles.csv", import.meta.url), "utf8")
@@ -119,12 +126,30 @@ const RATES = LAYOUT.map(({ geo_code }, i) =>
 );
 const COUNTS = LAYOUT.map(({ geo_code }, i) => row(geo_code, 2024, geo_code === "EL30" ? 3800000 : 180000 + ((i * 5) % 13) * 110000, { unit: "persons" }));
 
+const DUMBBELL = [
+  ["EL", 1.4, 1.24],
+  ["PT", 1.35, 1.4],
+  ["IT", 1.44, 1.18],
+  ["ES", 1.34, 1.12],
+].flatMap(([geo, a, b]) => [
+  row(geo, 2011, a, { unit: "γεννήσεις ανά γυναίκα" }),
+  row(geo, 2024, b, { unit: "γεννήσεις ανά γυναίκα", ...(geo === "EL" ? { status: "provisional" } : {}) }),
+]);
+const WATERFALL = [
+  ["births", 70000],
+  ["deaths", -125000],
+  ["migration", 49000, { status: "provisional" }],
+  ["change", -6000],
+].map(([definition_id, v, extra = {}]) => row("EL", 2025, v, { definition_id, unit: "persons", ...extra }));
+
 export const CHARTS = {
   line: [line, LINE, { title: "Η εξάρτηση των ηλικιωμένων αυξάνεται ταχύτερα από την Πορτογαλία", subtitle: "Δείκτης εξάρτησης ηλικιωμένων, %", format: { maximumFractionDigits: 0 } }],
   pyramid: [pyramid, PYRAMID, { title: "Η μεγαλύτερη ομάδα μετακινήθηκε 15 χρόνια μεγαλύτερη", subtitle: "Πληθυσμός κατά φύλο και ηλικία" }],
   lexis: [lexis, LEXIS, { title: "Η γονιμότητα μετατοπίζεται σε μεγαλύτερες ηλικίες", subtitle: "Γεννήσεις ανά γυναίκα, κατά ηλικία και έτος", format: { maximumFractionDigits: 2 } }],
   choropleth: [choropleth, RATES, { title: "Η θνησιμότητα είναι υψηλότερη στις αγροτικές περιφέρειες", subtitle: "Θάνατοι ανά 1.000 κατοίκους, 2024", focus: "EL30", geometry: GEOMETRY, format: { maximumFractionDigits: 1 } }],
   symbols: [symbols, COUNTS, { title: "Η Αττική συγκεντρώνει πάνω από το ένα τρίτο του πληθυσμού", subtitle: "Πληθυσμός, 2024", focus: "EL30", geometry: GEOMETRY }],
+  dumbbell: [dumbbell, DUMBBELL, { title: "Η γονιμότητα έπεσε σε τρεις από τις τέσσερις", subtitle: "Γεννήσεις ανά γυναίκα, 2011 και 2024", format: { maximumFractionDigits: 2 } }],
+  waterfall: [waterfall, WATERFALL, { title: "Οι θάνατοι ξεπερνούν γεννήσεις και μετανάστευση", subtitle: "Συνιστώσες της μεταβολής του πληθυσμού, 2025", parts: ["births", "deaths", "migration"], total: "change" }],
   tiles: [tiles, TILES, { title: "Όλες οι περιφέρειες χάνουν πληθυσμό", subtitle: "Πληθυσμός, 2011 = 100", layout: LAYOUT, format: { maximumFractionDigits: 0 } }],
 };
 

@@ -74,6 +74,15 @@ def test_every_file_is_in_the_manifest_and_every_value_passes_the_contract(produ
         assert {s["source_id"] for s in entry["sources"]} == build.STEPS[name].sources
 
 
+def test_derived_indicators_carry_their_official_decimals(product):
+    manifest = json.loads((product / "manifest.json").read_bytes())
+    derived = {n: i.decimals for n, i in indicators.INDICATORS.items() if n in manifest}
+    assert derived  # the fixtures build some
+    for name, entry in manifest.items():
+        # series and geometry are published as the source gives them
+        assert entry.get("decimals") == derived.get(name), name
+
+
 def test_only_changed_outputs_are_rebuilt(store, product, tmp_path):
     shutil.copytree(product, tmp_path, dirs_exist_ok=True)
     assert build.build(store, tmp_path) == []

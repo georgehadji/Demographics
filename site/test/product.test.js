@@ -23,19 +23,26 @@ const FILES = {
   tampered: [row("EL", "2023", "1.0", "observed", "final")],
   unsourced: [row("EL", "2023", "1.0", "observed", "final", "")],
   unlisted: [row("EL", "2023", "1.0", "observed", "final")],
+  rounded: [row("EL", "2023", "46.667", "derived", "final")],
 };
+// a derived indicator carries the official value's decimals in the manifest
+const DECIMALS = { rounded: 1 };
 const DIR = mkdtempSync(join(tmpdir(), "kohortes-"));
 const manifest = {};
 for (const [name, rows] of Object.entries(FILES)) {
   const text = [HEADER, ...rows].join("\n") + "\n";
   writeFileSync(join(DIR, `${name}.csv`), text);
   const sha = name === "tampered" ? "0".repeat(64) : createHash("sha256").update(text).digest("hex");
-  if (name !== "unlisted") manifest[name] = { files: { [`${name}.csv`]: sha } };
+  if (name !== "unlisted") manifest[name] = { files: { [`${name}.csv`]: sha }, decimals: DECIMALS[name] };
 }
 writeFileSync(join(DIR, "manifest.json"), JSON.stringify(manifest));
 
 test("a fact is the formatted value with its source", () => {
   assert.equal(fact(DIR, "population", "EL", "2023"), '<span class="fact" title="Πηγή: Eurostat · demo_pjan · έκδοση 2026-09-15">10.400.000</span>');
+});
+
+test("a derived value is shown to the decimals the manifest gives", () => {
+  assert.match(fact(DIR, "rounded", "EL", "2023"), />46,7</);
 });
 
 test("a provisional or projected fact says so in the text", () => {
@@ -68,5 +75,6 @@ test("a chart gives the figure in both modes, its table and its CSV", () => {
   assert.match(html, /class="kh-dark"/);
   assert.match(html, /<details><summary>Πίνακας δεδομένων<\/summary><table>/);
   assert.match(html, /download="population.csv" href="data:text\/csv/);
-  assert.throws(() => chart(DIR, { type: "choropleth", data: "population", geo: ["EL"], title: "x" }), /the site draws line/);
+  assert.throws(() => chart(DIR, { type: "pie", data: "population", geo: ["EL"], title: "x" }), /the site draws line/);
+  assert.throws(() => chart(DIR, { type: "tiles", data: "population", geo: ["EL"], layout: "../x", title: "x" }), /not a reference table name/);
 });

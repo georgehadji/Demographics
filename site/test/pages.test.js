@@ -31,7 +31,7 @@ const CATALOG = {
   areas: { EL: "Ελλάδα", EU27_2020: "ΕΕ-27", EU27_2020_MEDIAN: "Διάμεσος ΕΕ-27" },
   home: ["population"],
   indicators: [{ name: "population", title: "Πληθυσμός" }],
-  regions: { geometry: "geometry_el_nuts2" },
+  regions: { geometry: "geometry_el_nuts2", layout: "el_nuts2_tiles" },
   projections: { europop: "projection", wpp: "wpp", scenarios: { s1: "χαμηλότερη γονιμότητα" } },
 };
 
@@ -67,16 +67,27 @@ test("a region page compares the region with Greece, by its GISCO name; regions 
   assert.match(page, /2024: \{\{< fact population_regional EL30 2024 total total >\}\}, Ελλάδα: \{\{< fact population_regional EL 2024/);
   assert.match(page, /\{\{< chart regions\/EL30-population\.json >\}\}/);
   const spec = JSON.parse(files["regions/EL30-population.json"]);
-  assert.deepEqual([spec.focus, spec.geo, spec.labels.EL30], ["EL30", ["EL30", "EL"], "Αττική"]);
+  // a count shows the region alone: beside the country's it would only show the country's scale
+  assert.deepEqual([spec.focus, spec.geo, spec.labels.EL30], ["EL30", ["EL30"], "Αττική"]);
   assert.doesNotMatch(files["regions/EL43.qmd"], /fact/);
   assert.match(files["regions/index.qmd"], /\[Αττική\]\(EL30\.qmd\)\n- \[Κρήτη\]\(EL43\.qmd\)/);
+});
+
+test("an indicator with a regional series gets a map of its latest period and the tile grid", () => {
+  const files = pages(DIR, CATALOG);
+  assert.match(files["indicators/population.qmd"], /## Περιφέρειες\n\n\{\{< chart indicators\/population-map\.json >\}\}\n\n\{\{< chart indicators\/population-tiles\.json >\}\}/);
+  const map = JSON.parse(files["indicators/population-map.json"]);
+  // a count: proportional symbols, never a choropleth
+  assert.deepEqual([map.type, map.geo, map.period, map.focus, map.geometry], ["symbols", ["EL30", "EL43"], "2024", null, "geometry_el_nuts2"]);
+  const tiles = JSON.parse(files["indicators/population-tiles.json"]);
+  assert.deepEqual([tiles.type, tiles.geo, tiles.focus, tiles.layout, tiles.labels.EL43], ["tiles", ["EL30", "EL43", "EL"], "EL", "el_nuts2_tiles", "Κρήτη"]);
 });
 
 test("the projections page quotes the baseline and the WPP median, and names every scenario", () => {
   const files = pages(DIR, CATALOG);
   const page = files["projections.qmd"];
-  assert.match(page, /fact projection EL 2025 total total >\}\} \(2025\) σε \{\{< fact projection EL 2100/);
-  assert.match(page, /fact wpp EL 2024 total total >\}\} \(2024\) σε \{\{< fact wpp EL 2100/);
+  assert.match(page, /2025: \{\{< fact projection EL 2025 total total >\}\}· 2100: \{\{< fact projection EL 2100/);
+  assert.match(page, /2024: \{\{< fact wpp EL 2024 total total >\}\}· 2100: \{\{< fact wpp EL 2100 total total >\}\}\. Οι ζώνες/);
   assert.match(page, /όχι προβλέψεις/);
   assert.equal(JSON.parse(files["projections/europop.json"]).labels.s1, "χαμηλότερη γονιμότητα");
   assert.throws(() => pages(DIR, { ...CATALOG, projections: { ...CATALOG.projections, scenarios: {} } }), /no Greek name for the scenarios s1/);

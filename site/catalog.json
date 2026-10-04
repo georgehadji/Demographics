@@ -1,0 +1,22 @@
+{
+  "_comment": "Pages the site makes from the data product (src/pages.js): Greek title of each indicator page, the data product file it reads, its sex and age, and the areas compared. Page text only; every value comes from the data product.",
+  "areas": { "EL": "Ελλάδα", "EU27_2020": "ΕΕ-27", "EU27_2020_MEDIAN": "Διάμεσος ΕΕ-27" },
+  "home": ["population", "natural_change", "net_migration"],
+  "indicators": [
+    { "name": "population", "title": "Πληθυσμός την 1η Ιανουαρίου" },
+    { "name": "natural_change", "title": "Φυσική μεταβολή (γεννήσεις μείον θάνατοι)" },
+    { "name": "net_migration", "title": "Καθαρή μετανάστευση (εκτίμηση)" },
+    { "name": "population_growth_rate", "title": "Ρυθμός μεταβολής του πληθυσμού" },
+    { "name": "total_fertility_rate", "title": "Συνολικός δείκτης γονιμότητας" },
+    { "name": "mean_age_first_birth", "title": "Μέση ηλικία της μητέρας στην πρώτη γέννηση" },
+    { "name": "life_expectancy_0", "title": "Προσδόκιμο ζωής στη γέννηση", "age": "0" },
+    { "name": "life_expectancy_65", "title": "Προσδόκιμο ζωής στα 65", "age": "65" },
+    { "name": "infant_mortality_rate", "title": "Βρεφική θνησιμότητα" },
+    { "name": "median_age", "title": "Διάμεση ηλικία" },
+    { "name": "population_share", "title": "Πληθυσμός 65 ετών και άνω (ποσοστό)", "age": "65+" },
+    { "name": "old_age_dependency_ratio", "title": "Δείκτης εξάρτησης ηλικιωμένων" },
+    { "name": "young_age_dependency_ratio", "title": "Δείκτης εξάρτησης νέων" },
+    { "name": "total_age_dependency_ratio", "title": "Συνολικός δείκτης εξάρτησης" },
+    { "name": "ageing_index", "title": "Δείκτης γήρανσης" }
+  ]
+}

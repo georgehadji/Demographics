@@ -8,6 +8,8 @@ import { style } from "./grammar.js";
 
 // Approximate width of a label character, in pixels, at Plot's 10px font.
 const LABEL_CHAR = 6;
+// Pixels kept free at both ends of the x axis, more than the large dot's radius.
+const DOT_ROOM = 8;
 
 /** The two periods and, per area, its [first, second] row, sorted by the second value. */
 function pairs(rows) {
@@ -34,7 +36,7 @@ function draw(rows, s, options) {
   return Plot.plot({
     ...frame(s, options),
     marginLeft: Math.max(...list.map(([a]) => y(a).length)) * LABEL_CHAR + 12,
-    x: { label: s.unit, tickFormat: s.format },
+    x: { label: s.unit, tickFormat: s.format, inset: DOT_ROOM }, // dots at the ends stay whole
     y: { label: null, domain: list.map(([a]) => y(a)) },
     marks: [
       Plot.gridX({ stroke: tokens["color-gridline"], strokeOpacity: 1 }),

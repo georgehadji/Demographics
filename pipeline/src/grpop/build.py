@@ -19,7 +19,7 @@ import hashlib
 import json
 import sys
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -38,6 +38,9 @@ COLUMNS = list(ObservationSchema.to_schema().columns)
 class Step:
     sources: frozenset[str]
     run: Callable[[indicators.Data], pl.DataFrame | dict[str, Any]]  # observations or GeoJSON
+    # A derived indicator's values are published to the official value's decimals; the
+    # manifest carries them for the site's formatting.
+    decimals: int | None = None
 
 
 def _indicator(indicator: indicators.Indicator) -> Step:
@@ -54,7 +57,7 @@ def _indicator(indicator: indicators.Indicator) -> Step:
                     )
         return ours
 
-    return Step(frozenset(indicators.sources(indicator)), run)
+    return Step(frozenset(indicators.sources(indicator)), run, indicator.decimals)
 
 
 def _series(series: indicators.Series) -> Step:
@@ -71,7 +74,7 @@ def _with_median(step: Step) -> Step:
         assert isinstance(df, pl.DataFrame)
         return groups.with_median(df)
 
-    return Step(step.sources, run)
+    return replace(step, run=run)
 
 
 def _adds_up(step: Step) -> Step:
@@ -101,7 +104,7 @@ def _adds_up(step: Step) -> Step:
                     raise ValueError(f"{name}:\n{gaps}\nlisted gaps that are gone: {sorted(gone)}")
         return df
 
-    return Step(step.sources, run)
+    return replace(step, run=run)
 
 
 ADDS_UP = {"population_by_age_group_regional"}
@@ -244,6 +247,8 @@ def build(store: Path, out: Path, pin: set[str] | None = None) -> list[str]:
                     else df.height
                 )
                 entry = {"inputs": inputs, "rows": rows, "sources": sources, "files": files}
+                if step.decimals is not None:
+                    entry["decimals"] = step.decimals
                 rebuilt.append(name)
                 print(f"{name}: {rows} rows", flush=True)
             manifest[name] = entry

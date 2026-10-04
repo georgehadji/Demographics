@@ -11,9 +11,13 @@ import { hexTokens } from "../../design/src/build.js";
 import { formatNumber } from "../../design/src/format.js";
 import { TEXT, vintageDate } from "../../charts/src/chart.js";
 import { style } from "../../charts/src/grammar.js";
+import { dumbbell } from "../../charts/src/dumbbell.js";
 import { line } from "../../charts/src/line.js";
 import { lexis } from "../../charts/src/lexis.js";
+import { choropleth, symbols } from "../../charts/src/map.js";
 import { pyramid } from "../../charts/src/pyramid.js";
+import { tiles } from "../../charts/src/tiles.js";
+import { waterfall } from "../../charts/src/waterfall.js";
 
 // Fields of pipeline/src/grpop/provenance.py a value must carry to be quoted.
 export const PROVENANCE = [
@@ -27,9 +31,13 @@ export const PROVENANCE = [
   "nature",
   "status",
 ];
-// ponytail: types whose spec is plain JSON; maps and tiles need geometry or a layout, add
-// them when a page uses one.
-const TYPES = { line, lexis, pyramid };
+const TYPES = { line, lexis, pyramid, dumbbell, waterfall, tiles, choropleth, symbols };
+// Reference tables a spec may name (spec.layout), in data/reference.
+const REFERENCE = new URL("../../data/reference/", import.meta.url);
+const reference = (name) => {
+  if (!/^[a-z0-9_]+$/.test(name)) throw new Error(`layout ${name}: not a reference table name`);
+  return csvParse(readFileSync(new URL(`${name}.csv`, REFERENCE), "utf8"));
+};
 const LABELS = { el: { table: "Πίνακας δεδομένων", csv: "Λήψη CSV" }, en: { table: "Data table", csv: "Download CSV" } };
 
 const typed = (r) => ({
@@ -42,13 +50,21 @@ const typed = (r) => ({
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
+function manifest(dir) {
+  if (!dir) throw new Error("KOHORTES_DATA must name the data product directory (grpop-build --out)");
+  return JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
+}
+
+/** Decimals of a derived indicator (the official value's rounding), or undefined. */
+export const decimals = (dir, name) => manifest(dir)[name]?.decimals;
+const formatOf = (dir, name) => (decimals(dir, name) === undefined ? {} : { maximumFractionDigits: decimals(dir, name) });
+
 /** The bytes of one data product file, after checking it against the manifest. */
 function checked(dir, name, file) {
-  if (!dir) throw new Error("KOHORTES_DATA must name the data product directory (grpop-build --out)");
-  const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
-  if (!manifest[name]?.files?.[file]) throw new Error(`${name}: not in the data product manifest, so it has no provenance`);
+  const listed = manifest(dir);
+  if (!listed[name]?.files?.[file]) throw new Error(`${name}: not in the data product manifest, so it has no provenance`);
   const bytes = readFileSync(join(dir, file));
-  if (sha256(bytes) !== manifest[name].files[file]) throw new Error(`${file}: sha256 differs from the manifest`);
+  if (sha256(bytes) !== listed[name].files[file]) throw new Error(`${file}: sha256 differs from the manifest`);
   return bytes;
 }
 
@@ -83,7 +99,7 @@ export function fact(dir, name, geo, period, sex = "total", age = "total", local
   if (r.value === null) throw new Error(`${where}: ${r.status}`);
   const { dash, hollow } = style(r.nature, r.status);
   const notes = [dash && t.nature[r.nature], hollow && t.status[r.status]].filter(Boolean);
-  const text = formatNumber(r.value, {}, locale) + (notes.length ? ` (${notes.join(", ")})` : "");
+  const text = formatNumber(r.value, formatOf(dir, name), locale) + (notes.length ? ` (${notes.join(", ")})` : "");
   const title = `${t.source}: ${r.source} · ${r.dataset_code} · ${t.vintage} ${vintageDate(r.vintage)}`;
   return `<span class="fact" title="${escape(title)}">${escape(text)}</span>`;
 }
@@ -94,9 +110,16 @@ export function fact(dir, name, geo, period, sex = "total", age = "total", local
  * table and its CSV.
  */
 export function chart(dir, spec) {
-  const { type, data, geo, sex = "total", age, ...rest } = spec;
+  const { type, data, geo, sex = "total", age, ...given } = spec;
   const draw = TYPES[type];
   if (!draw) throw new Error(`chart type ${type}: the site draws ${Object.keys(TYPES).join(", ")}`);
+  // A spec names its geometry (a data product file) and layout (a reference table).
+  const rest = {
+    format: formatOf(dir, data),
+    ...given,
+    ...(given.geometry && { geometry: geometry(dir, given.geometry) }),
+    ...(given.layout && { layout: reference(given.layout) }),
+  };
   const rows = load(dir, data).filter((r) => geo.includes(r.geo_code) && r.sex === sex && (age === undefined || r.age === age));
   const { window } = new JSDOM("");
   try {

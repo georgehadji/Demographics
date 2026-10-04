@@ -131,6 +131,8 @@ test("alt text is derived from the data, focus first, scenarios named as such", 
   );
   const high = row("EL", "2016", 11500000, { nature: "scenario", scenario_id: "high" });
   assert.ok(chart([...ROWS, high]).alt.includes("Ελλάδα (σενάριο: high): από 11.500.000 (2016)"));
+  // the area's own series comes before its scenarios, whatever the order of the rows
+  assert.ok(chart([ROWS[5], ...ROWS.filter((_, i) => i !== 5)]).alt.startsWith("Ο πληθυσμός μειώνεται. Ελλάδα: από"));
 });
 
 test("a scenario takes its name from the labels, in the alt text, the line label and the table", () => {

@@ -1,5 +1,5 @@
 {
-  "_comment": "Pages the site makes from the data product (src/pages.js): Greek title of each indicator page, the data product file it reads, its sex and age, and the areas compared; the map geometry whose regions get a page (names from GISCO); the projection files and the Greek name of each scenario_id. Page text only; every value comes from the data product.",
+  "_comment": "Pages the site makes from the data product (src/pages.js): Greek title of each indicator page, the data product file it reads, its sex and age, and the areas compared; the map geometry whose regions get a page (names from GISCO) and the tile layout of data/reference; the projection files and the Greek name of each scenario_id. Page text only; every value comes from the data product.",
   "areas": { "EL": "Ελλάδα", "EU27_2020": "ΕΕ-27", "EU27_2020_MEDIAN": "Διάμεσος ΕΕ-27" },
   "home": ["population", "natural_change", "net_migration"],
   "indicators": [
@@ -19,7 +19,7 @@
     { "name": "total_age_dependency_ratio", "title": "Συνολικός δείκτης εξάρτησης" },
     { "name": "ageing_index", "title": "Δείκτης γήρανσης" }
   ],
-  "regions": { "geometry": "geometry_el_nuts2" },
+  "regions": { "geometry": "geometry_el_nuts2", "layout": "el_nuts2_tiles" },
   "projections": {
     "europop": "population_projection",
     "wpp": "population_projection_wpp",

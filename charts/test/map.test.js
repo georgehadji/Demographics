@@ -29,6 +29,9 @@ test("the focus region is outlined in the accent", () => {
   const outlines = marks(map(choropleth, rate()).figure, "geo").filter((g) => attr(g, "stroke") === tokens["color-accent"]);
   assert.equal(outlines.length, 1);
   assert.equal(outlines[0].querySelectorAll("path").length, 1);
+  // focus null: a map of all regions, none in the foreground
+  const none = marks(map(choropleth, rate(), { ...SPEC, focus: null }).figure, "geo").filter((g) => attr(g, "stroke") === tokens["color-accent"]);
+  assert.equal(none.flatMap((g) => [...g.querySelectorAll("path")]).length, 0);
 });
 
 test("rings are rewound so a region is not drawn as the whole globe", () => {

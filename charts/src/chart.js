@@ -147,8 +147,9 @@ export function settings(rows, spec) {
   const locale = spec.locale ?? "el-GR";
   const text = TEXT[locale.slice(0, 2)];
   if (!text) throw new Error(`no chart text for locale ${locale}`);
-  const focus = spec.focus ?? "EL";
-  if (!rows.some((r) => r.geo_code === focus)) throw new Error(`focus ${focus} is not in the data`);
+  // null: no area in the foreground (e.g. a map of all regions)
+  const focus = spec.focus === undefined ? "EL" : spec.focus;
+  if (focus !== null && !rows.some((r) => r.geo_code === focus)) throw new Error(`focus ${focus} is not in the data`);
   if (!spec.title) throw new Error("the title states the finding (PROPOSAL §7A)");
   // names of areas and scenarios, by geo_code or scenario_id
   const label = (key) => spec.labels?.[key] ?? key;
@@ -180,7 +181,8 @@ export function footer(rows, s) {
 export function seriesAlt(rows, s, { focusFirst = true } = {}) {
   const sign = focusFirst ? 1 : -1;
   const series = [...Map.groupBy(central(rows), seriesKey).values()].sort(
-    (p, q) => sign * ((q[0].geo_code === s.focus) - (p[0].geo_code === s.focus)),
+    // focus first (or last), and an area's own series before its scenarios
+    (p, q) => sign * ((q[0].geo_code === s.focus) - (p[0].geo_code === s.focus)) || !!p[0].scenario_id - !!q[0].scenario_id,
   );
   const parts = series.map((part) => {
     const id = part[0].scenario_id;

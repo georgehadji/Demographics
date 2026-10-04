@@ -42,7 +42,9 @@ def changes(version: str) -> str:
 
 
 def sources_text(manifest: dict[str, Any]) -> str:
-    used = sorted({s["source_id"] for e in manifest.values() for s in e["sources"]})
+    """Terms of the sources of the files the zip holds (``_open``)."""
+    ids = [{s["source_id"] for s in e["sources"]} for e in manifest.values()]
+    used = sorted(set().union(*(i for i in ids if all(map(_reusable, i)))))
     lines = ["# Sources and their terms", ""]
     for source_id in used:
         source = get_source(source_id)

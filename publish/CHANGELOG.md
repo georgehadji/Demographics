@@ -2,7 +2,7 @@
 
 Each release of the data product, newest first. `grpop-publish` puts the entry of the version it publishes into the release (`CHANGELOG.md` in the zip) and refuses a version that is not the newest entry here. Versions follow semver: major for a changed definition or removed file, minor for new files or sources, patch for new data under the same definitions.
 
-## 1.0.0 (to be released)
+## 1.0.0 (2026-10-04)
 
 First release. Every file of the data product except the map geometry (GISCO terms are non-commercial; see `SOURCES.md` and LICENSE-CONTENT.md):
 

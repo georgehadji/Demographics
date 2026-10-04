@@ -19,8 +19,10 @@ const REQUIRED = [
   "vintage",
 ];
 // Table columns in order; the optional ones are shown only when some row needs them.
-const COLUMNS = ["geo_code", "period", "sex", "age", "value", "unit", "nature", "status", "scenario_id", "interval", "break_in_series"];
+const COLUMNS = ["geo_code", "definition_id", "period", "sex", "age", "value", "unit", "nature", "status", "scenario_id", "interval", "break_in_series"];
+// Optional columns: shown when a row needs them (the measure, when rows hold more than one).
 const OPTIONAL = {
+  definition_id: (r, rows) => r.definition_id !== rows[0].definition_id,
   sex: (r) => r.sex !== "total",
   age: (r) => r.age !== "total",
   scenario_id: (r) => r.scenario_id,
@@ -47,8 +49,10 @@ export const TEXT = {
     age: "ηλικία",
     missing: "—",
     yes: "ναι",
+    total: "σύνολο",
     columns: {
       geo_code: "Περιοχή",
+      definition_id: "Μέγεθος",
       period: "Περίοδος",
       sex: "Φύλο",
       age: "Ηλικία",
@@ -100,8 +104,10 @@ export const TEXT = {
     age: "age",
     missing: "—",
     yes: "yes",
+    total: "total",
     columns: {
       geo_code: "Area",
+      definition_id: "Measure",
       period: "Period",
       sex: "Sex",
       age: "Age",
@@ -215,7 +221,7 @@ export function table(rows, s, document) {
   const el = (tag, text) => Object.assign(document.createElement(tag), text === undefined ? {} : { textContent: text });
   const t = el("table");
   t.append(el("caption", s.title));
-  const columns = COLUMNS.filter((c) => !OPTIONAL[c] || rows.some(OPTIONAL[c]));
+  const columns = COLUMNS.filter((c) => !OPTIONAL[c] || rows.some((r) => OPTIONAL[c](r, rows)));
   const head = el("tr");
   for (const c of columns) head.append(Object.assign(el("th", s.text.columns[c]), { scope: "col" }));
   const body = el("tbody");
@@ -223,6 +229,7 @@ export function table(rows, s, document) {
     const tr = el("tr");
     const cells = {
       geo_code: s.label(r.geo_code),
+      definition_id: s.label(r.definition_id),
       period: r.period,
       sex: s.text.sex[r.sex],
       age: r.age,
@@ -294,6 +301,18 @@ export function frame(s, { tokens, document, caption }) {
 const breaksIn = (rows, s) => [
   ...new Set(byPeriod(central(rows).filter((r) => r.break_in_series)).map((r) => `${s.label(r.geo_code)} ${r.period}`)),
 ];
+
+/** Plot options of a bar in the grammar: projected lighter with a dashed edge, provisional hollow. */
+export function barLook(r, color, tokens) {
+  const look = style(r.nature, r.status);
+  return {
+    fill: look.hollow ? tokens["color-background"] : color,
+    fillOpacity: look.dash ? tokens["opacity-band-80"] : 1,
+    stroke: color,
+    strokeWidth: look.hollow || look.dash ? tokens["stroke-width-context"] : 0,
+    strokeDasharray: look.dash ? tokens[look.dash] : null,
+  };
+}
 
 /** ", προβολή" after a value that is projected or a scenario, so it is never read as observed. */
 export const natureNote = (s, r) => (style(r.nature, "final").dash ? `, ${s.text.nature[r.nature]}` : "");

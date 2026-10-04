@@ -4,7 +4,7 @@
 // is the focus area at spec.period (default: its latest period); the grammar styles its
 // bars (projected bars are lighter with a dashed edge, provisional ones hollow).
 import * as Plot from "@observablehq/plot";
-import { ageStart, compose, frame, natureNote, sentence, unique } from "./chart.js";
+import { ageStart, barLook, compose, frame, natureNote, sentence, unique } from "./chart.js";
 import { style } from "./grammar.js";
 
 const SIDE = { male: -1, female: 1 };
@@ -30,7 +30,7 @@ function profiles(rows, s) {
   return [main, others[0] ?? []];
 }
 
-const name = (s, r) => `${s.label(r.geo_code)} ${r.period}` + (r.scenario_id ? ` (${r.scenario_id})` : "");
+const name = (s, r) => `${s.label(r.geo_code)} ${r.period}` + (r.scenario_id ? ` (${s.label(r.scenario_id)})` : "");
 const signed = (r) => SIDE[r.sex] * r.value;
 
 function draw(rows, s, options) {

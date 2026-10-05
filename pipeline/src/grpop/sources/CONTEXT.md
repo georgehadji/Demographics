@@ -8,4 +8,4 @@ Where data comes from (ADR 0005, L1).
 | `eurostat.py` | `grpop-ingest`: downloads whole Eurostat datasets, and the files of registry entries with `ingest` set (GISCO GeoJSON), into the snapshot store, with backoff |
 | `probe.py` | `grpop-probe`: checks every registry entry against the live source and writes the probe report |
 | `registry.py` | Typed, cached access to `registry.yaml` (`load_registry`, `get_source`), licence keys resolved |
-| `registry.yaml` | Every source: provider, code, access, licence (by key), phase, verification with evidence |
+| `registry.yaml` | Every source: provider, code, title (and `title_el` for the site), access, licence (by key), phase, verification with evidence |

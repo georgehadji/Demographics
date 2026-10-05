@@ -9,6 +9,7 @@ ITEM = """
   unit: persons
   title: t
   description: d
+  el: {{title: τ, description: δ}}
 """
 
 

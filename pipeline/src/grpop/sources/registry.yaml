@@ -79,6 +79,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_pjan
     title: Population on 1 January by age and sex
+    title_el: "Πληθυσμός την 1η Ιανουαρίου κατά ηλικία και φύλο"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
@@ -91,6 +92,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_gind
     title: Population change - demographic balance and crude rates at national level
+    title_el: "Μεταβολή του πληθυσμού: δημογραφικό ισοζύγιο και αδροί δείκτες, εθνικό επίπεδο"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_gind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -103,6 +105,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_find
     title: Fertility indicators
+    title_el: "Δείκτες γονιμότητας"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_find?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -115,6 +118,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_frate
     title: Fertility rates by age
+    title_el: "Δείκτες γονιμότητας κατά ηλικία"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_frate?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -127,6 +131,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_mlexpec
     title: Life expectancy by age and sex
+    title_el: "Προσδόκιμο ζωής κατά ηλικία και φύλο"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlexpec?format=JSON&lang=EN&geo=EL&age=Y_LT1&lastTimePeriod=1
@@ -139,6 +144,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_pjanind
     title: Population structure indicators at national level
+    title_el: "Δείκτες πληθυσμιακής δομής, εθνικό επίπεδο"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -151,6 +157,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_pjanbroad
     title: Population on 1 January by broad age group and sex
+    title_el: "Πληθυσμός την 1η Ιανουαρίου κατά ευρεία ηλικιακή ομάδα και φύλο"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjanbroad?format=JSON&lang=EN&geo=EL&sex=T&lastTimePeriod=1
@@ -163,6 +170,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_pjangroup
     title: Population on 1 January by age group and sex
+    title_el: "Πληθυσμός την 1η Ιανουαρίου κατά ηλικιακή ομάδα και φύλο"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjangroup?format=JSON&lang=EN&geo=EL&sex=T&lastTimePeriod=1
@@ -175,6 +183,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_minfind
     title: Infant mortality rates
+    title_el: "Δείκτες βρεφικής θνησιμότητας"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_minfind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -187,6 +196,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_gind3
     title: Population change - demographic balance and crude rates at regional level (NUTS 3)
+    title_el: "Μεταβολή του πληθυσμού: δημογραφικό ισοζύγιο και αδροί δείκτες, περιφερειακό επίπεδο (NUTS 3)"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_gind3?format=JSON&lang=EN&geo=EL&sinceTimePeriod=2020
@@ -206,6 +216,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_d2jan
     title: Population on 1 January by age, sex and NUTS 2 region
+    title_el: "Πληθυσμός την 1η Ιανουαρίου κατά ηλικία, φύλο και Περιφέρεια NUTS 2"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_d2jan?format=JSON&lang=EN&geo=EL51&sex=T&age=TOTAL&lastTimePeriod=1
@@ -224,6 +235,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_pjanind2
     title: Population structure indicators by NUTS 2 region
+    title_el: "Δείκτες πληθυσμιακής δομής κατά Περιφέρεια NUTS 2"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanind2?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
@@ -236,6 +248,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_find2
     title: Fertility indicators by NUTS 2 region
+    title_el: "Δείκτες γονιμότητας κατά Περιφέρεια NUTS 2"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_find2?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
@@ -250,6 +263,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_frate2
     title: Fertility rates by age and NUTS 2 region
+    title_el: "Δείκτες γονιμότητας κατά ηλικία και Περιφέρεια NUTS 2"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_frate2?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
@@ -262,6 +276,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_mlifexp
     title: Life expectancy by age, sex and NUTS 2 region
+    title_el: "Προσδόκιμο ζωής κατά ηλικία, φύλο και Περιφέρεια NUTS 2"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_mlifexp?format=JSON&lang=EN&geo=EL51&sex=T&age=Y_LT1&lastTimePeriod=1
@@ -274,6 +289,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_minfind
     title: Infant mortality rates by NUTS 2 region
+    title_el: "Δείκτες βρεφικής θνησιμότητας κατά Περιφέρεια NUTS 2"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_minfind?format=JSON&lang=EN&geo=EL51&lastTimePeriod=1
@@ -286,6 +302,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_pjangrp3
     title: Population on 1 January by age group, sex and NUTS 3 region
+    title_el: "Πληθυσμός την 1η Ιανουαρίου κατά ηλικιακή ομάδα, φύλο και περιοχή NUTS 3"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjangrp3?format=JSON&lang=EN&geo=EL30&sex=T&age=TOTAL&lastTimePeriod=1
@@ -298,6 +315,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_fmonth
     title: Live births by month
+    title_el: "Γεννήσεις ζώντων κατά μήνα"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -310,6 +328,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_mmonth
     title: Deaths by month
+    title_el: "Θάνατοι κατά μήνα"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
@@ -322,6 +341,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_mwk_ts
     title: Deaths by week and sex
+    title_el: "Θάνατοι κατά εβδομάδα και φύλο"
     access: api
     probe_kind: eurostat_jsonstat
     # Greece reports with a lag: the latest week has no values, so the probe asks for a range.
@@ -335,6 +355,7 @@ sources:
     provider: Eurostat
     dataset_code: proj_25np
     title: EUROPOP2025 population on 1 January by age, sex and projection type
+    title_el: "EUROPOP2025: πληθυσμός την 1η Ιανουαρίου κατά ηλικία, φύλο και τύπο προβολής"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
@@ -350,6 +371,7 @@ sources:
     provider: Eurostat GISCO
     dataset_code: NUTS 2024
     title: NUTS 2024 boundaries (file index)
+    title_el: "Όρια NUTS 2024 (κατάλογος αρχείων)"
     access: bulk_file
     probe_kind: http
     probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/nuts-2024-files.json
@@ -366,6 +388,7 @@ sources:
     provider: Eurostat GISCO
     dataset_code: NUTS_RG_03M_2024_4326_LEVL_2
     title: NUTS 2024 regions, level 2, scale 1:3 million, WGS 84 (GeoJSON)
+    title_el: "Περιφέρειες NUTS 2024, επίπεδο 2, κλίμακα 1:3 εκατ., WGS 84 (GeoJSON)"
     access: bulk_file
     probe_kind: http
     probe_url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/geojson/NUTS_RG_03M_2024_4326_LEVL_2.geojson
@@ -382,6 +405,7 @@ sources:
     provider: ELSTAT
     dataset_code: estimated population 1.1.2025 and migration flows 2024
     title: Estimated population (1.1.2025) and migration flows (2024), press release
+    title_el: "Εκτιμώμενος πληθυσμός (1.1.2025) και μεταναστευτικές ροές (2024), δελτίο τύπου"
     access: pdf
     probe_kind: http
     probe_url: https://www.statistics.gr/documents/20181/18730878/DT_population_2025_en.pdf/5dafb9ee-8c2a-92cb-168f-92a5625aec79
@@ -397,6 +421,7 @@ sources:
     provider: UN DESA Population Division
     dataset_code: WPP2024
     title: World Population Prospects 2024
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024 (World Population Prospects)"
     access: bulk_file
     probe_kind: http
     probe_url: https://population.un.org/wpp/
@@ -412,6 +437,7 @@ sources:
     provider: UN DESA Population Division
     dataset_code: WPP2024 PPP/POPTOT
     title: World Population Prospects 2024, probabilistic projection of total population, 2024-2100 (median and 80/95% intervals)
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: πιθανοτική προβολή του συνολικού πληθυσμού, 2024–2100 (διάμεσος και διαστήματα 80% και 95%)"
     access: bulk_file
     probe_kind: http
     probe_url: https://population.un.org/wpp/assets/Excel%20Files/2_Indicators%20(Probabilistic)/EXCEL_FILES/2_Population/UN_PPP2024_Output_PopTot.xlsx
@@ -429,6 +455,7 @@ sources:
     provider: Human Mortality Database
     dataset_code: GRC
     title: Greece life tables and mortality series
+    title_el: "Ελλάδα: πίνακες επιβίωσης και σειρές θνησιμότητας"
     access: bulk_file
     probe_kind: http
     probe_url: https://www.mortality.org/Country/Country?cntr=GRC
@@ -444,6 +471,7 @@ sources:
     provider: Human Fertility Database
     dataset_code: GRC
     title: Greece fertility series
+    title_el: "Ελλάδα: σειρές γονιμότητας"
     access: bulk_file
     probe_kind: http
     probe_url: https://www.humanfertility.org/Country/Country?cntr=GRC
@@ -461,6 +489,7 @@ sources:
     provider: Eurostat
     dataset_code: proj_25rp5
     title: EUROPOP2025 population on 1 January by age group, sex, projection type and NUTS 3 region
+    title_el: "EUROPOP2025: πληθυσμός την 1η Ιανουαρίου κατά ηλικιακή ομάδα, φύλο, τύπο προβολής και περιοχή NUTS 3"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rp5?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
@@ -477,6 +506,7 @@ sources:
     provider: Eurostat
     dataset_code: proj_25rpind
     title: EUROPOP2025 population structure indicators by projection type and NUTS 3 region
+    title_el: "EUROPOP2025: δείκτες πληθυσμιακής δομής κατά τύπο προβολής και περιοχή NUTS 3"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rpind?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
@@ -490,6 +520,7 @@ sources:
     provider: Eurostat
     dataset_code: proj_25rdbal
     title: EUROPOP2025 demographic balances by projection type and NUTS 3 region (5-year aggregates)
+    title_el: "EUROPOP2025: δημογραφικά ισοζύγια κατά τύπο προβολής και περιοχή NUTS 3 (πενταετή σύνολα)"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25rdbal?format=JSON&lang=EN&geo=EL301&lastTimePeriod=1
@@ -503,6 +534,7 @@ sources:
     provider: Eurostat
     dataset_code: demo_r_pjanaggr3
     title: Population on 1 January by broad age group, sex and NUTS 3 region
+    title_el: "Πληθυσμός την 1η Ιανουαρίου κατά ευρεία ηλικιακή ομάδα, φύλο και περιοχή NUTS 3"
     access: api
     probe_kind: eurostat_jsonstat
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_pjanaggr3?format=JSON&lang=EN&geo=EL301&sex=T&age=TOTAL&lastTimePeriod=1
@@ -520,6 +552,7 @@ sources:
     provider: ELSTAT
     dataset_code: SPO03 table 06
     title: Live births by place of usual residence of the mother - municipalities and municipal units, 1999-2024
+    title_el: "Γεννήσεις ζώντων κατά τόπο συνήθους διαμονής της μητέρας: δήμοι και δημοτικές ενότητες, 1999–2024"
     access: bulk_file
     probe_kind: http
     probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO03/2024
@@ -538,6 +571,7 @@ sources:
     provider: ELSTAT
     dataset_code: SPO09 table 07
     title: Deaths by place of usual residence - municipalities and municipal units, 1999-2024
+    title_el: "Θάνατοι κατά τόπο συνήθους διαμονής: δήμοι και δημοτικές ενότητες, 1999–2024"
     access: bulk_file
     probe_kind: http
     probe_url: https://www.statistics.gr/el/statistics/-/publication/SPO09/2024
@@ -553,6 +587,7 @@ sources:
     provider: ELSTAT
     dataset_code: Census 2021 resident population by settlement
     title: 2021 Census resident population by region, regional unit, municipality, municipal unit, community and settlement
+    title_el: "Απογραφή 2021: μόνιμος πληθυσμός κατά περιφέρεια, περιφερειακή ενότητα, δήμο, δημοτική ενότητα, κοινότητα και οικισμό"
     access: bulk_file
     probe_kind: http
     probe_url: https://www.statistics.gr/documents/20181/17286366/MON_PLI_DHM_OIKISN_2021.xlsx/2b5a5f24-4083-ede5-7201-3c4fb109fb44
@@ -571,6 +606,7 @@ sources:
     provider: ELSTAT
     dataset_code: SPO18 table 10
     title: Estimated population on 1 January by sex, region and regional unit, 2002 onwards
+    title_el: "Εκτιμώμενος πληθυσμός την 1η Ιανουαρίου κατά φύλο, περιφέρεια και περιφερειακή ενότητα, από το 2002"
     access: bulk_file
     probe_kind: http
     probe_url: https://www.statistics.gr/el/statistics?p_p_id=documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_javax.faces.resource=document&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_ln=downloadResources&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_documentID=116985&_documents_WAR_publicationsportlet_INSTANCE_Mr0GiQJSgPHd_locale=el

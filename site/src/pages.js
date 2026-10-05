@@ -5,6 +5,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
+import { TEXT } from "../../charts/src/chart.js";
 import { geometry, load } from "./product.js";
 import { DEFINITIONS, REGISTRY } from "./repo.js";
 
@@ -12,6 +13,10 @@ const ROOT = new URL("../../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
 const front = (title) => `---\ntitle: "${title.replace(/"/g, '\\"')}"\n---\n\n{{< include /_tier.md >}}\n\n`;
 const anchor = (definitionId) => definitionId.replace(/[^a-z0-9]+/g, "-");
+/** The explanatory text of the pages (texts.yaml). */
+export const TEXTS = yaml.load(read("site/texts.yaml"));
+const DEFS = Object.fromEntries(yaml.load(read("pipeline/src/grpop/definitions.yaml")).map((d) => [d.id, d]));
+const callout = (title, body) => `::: {.callout-tip collapse="true" title="${title}"}\n${body}:::\n\n`;
 
 /** The periods with a central value for geo, sex and age, sorted. */
 const periods = (rows, geo, sex = "total", age = "total") =>
@@ -61,7 +66,10 @@ function regional(dir, catalog, { name, title, sex = "total", age = "total" }, n
       title: `${title}: Περιφέρειες και ${catalog.areas.EL}`,
     });
   const charts = Object.keys(files).map((path) => `{{< chart ${path} >}}`);
-  return { text: `## Περιφέρειες\n\n${charts.join("\n\n")}\n\n[Η σελίδα κάθε Περιφέρειας](../regions/index.qmd)\n`, files };
+  return {
+    text: `## Περιφέρειες\n\n${TEXTS.pages.regional}\n${charts.join("\n\n")}\n\n[Η σελίδα κάθε Περιφέρειας](../regions/index.qmd)\n`,
+    files,
+  };
 }
 
 /** An indicator's page and chart specs; `names` maps each region's code to its name. */
@@ -84,13 +92,17 @@ function indicator(dir, catalog, manifest, names, item) {
     title: `${title}: ${areas.map((g) => catalog.areas[g]).join(", ")}`,
     labels: Object.fromEntries(areas.map((g) => [g, catalog.areas[g]])),
   };
+  const text = TEXTS.indicators[name];
+  if (!text) throw new Error(`texts.yaml: no explanation of the indicator ${name}`);
+  const def = DEFS[rows[0].definition_id];
   const regions = manifest[`${name}_regional`] ? regional(dir, catalog, item, names) : { text: "", files: {} };
   const page =
     front(title) +
     `Η πιο πρόσφατη τιμή για την Ελλάδα είναι του ${period}:\n\n${facts.join("\n")}\n\n` +
-    (item.note ? `::: {.callout-note}\n${item.note}\n:::\n\n` : "") +
     `{{< chart indicators/${name}.json >}}\n\n` +
-    `Ορισμός: [${rows[0].definition_id}](/definitions.qmd#${anchor(rows[0].definition_id)}).\n\n` +
+    callout("Πώς διαβάζεται το γράφημα", TEXTS.pages.chart) +
+    `${text}\n` +
+    `## Ορισμός\n\n${def.el.description} ([Όλοι οι ορισμοί](/definitions.qmd#${anchor(def.id)}))\n\n` +
     regions.text;
   return { [`indicators/${name}.qmd`]: page, [`indicators/${name}.json`]: json(spec), ...regions.files };
 }
@@ -116,14 +128,14 @@ function region(dir, catalog, manifest, { geo_code: geo, name }) {
         `[Όλες οι χώρες](../indicators/${n}.qmd)\n\n{{< chart ${path} >}}\n`,
     );
   }
-  files[`regions/${geo}.qmd`] = front(name) + `Η Περιφέρεια (NUTS 2: \`${geo}\`), με τους ρυθμούς και τους δείκτες σε σύγκριση με το σύνολο της χώρας.\n\n` + parts.join("\n");
+  files[`regions/${geo}.qmd`] = front(name) + `Κωδικός NUTS 2: \`${geo}\`.\n\n${TEXTS.pages.region}\n` + parts.join("\n");
   return files;
 }
 
 function regions(dir, catalog, manifest, features) {
   const sorted = [...features].sort((a, b) => a.name.localeCompare(b.name, "el"));
   return Object.assign(
-    { "regions/index.qmd": front("Περιφέρειες") + sorted.map((p) => `- [${p.name}](${p.geo_code}.qmd)`).join("\n") + "\n" },
+    { "regions/index.qmd": front("Περιφέρειες") + `${TEXTS.pages.regions}\n` + sorted.map((p) => `- [${p.name}](${p.geo_code}.qmd)`).join("\n") + "\n" },
     ...features.map((p) => region(dir, catalog, manifest, p)),
   );
 }
@@ -158,12 +170,12 @@ function projections(dir, catalog) {
     }),
     "projections.qmd":
       front("Προβολές πληθυσμού") +
-      "Οι προβολές δείχνουν τι συνεπάγονται υποθέσεις για τη γονιμότητα, τη θνησιμότητα και τη μετανάστευση. Δεν είναι προβλέψεις.\n\n" +
+      `${TEXTS.pages.projections}\n` +
       `## Eurostat EUROPOP2025\n\nΒασική προβολή για ${EL}, ${span(europop, rows)}.\n\n` +
-      "Τα σενάρια είναι οι έλεγχοι ευαισθησίας της Eurostat: μαθηματικές συνέπειες άλλων υποθέσεων, όχι προβλέψεις ούτε αποτελέσματα πολιτικών.\n\n" +
+      `${TEXTS.pages.projections_europop}\n` +
       "{{< chart projections/europop.json >}}\n\n" +
-      `## ΟΗΕ, World Population Prospects 2024\n\nΔιάμεσος για ${EL}, ${span(wpp, load(dir, wpp))}.` +
-      " Οι ζώνες είναι τα διαστήματα 80% και 95% της πιθανοτικής προβολής του ΟΗΕ. " +
+      `## ΟΗΕ, Παγκόσμιες Πληθυσμιακές Προοπτικές 2024\n\nΔιάμεσος για ${EL}, ${span(wpp, load(dir, wpp))}.\n\n` +
+      `${TEXTS.pages.projections_wpp}\n` +
       "Ο πληθυσμός εδώ είναι της 1ης Ιουλίου και δεν συγκρίνεται τιμή προς τιμή με της 1ης Ιανουαρίου " +
       "([ορισμός](definitions.qmd#population-1jul-v1)).\n\n" +
       "{{< chart projections/wpp.json >}}\n",
@@ -178,25 +190,18 @@ function home(dir, catalog) {
   });
   return (
     front("Κοόρτες: η δημογραφία της Ελλάδας") +
-    "Ανοιχτό παρατηρητήριο: κάθε αριθμός διαβάζεται από τα επίσημα δεδομένα τη στιγμή που χτίζεται η σελίδα, μαζί με την πηγή του.\n\n" +
+    `${TEXTS.pages.home}\n` +
     `${lines.join("\n")}\n\n` +
-    "Η καθαρή μετανάστευση είναι **εκτίμηση** της Eurostat, όχι μέτρηση.\n\n" +
-    "[Όλοι οι δείκτες](indicators/index.qmd) · [Περιφέρειες](regions/index.qmd) · [Προβολές](projections.qmd) · " +
-    "[Ορισμοί](definitions.qmd) · [Πηγές](sources.qmd)\n"
+    TEXTS.pages.home_after
   );
 }
 
 function definitions(dir, names) {
   const used = new Set(names.map((n) => load(dir, n)[0]?.definition_id));
-  const all = yaml.load(read("pipeline/src/grpop/definitions.yaml"));
-  const items = all
+  const items = Object.values(DEFS)
     .filter((d) => used.has(d.id))
-    .map((d) => `## ${d.title} {#${anchor(d.id)}}\n\n\`${d.id}\` · μονάδα: ${d.unit}\n\n${d.description}\n`);
-  return (
-    front("Ορισμοί") +
-    `Οι ορισμοί των δεικτών, όπως τους διαβάζει ο κώδικας ([\`definitions.yaml\`](${DEFINITIONS})). Οι περιγραφές είναι προς το παρόν στα αγγλικά.\n\n` +
-    items.join("\n")
-  );
+    .map((d) => `## ${d.el.title} {#${anchor(d.id)}}\n\n\`${d.id}\` · μονάδα: ${TEXT.el.units[d.unit]}\n\n${d.el.description}\n`);
+  return front("Ορισμοί") + `${TEXTS.pages.definitions.replace("{definitions}", DEFINITIONS)}\n` + items.join("\n");
 }
 
 function sources(manifest) {
@@ -206,14 +211,19 @@ function sources(manifest) {
     .filter((s) => used.has(s.id))
     .map((s) => {
       const l = registry.licences[s.licence];
-      return `## ${s.title}\n\n- ${s.provider}, \`${s.dataset_code}\`\n- Άδεια: [${l.name}](${l.terms_url})\n- Αναφορά: ${l.attribution}\n`;
+      const credit = l.attribution.replace("{dataset_code}", s.dataset_code);
+      return `## ${s.title_el}\n\n- ${s.provider}, \`${s.dataset_code}\`\n- Άδεια: [${l.name}](${l.terms_url})\n- Αναφορά: ${credit}\n`;
     });
-  return (
-    front("Πηγές") +
-    `Οι πηγές από τις οποίες χτίζεται το data product, με την άδεια και την αναφορά που ζητά η καθεμία ([registry](${REGISTRY})).\n\n` +
-    items.join("\n")
-  );
+  return front("Πηγές") + `${TEXTS.pages.sources.replace("{registry}", REGISTRY)}\n` + items.join("\n");
 }
+
+/** The Greek part of AI_USE.md, between its EL and EN paragraphs. */
+const greekAiUse = () => {
+  const text = read("AI_USE.md");
+  const [start, end] = [text.indexOf("**EL.** "), text.indexOf("**EN.**")];
+  if (start < 0 || end < start) throw new Error("AI_USE.md: no EL part before the EN part");
+  return text.slice(start + "**EL.** ".length, end);
+};
 
 /** Every generated file, path relative to site/ -> content. */
 export function pages(dir, catalog = JSON.parse(readFileSync(new URL("../catalog.json", import.meta.url), "utf8"))) {
@@ -222,13 +232,13 @@ export function pages(dir, catalog = JSON.parse(readFileSync(new URL("../catalog
   const names = Object.fromEntries(features.map((p) => [p.geo_code, p.name]));
   const files = Object.assign({}, ...catalog.indicators.map((item) => indicator(dir, catalog, manifest, names, item)));
   files["indicators/index.qmd"] =
-    front("Δείκτες") + catalog.indicators.map((i) => `- [${i.title}](${i.name}.qmd)`).join("\n") + "\n";
+    front("Δείκτες") + `${TEXTS.pages.indicators}\n` + catalog.indicators.map((i) => `- [${i.title}](${i.name}.qmd)`).join("\n") + "\n";
   Object.assign(files, regions(dir, catalog, manifest, features), projections(dir, catalog));
   files["index.qmd"] = home(dir, catalog);
   const { europop, wpp } = catalog.projections;
   files["definitions.qmd"] = definitions(dir, [...catalog.indicators.map((i) => i.name), europop, wpp]);
   files["sources.qmd"] = sources(manifest);
-  files["ai.qmd"] = front("Χρήση τεχνητής νοημοσύνης") + read("AI_USE.md").replace(/^# .*\n/, "");
+  files["ai.qmd"] = front("Χρήση τεχνητής νοημοσύνης") + greekAiUse();
   return files;
 }
 

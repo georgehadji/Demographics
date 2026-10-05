@@ -1,5 +1,5 @@
 ---
-title: Errata
+title: Διορθώσεις
 ---
 
 {{< include /_tier.md >}}

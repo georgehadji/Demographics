@@ -8,13 +8,15 @@
 // fan chart: 95% and 80% bands open from the last value before them, and a thin rule
 // marks the focus' last observation.
 import * as Plot from "@observablehq/plot";
-import { BREAK_MARK, byPeriod, central, compose, frame, seriesKey } from "./chart.js";
+import { BREAK_MARK, byPeriod, central, compose, frame, seriesKey, tip } from "./chart.js";
 import { style } from "./grammar.js";
 
 // Approximate width of a label character and line height of labels, in pixels, at
 // Plot's 10px font.
 const LABEL_CHAR = 6;
 const LABEL_GAP = 12;
+// Radius, in pixels, of the invisible point that shows a value's tooltip under the pointer.
+export const TIP_RADIUS = 5;
 const BANDS = [
   ["95", "opacity-band-95"],
   ["80", "opacity-band-80"],
@@ -51,7 +53,7 @@ function segments(rows, gaps) {
  * that start; `facet` adds fx/fy channels in small multiples; `gaps` cuts the line at a
  * break in series (the focus' line, not a comparator's).
  */
-export function seriesMarks(part, rows, { color, width, tokens, facet = {}, gaps = true }) {
+export function seriesMarks(part, rows, { color, width, tokens, facet = {}, gaps = true, title }) {
   const parts = segments(part, gaps);
   const start = byPeriod(part)[0];
   if (start.scenario_id && !(gaps && start.break_in_series)) {
@@ -75,6 +77,9 @@ export function seriesMarks(part, rows, { color, width, tokens, facet = {}, gaps
     marks.push(Plot.dot([r], { ...at, r: 3.5, stroke: color(r.nature), strokeWidth: width, fill: tokens["color-background"] }));
   for (const r of part.filter((r) => r.break_in_series && r.value !== null))
     marks.push(Plot.text([r], { ...at, text: () => BREAK_MARK, dy: -8, fill: tokens["color-text-muted"] }));
+  // one invisible point per value carrying its tooltip (fill-opacity 0 still takes the pointer)
+  if (title)
+    marks.push(Plot.dot(part.filter((r) => r.value !== null), { ...at, r: TIP_RADIUS, fill: color(part[0].nature), fillOpacity: 0, title }));
   return marks;
 }
 
@@ -131,7 +136,7 @@ function draw(all, s, options) {
     const width = tokens[focus ? "stroke-width-focus" : "stroke-width-context"];
     const color = (nature) => tokens[style(nature, "final").color] ?? base;
     under.push(...bands(part, all.filter((r) => r.interval && seriesKey(r) === key), color, tokens));
-    marks.push(...seriesMarks(part, rows, { color, width, tokens, gaps: part[0].geo_code === s.focus }));
+    marks.push(...seriesMarks(part, rows, { color, width, tokens, gaps: part[0].geo_code === s.focus, title: (r) => tip(s, r) }));
     const end = byPeriod(part.filter((r) => r.value !== null)).at(-1);
     if (end) {
       const name = s.label(end.geo_code) + (end.scenario_id ? ` (${s.label(end.scenario_id)})` : "");

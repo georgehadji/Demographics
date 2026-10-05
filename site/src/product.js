@@ -18,6 +18,7 @@ import { choropleth, symbols } from "../../charts/src/map.js";
 import { pyramid } from "../../charts/src/pyramid.js";
 import { tiles } from "../../charts/src/tiles.js";
 import { waterfall } from "../../charts/src/waterfall.js";
+import { DEFINITIONS, REGISTRY } from "./repo.js";
 
 // Fields of pipeline/src/grpop/provenance.py a value must carry to be quoted.
 export const PROVENANCE = [
@@ -38,7 +39,26 @@ const reference = (name) => {
   if (!/^[a-z0-9_]+$/.test(name)) throw new Error(`layout ${name}: not a reference table name`);
   return csvParse(readFileSync(new URL(`${name}.csv`, REFERENCE), "utf8"));
 };
-const LABELS = { el: { table: "Πίνακας δεδομένων", csv: "Λήψη CSV" }, en: { table: "Data table", csv: "Download CSV" } };
+const LABELS = {
+  el: {
+    table: "Πίνακας δεδομένων",
+    csv: "Λήψη CSV",
+    panel: "Πηγή και ορισμός",
+    retrieved: "λήψη",
+    definition: "ορισμός",
+    transform: "μετασχηματισμός",
+    registry: "Μητρώο πηγών (άδειες και επαλήθευση)",
+  },
+  en: {
+    table: "Data table",
+    csv: "Download CSV",
+    panel: "Source and definition",
+    retrieved: "retrieved",
+    definition: "definition",
+    transform: "transformation",
+    registry: "Source registry (licences and verification)",
+  },
+};
 
 const typed = (r) => ({
   ...r,
@@ -104,6 +124,25 @@ export function fact(dir, name, geo, period, sex = "total", age = "total", local
   return `<span class="fact" title="${escape(title)}">${escape(text)}</span>`;
 }
 
+// What the source panel shows of each row (PROPOSAL §7A), one line per distinct set.
+const PANEL = ["source", "dataset_code", "source_url", "vintage", "retrieved_at", "definition_id", "transform_version"];
+
+/**
+ * A chart's source panel: per source, its dataset (linked), vintage, retrieval date,
+ * definition (linked to definitions.yaml) and transformation version, all from the rows,
+ * and a link to the source registry. A details element, so the keyboard opens it.
+ */
+export function panel(rows, l, t) {
+  const distinct = new Map(rows.map((r) => [PANEL.map((k) => r[k]).join("|"), r])).values();
+  const lines = [...distinct].map(
+    (r) =>
+      `<li>${escape(r.source)}, <a href="${escape(r.source_url)}">${escape(r.dataset_code)}</a> · ${t.vintage} ${escape(vintageDate(r.vintage))}` +
+      ` · ${l.retrieved} ${escape(r.retrieved_at.slice(0, 10))} · ${l.definition} <a href="${DEFINITIONS}">${escape(r.definition_id)}</a>` +
+      ` · ${l.transform} ${escape(r.transform_version)}</li>`,
+  );
+  return `<details class="kh-sources"><summary>${l.panel}</summary><ul>${lines.join("")}</ul><p><a href="${REGISTRY}">${l.registry}</a></p></details>`;
+}
+
 /**
  * A chart from a JSON spec: {type, data, geo: [...], sex?, age?, ...the chart's spec}. The
  * figure in the light and the dark mode (styles.css shows the one Quarto is in), its data
@@ -132,6 +171,7 @@ export function chart(dir, spec) {
       `<div class="kh-light">${light.figure.outerHTML}</div>`,
       `<div class="kh-dark">${dark.figure.outerHTML}</div>`,
       `<details><summary>${l.table}</summary>${light.table.outerHTML}</details>`,
+      panel(rows, l, TEXT[(rest.locale ?? "el").slice(0, 2)]),
       `<p><a download="${escape(data)}.csv" href="${href}">${l.csv}</a></p>`,
       `</div>`,
     ].join("");

@@ -4,7 +4,7 @@
 // is the focus area at spec.period (default: its latest period); the grammar styles its
 // bars (projected bars are lighter with a dashed edge, provisional ones hollow).
 import * as Plot from "@observablehq/plot";
-import { ageStart, barLook, compose, frame, natureNote, sentence, unique } from "./chart.js";
+import { ageStart, barLook, compose, frame, natureNote, sentence, tip, unique } from "./chart.js";
 import { style } from "./grammar.js";
 
 const SIDE = { male: -1, female: 1 };
@@ -47,19 +47,16 @@ function draw(rows, s, options) {
       Plot.barX(group, {
         x: signed,
         y: "age",
-        fill: look.hollow ? tokens["color-background"] : color,
-        fillOpacity: look.dash ? tokens["opacity-band-80"] : 1,
-        stroke: color,
-        strokeWidth: look.hollow || look.dash ? tokens["stroke-width-context"] : 0,
-        strokeDasharray: look.dash ? tokens[look.dash] : null,
+        ...barLook(group[0], color, tokens),
         insetTop: 0.5,
         insetBottom: 0.5,
+        title: (r) => `${tip(s, r)} · ${s.text.sex[r.sex]}, ${s.text.age} ${r.age}`,
       }),
     );
   }
   if (compare.length)
     marks.push(
-      Plot.barX(compare, { x: signed, y: "age", fill: "none", stroke: tokens["color-comparator"], strokeWidth: tokens["stroke-width-context"] }),
+      Plot.barX(compare, { x: signed, y: "age", fill: "none", stroke: tokens["color-comparator"], strokeWidth: tokens["stroke-width-context"], title: (r) => `${tip(s, r)} · ${s.text.sex[r.sex]}, ${s.text.age} ${r.age}` }),
     );
   const muted = tokens["color-text-muted"];
   marks.push(

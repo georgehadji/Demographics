@@ -10,6 +10,7 @@ Unit tests, run by `npm test`.
 | `line.test.js` | The line chart and the composite: colours, dashes, gaps (focus only at breaks), scenario start, hollow markers, label dodging, fan bands, last observation, table, alt text, CSV, input errors |
 | `map.test.js` | Choropleth and proportional symbols: palette, classification, attribution, focus outline, ring winding, grammar, rates vs counts, size key, alt text, input errors |
 | `pyramid.test.js` | The pyramid: sides, outline comparison, grammar on bars, alt text, input errors |
-| `rows.js` | Shared by the tests: a jsdom document, the tokens, a hand-written observation row and selectors for Plot's mark groups |
+| `rows.js` | Shared by the tests: a jsdom document, the tokens, a hand-written observation row and selectors for Plot's mark groups (without the invisible tooltip points) |
 | `waterfall.test.js` | The waterfall: floating parts and total, grammar, alt text, measure column, the sum check and its tolerance, input errors |
+| `tip.test.js` | Tooltips: the text of one, and every chart type of the gallery giving each value one built from its row |
 | `tiles.test.js` | The tile grid: the layout covers every Greek NUTS 2 region once, accent and reference lines, labels, input errors |

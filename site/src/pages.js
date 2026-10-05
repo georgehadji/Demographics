@@ -6,6 +6,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 import { geometry, load } from "./product.js";
+import { DEFINITIONS, REGISTRY } from "./repo.js";
 
 const ROOT = new URL("../../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), "utf8");
@@ -192,7 +193,7 @@ function definitions(dir, names) {
     .map((d) => `## ${d.title} {#${anchor(d.id)}}\n\n\`${d.id}\` · μονάδα: ${d.unit}\n\n${d.description}\n`);
   return (
     front("Ορισμοί") +
-    "Οι ορισμοί των δεικτών, όπως τους διαβάζει ο κώδικας ([`definitions.yaml`](https://github.com/georgehadji/Demographics/blob/main/pipeline/src/grpop/definitions.yaml)). Οι περιγραφές είναι προς το παρόν στα αγγλικά.\n\n" +
+    `Οι ορισμοί των δεικτών, όπως τους διαβάζει ο κώδικας ([\`definitions.yaml\`](${DEFINITIONS})). Οι περιγραφές είναι προς το παρόν στα αγγλικά.\n\n` +
     items.join("\n")
   );
 }
@@ -208,7 +209,7 @@ function sources(manifest) {
     });
   return (
     front("Πηγές") +
-    "Οι πηγές από τις οποίες χτίζεται το data product, με την άδεια και την αναφορά που ζητά η καθεμία ([registry](https://github.com/georgehadji/Demographics/blob/main/pipeline/src/grpop/sources/registry.yaml)).\n\n" +
+    `Οι πηγές από τις οποίες χτίζεται το data product, με την άδεια και την αναφορά που ζητά η καθεμία ([registry](${REGISTRY})).\n\n` +
     items.join("\n")
   );
 }

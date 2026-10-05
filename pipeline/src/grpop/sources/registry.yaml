@@ -151,7 +151,7 @@ sources:
     licence: eurostat
     used_for: [age_specific_mortality, life_tables]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-05, evidence: 'Source probe run 37333712077: HTTP 200, JSON-stat "Life table by age and sex" (updated 2026-09-25) with a Greek value; confirms the code exists'}
 
   - id: eurostat_demo_pjanind
     provider: Eurostat

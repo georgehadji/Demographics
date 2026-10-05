@@ -75,6 +75,7 @@ function drawChoropleth(rows, s, options) {
   const diverging = s.palette === "diverging";
   const extent = Math.max(...valued.map((f) => Math.abs(f.row.value)));
   const hollow = valued.filter((f) => style(f.row.nature, f.row.status).hollow);
+  const digits = Math.max(0, ...valued.map((f) => (String(f.row.value).split(".")[1] ?? "").length));
   return Plot.plot({
     ...frame(s, { ...options, caption: caption(options, s) }),
     projection,
@@ -84,7 +85,8 @@ function drawChoropleth(rows, s, options) {
       ...(diverging && classes === "quantize" ? { domain: [-extent, extent] } : {}),
       legend: true,
       label: `${s.unit} · ${s.text.classes[classes]}`,
-      tickFormat: s.format,
+      // class boundaries are computed: show them no finer than the data
+      tickFormat: (v) => s.format(+v.toFixed(digits)),
     },
     marks: [
       ...under,

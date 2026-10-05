@@ -97,6 +97,19 @@ def test_regional_population_adds_up():
     assert harmonize.hierarchy_gaps(obs).is_empty()
 
 
+@pytest.mark.parametrize("name", ["sex_ratio", "sex_ratio_regional"])
+def test_sex_ratio_is_males_per_100_females(name):
+    ind = indicators.INDICATORS[name]
+    d = data(sources(ind))
+    ours = indicators.compute(ind, d)
+    population = ind.inputs["population"].read(d).filter(pl.col("age") == "total")
+    for geo, period, value in ours.select("geo_code", "period", "value").iter_rows():
+        by_sex = population.filter((pl.col("geo_code") == geo) & (pl.col("period") == period))
+        total = {s: v for s, v in by_sex.select("sex", "value").iter_rows()}
+        assert value == pytest.approx(100 * total["male"] / total["female"])
+    assert set(ours["sex"]) == {"total"} and set(ours["age"]) == {"total"}
+
+
 def test_inputs_from_several_sources_are_rejected():
     ind = indicators.INDICATORS["old_age_dependency_ratio"]
     two = dataclasses.replace(ind, inputs={**ind.inputs, "x": indicators.SERIES["net_migration"]})

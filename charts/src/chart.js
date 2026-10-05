@@ -78,6 +78,7 @@ export const TEXT = {
     units: {
       "% of persons of known age": "% των ατόμων γνωστής ηλικίας",
       "live births per woman": "γεννήσεις ζώντων ανά γυναίκα",
+      "males per 100 females": "άνδρες ανά 100 γυναίκες",
       "per 100 persons aged 0-14": "ανά 100 άτομα 0–14 ετών",
       "per 100 persons aged 15-64": "ανά 100 άτομα 15–64 ετών",
       "per 1000 average population": "ανά 1.000 κατοίκους (μέσος πληθυσμός)",

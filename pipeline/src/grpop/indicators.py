@@ -234,6 +234,22 @@ def _growth_rate(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
     )
 
 
+def _sex_ratio(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
+    """Males per 100 females, all ages, per geo_code and period."""
+    value, sex = pl.col("value"), pl.col("sex")
+    return (
+        inputs["population"]
+        .filter((pl.col("age") == "total") & value.is_not_null())
+        .group_by("geo_code", "period")
+        .agg(
+            *carried(),
+            value=value.filter(sex == "male").first() / value.filter(sex == "female").first() * 100,
+        )
+        .filter(value.is_not_null())
+        .with_columns(sex=pl.lit("total"), age=pl.lit("total"))
+    )
+
+
 # Age classes of demo_frate that make up the total fertility rate, with their width.
 _FERTILITY_AGES = {"10-14": 5, **{str(a): 1 for a in range(15, 50)}, "50+": 5}
 
@@ -432,6 +448,19 @@ INDICATORS = {
         # INFERENCE: the two tables were built from different versions of the Italian data.
         known_differences=_cells("IT 1960-1966, IT 1968-1969, IT 1997-1998"),
     ),
+    # Δ7. Eurostat publishes no sex ratio, so there is no official value to match.
+    **{
+        name: Indicator(
+            definition_id="sex_ratio@v1",
+            transform_version="sex_ratio@0.1",
+            inputs={"population": population},
+            formula=_sex_ratio,
+        )
+        for name, population in (
+            ("sex_ratio", _POPULATION),
+            ("sex_ratio_regional", _POPULATION_REGIONAL),
+        )
+    },
 }
 
 
@@ -443,6 +472,11 @@ SERIES = {
     ),
     "net_migration": _gind("net_migration@v1", "CNMIGRAT"),
     "mean_age_first_birth": _find("mean_age_first_birth@v1", "AGEMOTH1"),
+    # Δ7: crude rates and the mean age at childbearing, national and regional.
+    "mean_age_childbearing": _find("mean_age_childbearing@v1", "AGEMOTH"),
+    "crude_birth_rate": _gind("crude_birth_rate@v1", "GBIRTHRT"),
+    "crude_death_rate": _gind("crude_death_rate@v1", "GDEATHRT"),
+    "crude_net_migration_rate": _gind("crude_net_migration_rate@v1", "CNMIGRATRT"),
     **{
         f"life_expectancy_{age}": Series(
             "eurostat_demo_mlexpec",
@@ -508,6 +542,23 @@ SERIES = {
     "infant_mortality_rate_regional": _regional(
         "eurostat_demo_r_minfind", "infant_mortality_rate@v1", Nature.OFFICIAL_ESTIMATE
     ),
+    "mean_age_childbearing_regional": _regional(
+        "eurostat_demo_r_find2",
+        "mean_age_childbearing@v1",
+        Nature.OFFICIAL_ESTIMATE,
+        indic_de="AGEMOTH",
+        unit="YR",
+    ),
+    **{
+        f"{name}_regional": _regional(
+            "eurostat_demo_r_gind3", f"{name}@v1", Nature.OFFICIAL_ESTIMATE, indic_de=code
+        )
+        for name, code in (
+            ("crude_birth_rate", "GBIRTHRT"),
+            ("crude_death_rate", "GDEATHRT"),
+            ("crude_net_migration_rate", "CNMIGRATRT"),
+        )
+    },
 }
 
 

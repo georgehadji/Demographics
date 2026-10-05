@@ -58,6 +58,9 @@ test("an indicator page quotes its values through fact() and compares only areas
   assert.match(files["definitions.qmd"], /\{#population-1jan-v1\}/);
   assert.match(files["sources.qmd"], /demo_pjan/);
   assert.doesNotMatch(files["sources.qmd"], /demo_find/); // only the sources the product reads
+  assert.doesNotMatch(page, /callout-note/); // no note in the catalog
+  const noted = { ...CATALOG, indicators: [{ name: "population", title: "Πληθυσμός", note: "Δες και τη γονιμότητα." }] };
+  assert.match(pages(DIR, noted)["indicators/population.qmd"], /::: \{\.callout-note\}\nΔες και τη γονιμότητα\.\n:::/);
 });
 
 test("a region page compares the region with Greece, by its GISCO name; regions without data get no section", () => {

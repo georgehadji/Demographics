@@ -88,6 +88,7 @@ function indicator(dir, catalog, manifest, names, item) {
   const page =
     front(title) +
     `Η πιο πρόσφατη τιμή για την Ελλάδα είναι του ${period}:\n\n${facts.join("\n")}\n\n` +
+    (item.note ? `::: {.callout-note}\n${item.note}\n:::\n\n` : "") +
     `{{< chart indicators/${name}.json >}}\n\n` +
     `Ορισμός: [${rows[0].definition_id}](/definitions.qmd#${anchor(rows[0].definition_id)}).\n\n` +
     regions.text;

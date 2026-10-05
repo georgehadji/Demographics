@@ -149,9 +149,11 @@ export function panel(rows, l, t) {
  * table and its CSV.
  */
 export function chart(dir, spec) {
-  const { type, data, geo, sex = "total", age, ...given } = spec;
+  const { type, data, geo, sex = "total", age, ages, ...given } = spec;
   const draw = TYPES[type];
   if (!draw) throw new Error(`chart type ${type}: the site draws ${Object.keys(TYPES).join(", ")}`);
+  // "single": single years of age only, without the open classes (a Lexis surface)
+  if (ages !== undefined && ages !== "single") throw new Error(`ages ${ages}: only "single" is known`);
   // A spec names its geometry (a data product file) and layout (a reference table).
   const rest = {
     format: formatOf(dir, data),
@@ -159,7 +161,9 @@ export function chart(dir, spec) {
     ...(given.geometry && { geometry: geometry(dir, given.geometry) }),
     ...(given.layout && { layout: reference(given.layout) }),
   };
-  const rows = load(dir, data).filter((r) => geo.includes(r.geo_code) && r.sex === sex && (age === undefined || r.age === age));
+  const rows = load(dir, data).filter(
+    (r) => geo.includes(r.geo_code) && r.sex === sex && (age === undefined || r.age === age) && (ages === undefined || /^\d+$/.test(r.age)),
+  );
   const { window } = new JSDOM("");
   try {
     const modes = hexTokens();

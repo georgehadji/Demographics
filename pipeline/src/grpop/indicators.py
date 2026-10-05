@@ -43,6 +43,9 @@ class Series:
     # for demo_pjanind MMEDAGEPOP or {"age": "0-14"} for PC_Y0_14.
     fixed: dict[str, str] = field(default_factory=dict)
     geo_prefix: str = ""  # keep only geo codes that start with it, e.g. "EL"
+    # The decimals the source publishes, where the site's default formatting would lose
+    # them (e.g. death rates of 0.00025).
+    decimals: int | None = None
 
     def read(self, data: Data) -> pl.DataFrame:
         snapshot, raw = data[self.source_id]
@@ -493,6 +496,23 @@ SERIES = {
         Nature.OFFICIAL_ESTIMATE,
         select={"indic_de": "INFMORRT"},
     ),
+    # Δ7b: the Eurostat life table by single year of age and sex, Greece only.
+    # ponytail: all countries would be about a million rows per series; add them
+    # when a page compares mortality by age.
+    **{
+        name: Series(
+            "eurostat_demo_mlifetable",
+            f"{name}@v1",
+            Nature.OFFICIAL_ESTIMATE,
+            select={"indic_de": code},
+            geo_prefix="EL",
+            decimals=5,
+        )
+        for name, code in {
+            "age_specific_death_rate": "DEATHRATE",
+            "probability_of_dying": "PROBDEATH",
+        }.items()
+    },
     # Greek regional series (EL and NUTS 1-3 as each table has them). #6 has no regional
     # table: demo_r_find2 has no mean age at first birth. #2 and #5 are published, not
     # derived, here: VERIFIED 2026-09-29 that they cannot be reproduced from the

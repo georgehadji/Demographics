@@ -38,8 +38,8 @@ COLUMNS = list(ObservationSchema.to_schema().columns)
 class Step:
     sources: frozenset[str]
     run: Callable[[indicators.Data], pl.DataFrame | dict[str, Any]]  # observations or GeoJSON
-    # A derived indicator's values are published to the official value's decimals; the
-    # manifest carries them for the site's formatting.
+    # A derived indicator's values are published to the official value's decimals, a
+    # series' to the source's where given; the manifest carries them for the site.
     decimals: int | None = None
 
 
@@ -61,7 +61,7 @@ def _indicator(indicator: indicators.Indicator) -> Step:
 
 
 def _series(series: indicators.Series) -> Step:
-    return Step(frozenset({series.source_id}), series.read)
+    return Step(frozenset({series.source_id}), series.read, series.decimals)
 
 
 if indicators.INDICATORS.keys() & indicators.SERIES.keys():
@@ -114,10 +114,11 @@ ADDS_UP = {"population_by_age_group_regional"}
 # 242,207). VERIFIED 2026-10-03 that the regional totals equal demo_r_pjanaggr3 and male
 # + female. Cause UNKNOWN. (period, sex) -> the largest difference allowed, in persons.
 KNOWN_GAPS = {("2018", "total"): 3, ("2018", "female"): 3}
-# National rates and means get the EU-27 median as a comparator; counts do not.
+# National rates and means get the EU-27 median as a comparator; counts do not, nor do
+# series of Greece alone (geo_prefix), which have no member states to take it from.
 _national = {
     **{n: i.definition_id for n, i in indicators.INDICATORS.items()},
-    **{n: s.definition_id for n, s in indicators.SERIES.items()},
+    **{n: s.definition_id for n, s in indicators.SERIES.items() if not s.geo_prefix},
 }
 MEDIAN = {
     n

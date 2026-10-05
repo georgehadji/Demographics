@@ -140,6 +140,19 @@ sources:
     phase: 1
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
+  - id: eurostat_demo_mlifetable
+    provider: Eurostat
+    dataset_code: demo_mlifetable
+    title: Life table by age and sex
+    title_el: "Πίνακας επιβίωσης κατά ηλικία και φύλο"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mlifetable?format=JSON&lang=EN&geo=EL&sex=T&age=Y_LT1&indic_de=DEATHRATE&lastTimePeriod=1
+    licence: eurostat
+    used_for: [age_specific_mortality, life_tables]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_demo_pjanind
     provider: Eurostat
     dataset_code: demo_pjanind

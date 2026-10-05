@@ -141,6 +141,40 @@ function regions(dir, catalog, manifest, features) {
   );
 }
 
+/** Mortality by age for Greece: the probability of dying at a few ages, and the Lexis
+ * surface of the death rates by age and year (Eurostat life table). */
+function mortality(dir, catalog) {
+  const { rate, probability, ages } = catalog.life_table;
+  const q = load(dir, probability);
+  const period = latest(q, "EL", "total", ages[0]);
+  if (!period) throw new Error(`${probability}: no value for Greece at age ${ages[0]}`);
+  const defs = [rate, probability].map((name) => DEFS[load(dir, name)[0].definition_id]);
+  const facts = ages.map((a) => `- ${a} ετών: ${fact(probability, "EL", period, "total", a)}`);
+  const EL = catalog.areas.EL;
+  return {
+    "indicators/mortality_by_age.json": json({
+      type: "lexis",
+      data: rate,
+      geo: ["EL"],
+      sex: "total",
+      ages: "single",
+      classes: "quantile",
+      focus: "EL",
+      title: `${defs[0].el.title}: ${EL}, κατά ηλικία και έτος`,
+      labels: { EL },
+    }),
+    "indicators/mortality_by_age.qmd":
+      front("Θνησιμότητα κατά ηλικία") +
+      `${TEXTS.pages.mortality}\n` +
+      `## Πιθανότητα θανάτου μέσα στον επόμενο χρόνο, ${EL}, ${period}\n\n${facts.join("\n")}\n\n` +
+      "{{< chart indicators/mortality_by_age.json >}}\n\n" +
+      TEXTS.pages.mortality_after +
+      "\n## Ορισμοί\n\n" +
+      defs.map((d) => `- **${d.el.title}:** ${d.el.description} ([ορισμός](/definitions.qmd#${anchor(d.id)}))`).join("\n") +
+      "\n",
+  };
+}
+
 /** EUROPOP2025 with its sensitivity tests, and the UN WPP 2024 fan, for Greece. */
 function projections(dir, catalog) {
   const { europop, wpp, scenarios } = catalog.projections;
@@ -233,11 +267,17 @@ export function pages(dir, catalog = JSON.parse(readFileSync(new URL("../catalog
   const names = Object.fromEntries(features.map((p) => [p.geo_code, p.name]));
   const files = Object.assign({}, ...catalog.indicators.map((item) => indicator(dir, catalog, manifest, names, item)));
   files["indicators/index.qmd"] =
-    front("Δείκτες") + `${TEXTS.pages.indicators}\n` + catalog.indicators.map((i) => `- [${i.title}](${i.name}.qmd)`).join("\n") + "\n";
+    front("Δείκτες") +
+    `${TEXTS.pages.indicators}\n` +
+    catalog.indicators.map((i) => `- [${i.title}](${i.name}.qmd)`).join("\n") +
+    (catalog.life_table ? "\n- [Θνησιμότητα κατά ηλικία](mortality_by_age.qmd)" : "") +
+    "\n";
   Object.assign(files, regions(dir, catalog, manifest, features), projections(dir, catalog));
+  if (catalog.life_table) Object.assign(files, mortality(dir, catalog));
   files["index.qmd"] = home(dir, catalog);
   const { europop, wpp } = catalog.projections;
-  files["definitions.qmd"] = definitions(dir, [...catalog.indicators.map((i) => i.name), europop, wpp]);
+  const lifeTable = catalog.life_table ? [catalog.life_table.rate, catalog.life_table.probability] : [];
+  files["definitions.qmd"] = definitions(dir, [...catalog.indicators.map((i) => i.name), europop, wpp, ...lifeTable]);
   files["sources.qmd"] = sources(manifest);
   files["ai.qmd"] = front("Χρήση τεχνητής νοημοσύνης") + greekAiUse();
   return files;

@@ -73,13 +73,17 @@ test("a region page compares the region with Greece, by its GISCO name; regions 
   assert.match(files["regions/index.qmd"], /\[Αττική\]\(EL30\.qmd\)\n- \[Κρήτη\]\(EL43\.qmd\)/);
 });
 
-test("an indicator with a regional series gets a map of its latest period and the tile grid", () => {
-  const files = pages(DIR, CATALOG);
-  assert.match(files["indicators/population.qmd"], /## Περιφέρειες\n\n\{\{< chart indicators\/population-map\.json >\}\}\n\n\{\{< chart indicators\/population-tiles\.json >\}\}/);
+test("a regional count gets proportional symbols; a regional rate a choropleth beside the tile grid", () => {
+  const rate = (text) => text.replaceAll(",persons,", ",live births per woman,");
+  write("fertility.csv", rate(csv(row("EL", "2024", "1.3"))));
+  write("fertility_regional.csv", rate(csv(row("EL", "2024", "1.3"), row("EL30", "2024", "1.1"), row("EL43", "2024", "1.5"))));
+  const files = pages(DIR, { ...CATALOG, indicators: [...CATALOG.indicators, { name: "fertility", title: "Γονιμότητα" }] });
   const map = JSON.parse(files["indicators/population-map.json"]);
-  // a count: proportional symbols, never a choropleth
   assert.deepEqual([map.type, map.geo, map.period, map.focus, map.geometry], ["symbols", ["EL30", "EL43"], "2024", null, "geometry_el_nuts2"]);
-  const tiles = JSON.parse(files["indicators/population-tiles.json"]);
+  assert.equal(files["indicators/population-tiles.json"], undefined); // the regions would lie flat under the country's line
+  assert.match(files["indicators/fertility.qmd"], /## Περιφέρειες\n\n\{\{< chart indicators\/fertility-map\.json >\}\}\n\n\{\{< chart indicators\/fertility-tiles\.json >\}\}/);
+  assert.equal(JSON.parse(files["indicators/fertility-map.json"]).type, "choropleth");
+  const tiles = JSON.parse(files["indicators/fertility-tiles.json"]);
   assert.deepEqual([tiles.type, tiles.geo, tiles.focus, tiles.layout, tiles.labels.EL43], ["tiles", ["EL30", "EL43", "EL"], "EL", "el_nuts2_tiles", "Κρήτη"]);
 });
 

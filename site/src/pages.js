@@ -26,9 +26,10 @@ const json = (spec) => JSON.stringify(spec, null, 1) + "\n";
 const fact = (name, geo, period, sex, age) => `{{< fact ${name} ${geo} ${period} ${sex} ${age} >}}`;
 
 /**
- * The regions of an indicator that has a regional series: a map at the latest period
- * (a choropleth for a rate, proportional symbols for a count) beside the tile grid over
- * time, which shows every region at the same size, as PROPOSAL §7A asks of a map.
+ * The regions of an indicator that has a regional series. A rate: a choropleth of the
+ * latest period beside the tile grid over time, which shows every region at the same
+ * size, as PROPOSAL §7A asks of a choropleth. A count: proportional symbols only; on
+ * tiles beside the country's line the regions would lie flat at the bottom.
  */
 function regional(dir, catalog, { name, title, sex = "total", age = "total" }, names) {
   const data = `${name}_regional`;
@@ -37,30 +38,29 @@ function regional(dir, catalog, { name, title, sex = "total", age = "total" }, n
   if (!period) return { text: "", files: {} };
   const codes = Object.keys(names);
   const common = { data, sex, age, labels: { EL: catalog.areas.EL, ...names } };
-  return {
-    text:
-      `## Περιφέρειες\n\n{{< chart indicators/${name}-map.json >}}\n\n{{< chart indicators/${name}-tiles.json >}}\n\n` +
-      "[Η σελίδα κάθε Περιφέρειας](../regions/index.qmd)\n",
-    files: {
-      [`indicators/${name}-map.json`]: json({
-        type: rows[0].unit === "persons" ? "symbols" : "choropleth",
-        ...common,
-        geo: codes,
-        period,
-        focus: null,
-        geometry: catalog.regions.geometry,
-        title: `${title}: Περιφέρειες, ${period}`,
-      }),
-      [`indicators/${name}-tiles.json`]: json({
-        type: "tiles",
-        ...common,
-        geo: [...codes, "EL"],
-        focus: "EL",
-        layout: catalog.regions.layout,
-        title: `${title}: Περιφέρειες και ${catalog.areas.EL}`,
-      }),
-    },
+  const count = rows[0].unit === "persons";
+  const files = {
+    [`indicators/${name}-map.json`]: json({
+      type: count ? "symbols" : "choropleth",
+      ...common,
+      geo: codes,
+      period,
+      focus: null,
+      geometry: catalog.regions.geometry,
+      title: `${title}: Περιφέρειες, ${period}`,
+    }),
   };
+  if (!count)
+    files[`indicators/${name}-tiles.json`] = json({
+      type: "tiles",
+      ...common,
+      geo: [...codes, "EL"],
+      focus: "EL",
+      layout: catalog.regions.layout,
+      title: `${title}: Περιφέρειες και ${catalog.areas.EL}`,
+    });
+  const charts = Object.keys(files).map((path) => `{{< chart ${path} >}}`);
+  return { text: `## Περιφέρειες\n\n${charts.join("\n\n")}\n\n[Η σελίδα κάθε Περιφέρειας](../regions/index.qmd)\n`, files };
 }
 
 /** An indicator's page and chart specs; `names` maps each region's code to its name. */

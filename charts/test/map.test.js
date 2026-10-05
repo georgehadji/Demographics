@@ -18,6 +18,11 @@ test("a choropleth fills each region from the palette and names the classificati
   assert.equal(fills.length, CODES.length);
   for (const f of fills) assert.ok(tokens["palette-sequential"].includes(f), f);
   assert.ok(figure.textContent.includes("ανά 1.000 κατοίκους (μέσος πληθυσμός) · ίσα διαστήματα"));
+  // computed class boundaries no finer than the data (one decimal here)
+  const ticks = [...figure.querySelectorAll("svg")][0].querySelectorAll("text");
+  const numbers = [...ticks].map((t) => t.textContent).filter((t) => /^[−\d]/.test(t));
+  assert.ok(numbers.length > 0);
+  for (const t of numbers) assert.match(t, /^−?[\d.]+(,\d)?$/);
 });
 
 test("every map credits the geometry's source in its footer", () => {

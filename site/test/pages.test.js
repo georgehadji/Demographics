@@ -64,7 +64,7 @@ test("every page explains itself in Greek: indicators, definitions, sources, AI 
   const files = pages(DIR, CATALOG);
   const page = files["indicators/population.qmd"];
   assert.ok(page.includes(TEXTS.indicators.population));
-  assert.match(page, /title="Πώς διαβάζεται το γράφημα"/);
+  assert.match(page, /<details class="kh-guide"><summary>Πώς διαβάζεται το γράφημα<\/summary>/);
   assert.match(page, /## Ορισμός\n\nΟ μόνιμος πληθυσμός[^\n]*\(\[Όλοι οι ορισμοί\]\(\/definitions\.qmd#population-1jan-v1\)\)/);
   assert.match(files["definitions.qmd"], /## Πληθυσμός την 1η Ιανουαρίου \{#population-1jan-v1\}\n\n`population_1jan@v1` · μονάδα: άτομα/);
   assert.match(files["sources.qmd"], /## Πληθυσμός την 1η Ιανουαρίου κατά ηλικία και φύλο/);

@@ -137,6 +137,49 @@
   description: >-
     As Eurostat demo_find AGEMOTH1.
 
+- id: mean_age_childbearing@v1
+  metric: mean_age_childbearing
+  unit: years
+  title: Mean age of women at childbirth
+  description: >-
+    Mean age of mothers at the birth of their children, of any birth order. As
+    Eurostat demo_find AGEMOTH.
+
+- id: crude_birth_rate@v1
+  metric: crude_birth_rate
+  unit: per 1000 average population
+  title: Crude birth rate
+  description: >-
+    Live births during the year per 1000 of the average population, as Eurostat
+    demo_gind GBIRTHRT. It depends on the age structure: compare fertility between
+    populations with the total fertility rate.
+
+- id: crude_death_rate@v1
+  metric: crude_death_rate
+  unit: per 1000 average population
+  title: Crude death rate
+  description: >-
+    Deaths during the year per 1000 of the average population, as Eurostat demo_gind
+    GDEATHRT. It depends on the age structure: an older population has a higher rate
+    at the same mortality. Compare mortality between populations with life
+    expectancy.
+
+- id: crude_net_migration_rate@v1
+  metric: crude_net_migration_rate
+  unit: per 1000 average population
+  title: Crude rate of net migration plus statistical adjustment
+  description: >-
+    Net migration plus statistical adjustment during the year per 1000 of the average
+    population, as Eurostat demo_gind CNMIGRATRT. A residual, like net_migration@v1.
+
+- id: sex_ratio@v1
+  metric: sex_ratio
+  unit: males per 100 females
+  title: Sex ratio
+  description: >-
+    Males per 100 females on 1 January, all ages: 100 times the male population
+    divided by the female population. Derived from the population by sex.
+
 - id: life_expectancy@v1
   metric: life_expectancy
   unit: years

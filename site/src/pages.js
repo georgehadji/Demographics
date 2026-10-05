@@ -16,7 +16,8 @@ const anchor = (definitionId) => definitionId.replace(/[^a-z0-9]+/g, "-");
 /** The explanatory text of the pages (texts.yaml). */
 export const TEXTS = yaml.load(read("site/texts.yaml"));
 const DEFS = Object.fromEntries(yaml.load(read("pipeline/src/grpop/definitions.yaml")).map((d) => [d.id, d]));
-const callout = (title, body) => `::: {.callout-tip collapse="true" title="${title}"}\n${body}:::\n\n`;
+// a native <details>: Quarto's collapsible callout puts aria-expanded on a div, which axe rejects
+const collapsed = (title, body) => `<details class="kh-guide"><summary>${title}</summary>\n\n${body}\n</details>\n\n`;
 
 /** The periods with a central value for geo, sex and age, sorted. */
 const periods = (rows, geo, sex = "total", age = "total") =>
@@ -100,7 +101,7 @@ function indicator(dir, catalog, manifest, names, item) {
     front(title) +
     `Η πιο πρόσφατη τιμή για την Ελλάδα είναι του ${period}:\n\n${facts.join("\n")}\n\n` +
     `{{< chart indicators/${name}.json >}}\n\n` +
-    callout("Πώς διαβάζεται το γράφημα", TEXTS.pages.chart) +
+    collapsed("Πώς διαβάζεται το γράφημα", TEXTS.pages.chart) +
     `${text}\n` +
     `## Ορισμός\n\n${def.el.description} ([Όλοι οι ορισμοί](/definitions.qmd#${anchor(def.id)}))\n\n` +
     regions.text;

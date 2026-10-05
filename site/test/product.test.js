@@ -76,5 +76,12 @@ test("a chart gives the figure in both modes, its table and its CSV", () => {
   assert.match(html, /<details><summary>Πίνακας δεδομένων<\/summary><table>/);
   assert.match(html, /download="population.csv" href="data:text\/csv/);
   assert.throws(() => chart(DIR, { type: "pie", data: "population", geo: ["EL"], title: "x" }), /the site draws line/);
+  // the source panel: every field from the rows, the definition and the registry linked
+  const [, panel] = html.split('<details class="kh-sources">');
+  assert.ok(panel, "no source panel");
+  for (const field of ["Eurostat", 'href="https://example.org/demo_pjan">demo_pjan</a>', "έκδοση 2026-09-15", "λήψη 2026-10-02", ">population_1jan@v1</a>", "μετασχηματισμός 1"])
+    assert.ok(panel.includes(field), field);
+  assert.match(panel, /href="https:\/\/github\.com\/[^"]+\/definitions\.yaml"/);
+  assert.match(panel, /href="https:\/\/github\.com\/[^"]+\/registry\.yaml"/);
   assert.throws(() => chart(DIR, { type: "tiles", data: "population", geo: ["EL"], layout: "../x", title: "x" }), /not a reference table name/);
 });

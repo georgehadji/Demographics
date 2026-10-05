@@ -316,6 +316,15 @@ export function barLook(r, color, tokens) {
   };
 }
 
+/**
+ * The tooltip of one value (PROPOSAL §7A): area, period, value and unit, nature and
+ * status, source and dataset. Drawn as the SVG's own title, so it needs no script; the
+ * data table carries the same fields for the keyboard.
+ */
+export const tip = (s, r) =>
+  `${s.label(r.geo_code)}${r.scenario_id ? ` (${s.label(r.scenario_id)})` : ""} ${r.period}: ${s.format(r.value)} ${s.unit}` +
+  ` · ${s.text.nature[r.nature]}, ${s.text.status[r.status]} · ${r.source}, ${r.dataset_code}`;
+
 /** ", προβολή" after a value that is projected or a scenario, so it is never read as observed. */
 export const natureNote = (s, r) => (style(r.nature, "final").dash ? `, ${s.text.nature[r.nature]}` : "");
 

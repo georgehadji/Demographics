@@ -5,7 +5,7 @@
 // passed as spec.geometry; its attribution goes into the footer of every map, as the
 // GISCO terms require. spec.focus is the region outlined in the accent.
 import * as Plot from "@observablehq/plot";
-import { compose, frame, natureNote, sentence, unique } from "./chart.js";
+import { compose, frame, natureNote, sentence, tip, unique } from "./chart.js";
 import { style } from "./grammar.js";
 
 const CLASSES = ["quantize", "quantile"];
@@ -90,7 +90,7 @@ function drawChoropleth(rows, s, options) {
     },
     marks: [
       ...under,
-      Plot.geo(valued, { fill: (f) => f.row.value, stroke: tokens["color-boundary"], strokeWidth: tokens["stroke-width-boundary"] }),
+      Plot.geo(valued, { fill: (f) => f.row.value, stroke: tokens["color-boundary"], strokeWidth: tokens["stroke-width-boundary"], title: (f) => tip(s, f.row) }),
       ...over,
       Plot.dot(hollow, Plot.centroid({ r: 3.5, fill: tokens["color-background"], stroke: tokens["color-text"] })),
     ],
@@ -126,6 +126,7 @@ function drawSymbols(rows, s, options) {
           fill: (f) => (hollow(f) ? tokens["color-background"] : color(f)),
           stroke: (f) => (hollow(f) ? color(f) : tokens["color-background"]),
           strokeWidth: tokens["stroke-width-context"],
+          title: (f) => tip(s, f.row),
         }),
       ),
       // size key: nested circles in the bottom-left corner

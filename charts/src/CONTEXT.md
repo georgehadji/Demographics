@@ -4,7 +4,7 @@ Code of the chart library.
 
 | File | What it does |
 |---|---|
-| `chart.js` | `compose`: turns a figure function into a chart type returning figure, data table, alt text and CSV; input checks, footer (source, dataset, vintage, nature, breaks), the SVG's role and alt text, the Greek and English chart text; `barLook`, the grammar for bars |
+| `chart.js` | `compose`: turns a figure function into a chart type returning figure, data table, alt text and CSV; input checks, footer (source, dataset, vintage, nature, breaks), the SVG's role and alt text, the Greek and English chart text; `barLook`, the grammar for bars; `tip`, the tooltip of one value (an SVG title on every drawn value of every type) |
 | `dumbbell.js` | `dumbbell`: change between two periods, one row per area sorted by the second value, focus in the accent, the years labelled on the focus' row, grammar on the second value |
 | `grammar.js` | `style(nature, status)`: the epistemic grammar (PROPOSAL §7A) as token names: dash, bands, scenario hue, hollow marker, gap |
 | `lexis.js` | `lexis`: Lexis surface, rate by single year of age and calendar year, palette classes, cohort diagonals |

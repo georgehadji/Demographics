@@ -5,7 +5,7 @@
 // default) or quantiles ("quantile") and is named in the legend. Provisional cells are
 // outlined; a rule marks where projections start.
 import * as Plot from "@observablehq/plot";
-import { ageStart, compose, frame, natureNote, sentence, unique } from "./chart.js";
+import { ageStart, compose, frame, natureNote, sentence, tip, unique } from "./chart.js";
 import { style } from "./grammar.js";
 
 const COHORT_STEP = 10;
@@ -51,7 +51,7 @@ function draw(rows, s, options) {
       tickFormat: s.format,
     },
     marks: [
-      Plot.rect(drawn, { ...box, fill: "value" }),
+      Plot.rect(drawn, { ...box, fill: "value", title: (r) => `${tip(s, r)} · ${s.text.age} ${r.age}` }),
       Plot.rect(
         drawn.filter((r) => style(r.nature, r.status).hollow),
         { ...box, fill: "none", stroke: tokens["color-boundary"], strokeWidth: tokens["stroke-width-boundary"], inset: 0.5 },

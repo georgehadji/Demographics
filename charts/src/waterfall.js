@@ -5,7 +5,7 @@
 // area, so one colour: position and labels tell parts and total apart, the grammar styles
 // each bar.
 import * as Plot from "@observablehq/plot";
-import { barLook, compose, frame, natureNote, sentence, unique } from "./chart.js";
+import { barLook, compose, frame, natureNote, sentence, tip, unique } from "./chart.js";
 
 // Pixels kept free above and below the bars for their value labels.
 const VALUE_ROOM = 18;
@@ -52,7 +52,7 @@ function draw(rows, s, options) {
     // room for the value labels beyond the highest and the lowest bar
     y: { label: s.unit, tickFormat: s.format, grid: true, insetTop: VALUE_ROOM, insetBottom: VALUE_ROOM },
     marks: [
-      ...list.map((d) => Plot.barY([d], { x, y1: "start", y2: "end", ...barLook(d.row, accent, tokens) })),
+      ...list.map((d) => Plot.barY([d], { x, y1: "start", y2: "end", ...barLook(d.row, accent, tokens), title: () => `${s.label(d.row.definition_id)} · ${tip(s, d.row)}` })),
       // connectors: each part's end to the next bar
       Plot.link(list.slice(0, -1), { x1: x, x2: (_, i) => x(list[i + 1]), y1: "end", y2: "end", stroke: muted, strokeWidth: tokens["stroke-width-band-edge"] }),
       Plot.ruleY([0], { stroke: tokens["color-text"], strokeWidth: tokens["stroke-width-band-edge"] }),

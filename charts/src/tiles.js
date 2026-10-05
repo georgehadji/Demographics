@@ -3,7 +3,7 @@
 // geo_code, row, col). Each tile shows its region in the accent over the focus area
 // (spec.focus, e.g. the country) as a thin neutral reference line, on shared scales.
 import * as Plot from "@observablehq/plot";
-import { compose, frame, seriesAlt, seriesKey, unique } from "./chart.js";
+import { compose, frame, seriesAlt, seriesKey, tip, unique } from "./chart.js";
 import { seriesMarks } from "./line.js";
 import { style } from "./grammar.js";
 
@@ -30,7 +30,7 @@ function draw(rows, s, options) {
   for (const geo of regions) {
     const tile = at.get(geo);
     const facet = { fx: () => tile.col, fy: () => tile.row };
-    const context = { width: tokens["stroke-width-context"], tokens, facet };
+    const context = { width: tokens["stroke-width-context"], tokens, facet, title: (r) => tip(s, r) };
     // the tile's region is its focus; the reference runs through its breaks
     marks.push(...seriesMarks(reference, rows, { ...context, color: () => tokens["color-comparator"], gaps: false }));
     for (const part of Map.groupBy(rows.filter((r) => r.geo_code === geo), seriesKey).values()) {

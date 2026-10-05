@@ -28,8 +28,12 @@ export const row = (geo_code, period, value, extra = {}) => ({
   ...extra,
 });
 
-/** Mark groups by kind (Plot's aria-label, kept as data-mark); a mark's constant styles sit on its group. */
-export const marks = (fig, kind) => [...fig.querySelectorAll(`g[data-mark="${kind}"]`)];
+/**
+ * Mark groups by kind (Plot's aria-label, kept as data-mark); a mark's constant styles sit
+ * on its group. The invisible points that carry the tooltips (fill-opacity 0) are left out.
+ */
+export const marks = (fig, kind) =>
+  [...fig.querySelectorAll(`g[data-mark="${kind}"]`)].filter((g) => attr(g, "fill-opacity") !== "0");
 
 /** A mark attribute, on its group or, for clipped or faceted marks, one group deeper. */
 export const attr = (g, name) => g.getAttribute(name) ?? g.querySelector(`[${name}]`)?.getAttribute(name) ?? null;

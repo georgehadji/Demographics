@@ -3,7 +3,7 @@
 // is in the accent, comparators neutral; the two years are labelled on the focus' row.
 // The grammar styles the second value (projected: dashed link, provisional: hollow dot).
 import * as Plot from "@observablehq/plot";
-import { compose, frame, seriesAlt, unique } from "./chart.js";
+import { compose, frame, seriesAlt, tip, unique } from "./chart.js";
 import { style } from "./grammar.js";
 
 // Approximate width of a label character, in pixels, at Plot's 10px font.
@@ -54,7 +54,7 @@ function draw(rows, s, options) {
       }),
       Plot.dot(
         list.map(([a]) => a),
-        { x: "value", y, r: 3, fill: color, stroke: color },
+        { x: "value", y, r: 3, fill: color, stroke: color, title: (r) => tip(s, r) },
       ),
       Plot.dot(
         list.map(([, b]) => b),
@@ -65,6 +65,7 @@ function draw(rows, s, options) {
           fill: (r) => (style(r.nature, r.status).hollow ? tokens["color-background"] : color(r)),
           stroke: color,
           strokeWidth: tokens["stroke-width-context"],
+          title: (r) => tip(s, r),
         },
       ),
       ...focus.map((r, i) => Plot.text([r], { x: "value", y, text: () => periods[i], dy: -10, fill: tokens["color-text-muted"] })),

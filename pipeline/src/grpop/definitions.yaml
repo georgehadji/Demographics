@@ -12,6 +12,11 @@
   description: >-
     Usual resident population on 1 January of the reference year. The period is
     the year (YYYY), as in Eurostat demo_pjan.
+  el:
+    title: Πληθυσμός την 1η Ιανουαρίου
+    description: >-
+      Ο μόνιμος πληθυσμός, δηλαδή τα άτομα που ζουν συνήθως στη χώρα ή στην περιοχή,
+      την 1η Ιανουαρίου του έτους αναφοράς, όπως τον δημοσιεύει η Eurostat.
 
 - id: population_1jul@v1
   metric: population
@@ -22,6 +27,13 @@
     Prospects define it (de facto, the whole territory of the country or area). Not
     comparable value for value with population_1jan@v1: other reference date and
     population concept.
+  el:
+    title: Πληθυσμός την 1η Ιουλίου
+    description: >-
+      Ο συνολικός πληθυσμός την 1η Ιουλίου του έτους αναφοράς, όπως τον ορίζουν οι
+      Παγκόσμιες Πληθυσμιακές Προοπτικές του ΟΗΕ (πραγματικός πληθυσμός σε όλη την
+      επικράτεια). Δεν συγκρίνεται τιμή προς τιμή με τον πληθυσμό της 1ης
+      Ιανουαρίου: άλλη ημερομηνία αναφοράς και άλλη έννοια πληθυσμού.
 
 - id: old_age_dependency_ratio@v1
   metric: old_age_dependency_ratio
@@ -30,6 +42,11 @@
   description: >-
     Persons aged 65 and over per 100 persons aged 15 to 64, on 1 January. Persons of
     unknown age are excluded. The same ratio as Eurostat demo_pjanind OLDDEP1.
+  el:
+    title: Δείκτης εξάρτησης ηλικιωμένων
+    description: >-
+      Άτομα 65 ετών και άνω ανά 100 άτομα 15–64 ετών, την 1η Ιανουαρίου. Τα άτομα
+      άγνωστης ηλικίας δεν μετρούν. Ίδιος με τον δείκτη που δημοσιεύει η Eurostat.
 
 - id: young_age_dependency_ratio@v1
   metric: young_age_dependency_ratio
@@ -38,6 +55,11 @@
   description: >-
     Persons aged 0 to 14 per 100 persons aged 15 to 64, on 1 January. The same ratio
     as Eurostat demo_pjanind YOUNGDEP1.
+  el:
+    title: Δείκτης εξάρτησης νέων
+    description: >-
+      Άτομα 0–14 ετών ανά 100 άτομα 15–64 ετών, την 1η Ιανουαρίου. Ίδιος με τον
+      δείκτη που δημοσιεύει η Eurostat.
 
 - id: total_age_dependency_ratio@v1
   metric: total_age_dependency_ratio
@@ -47,6 +69,12 @@
     Persons aged 0 to 14 and 65 and over per 100 persons aged 15 to 64, on 1 January.
     Persons of unknown age are excluded. The same ratio as Eurostat demo_pjanind
     DEPRATIO1.
+  el:
+    title: Συνολικός δείκτης εξάρτησης
+    description: >-
+      Άτομα 0–14 ετών και 65 ετών και άνω ανά 100 άτομα 15–64 ετών, την 1η
+      Ιανουαρίου. Τα άτομα άγνωστης ηλικίας δεν μετρούν. Ίδιος με τον δείκτη που
+      δημοσιεύει η Eurostat.
 
 - id: ageing_index@v1
   metric: ageing_index
@@ -55,6 +83,12 @@
   description: >-
     Persons aged 65 and over per 100 persons aged 0 to 14, on 1 January. Persons of
     unknown age are excluded. Not in Eurostat demo_pjanind.
+  el:
+    title: Δείκτης γήρανσης
+    description: >-
+      Άτομα 65 ετών και άνω ανά 100 άτομα 0–14 ετών, την 1η Ιανουαρίου. Τα άτομα
+      άγνωστης ηλικίας δεν μετρούν. Η Eurostat δεν τον δημοσιεύει· τον υπολογίζουμε
+      από τον πληθυσμό κατά ηλικία.
 
 - id: population_share@v1
   metric: population_share
@@ -64,6 +98,11 @@
     Persons in the age band (the age column, e.g. 0-14 or 80+) per 100 persons of
     known age, on 1 January. As Eurostat demo_pjanind PC_Y0_14, PC_Y15_64, PC_Y65_MAX
     and PC_Y80_MAX.
+  el:
+    title: Μερίδιο του πληθυσμού σε μια ηλικιακή ομάδα
+    description: >-
+      Άτομα της ηλικιακής ομάδας (για παράδειγμα 0–14 ή 80+) ανά 100 άτομα γνωστής
+      ηλικίας, την 1η Ιανουαρίου.
 
 - id: median_age@v1
   metric: median_age
@@ -73,6 +112,12 @@
     The age that divides persons of known age into two equal halves on 1 January,
     interpolated linearly within the single year of age. As Eurostat demo_pjanind
     MEDAGEPOP, MMEDAGEPOP and FMEDAGEPOP.
+  el:
+    title: Διάμεση ηλικία του πληθυσμού
+    description: >-
+      Η ηλικία που χωρίζει τα άτομα γνωστής ηλικίας σε δύο ίσα μισά την 1η
+      Ιανουαρίου: οι μισοί είναι νεότεροι και οι μισοί μεγαλύτεροι. Υπολογίζεται με
+      γραμμική παρεμβολή μέσα στο έτος ηλικίας.
 
 - id: population_change@v1
   metric: population_change
@@ -82,6 +127,12 @@
     Population on 1 January of the next year minus population on 1 January of the
     reference year, as Eurostat demo_gind GROW (natural change plus net migration
     and statistical adjustment).
+  el:
+    title: Συνολική μεταβολή του πληθυσμού
+    description: >-
+      Ο πληθυσμός της 1ης Ιανουαρίου του επόμενου έτους μείον τον πληθυσμό της 1ης
+      Ιανουαρίου του έτους αναφοράς: η φυσική μεταβολή συν την καθαρή μετανάστευση
+      και τη στατιστική προσαρμογή.
 
 - id: average_population@v1
   metric: average_population
@@ -89,6 +140,11 @@
   title: Average population
   description: >-
     Average population of the reference year, as Eurostat demo_gind AVG.
+  el:
+    title: Μέσος πληθυσμός
+    description: >-
+      Ο μέσος πληθυσμός του έτους αναφοράς, όπως τον δημοσιεύει η Eurostat: ο μέσος
+      όρος του πληθυσμού την 1η Ιανουαρίου του έτους και του επόμενου.
 
 - id: population_growth_rate@v1
   metric: population_growth_rate
@@ -97,6 +153,11 @@
   description: >-
     Total population change during the year per 1000 of the average population. The
     same rate as Eurostat demo_gind GROWRT.
+  el:
+    title: Ρυθμός μεταβολής του πληθυσμού
+    description: >-
+      Η συνολική μεταβολή του πληθυσμού μέσα στο έτος ανά 1.000 κατοίκους του μέσου
+      πληθυσμού.
 
 - id: natural_change@v1
   metric: natural_change
@@ -104,6 +165,10 @@
   title: Natural change
   description: >-
     Live births minus deaths during the reference year, as Eurostat demo_gind NATGROW.
+  el:
+    title: Φυσική μεταβολή
+    description: >-
+      Οι γεννήσεις ζώντων μείον τους θανάτους μέσα στο έτος αναφοράς.
 
 - id: net_migration@v1
   metric: net_migration
@@ -113,6 +178,12 @@
     Total population change minus natural change during the reference year, as
     Eurostat demo_gind CNMIGRAT. It is a residual, not a count of migrants: it also
     absorbs statistical adjustments.
+  el:
+    title: Καθαρή μετανάστευση και στατιστική προσαρμογή
+    description: >-
+      Η συνολική μεταβολή του πληθυσμού μείον τη φυσική μεταβολή μέσα στο έτος.
+      Είναι υπόλοιπο, όχι καταμέτρηση μεταναστών: περιέχει και τις στατιστικές
+      προσαρμογές.
 
 - id: fertility_rate@v1
   metric: fertility_rate
@@ -121,6 +192,11 @@
   description: >-
     Live births to women of the age (the age column) per woman of that age, as
     Eurostat demo_frate. Age is age in completed years; 10-14 and 50+ are open classes.
+  el:
+    title: Ειδικός κατά ηλικία δείκτης γονιμότητας
+    description: >-
+      Γεννήσεις ζώντων από γυναίκες μιας ηλικίας ανά γυναίκα αυτής της ηλικίας. Η
+      ηλικία είναι σε συμπληρωμένα έτη· οι ομάδες 10–14 και 50+ είναι ανοιχτές.
 
 - id: total_fertility_rate@v1
   metric: total_fertility_rate
@@ -129,6 +205,12 @@
   description: >-
     Sum of the age-specific fertility rates of the reference year: the mean number of
     children a woman would have at those rates. As Eurostat demo_find TOTFERRT.
+  el:
+    title: Συνολικός δείκτης γονιμότητας
+    description: >-
+      Το άθροισμα των ειδικών κατά ηλικία δεικτών γονιμότητας ενός έτους: ο μέσος
+      αριθμός παιδιών που θα αποκτούσε μια γυναίκα αν σε όλη την αναπαραγωγική της
+      ζωή ίσχυαν οι δείκτες εκείνου του έτους.
 
 - id: mean_age_first_birth@v1
   metric: mean_age_first_birth
@@ -136,6 +218,11 @@
   title: Mean age of women at birth of first child
   description: >-
     As Eurostat demo_find AGEMOTH1.
+  el:
+    title: Μέση ηλικία της μητέρας στην πρώτη γέννηση
+    description: >-
+      Η μέση ηλικία των γυναικών όταν γεννούν το πρώτο τους παιδί, όπως τη
+      δημοσιεύει η Eurostat.
 
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
@@ -144,6 +231,11 @@
   description: >-
     Mean age of mothers at the birth of their children, of any birth order. As
     Eurostat demo_find AGEMOTH.
+  el:
+    title: Μέση ηλικία της μητέρας στη γέννηση
+    description: >-
+      Η μέση ηλικία των μητέρων στη γέννηση των παιδιών τους, οποιασδήποτε σειράς
+      γέννησης.
 
 - id: crude_birth_rate@v1
   metric: crude_birth_rate
@@ -153,6 +245,12 @@
     Live births during the year per 1000 of the average population, as Eurostat
     demo_gind GBIRTHRT. It depends on the age structure: compare fertility between
     populations with the total fertility rate.
+  el:
+    title: Αδρός δείκτης γεννητικότητας
+    description: >-
+      Γεννήσεις ζώντων μέσα στο έτος ανά 1.000 κατοίκους του μέσου πληθυσμού.
+      Εξαρτάται από την ηλικιακή δομή· τη γονιμότητα διαφορετικών πληθυσμών τη
+      συγκρίνει ο συνολικός δείκτης γονιμότητας.
 
 - id: crude_death_rate@v1
   metric: crude_death_rate
@@ -163,6 +261,13 @@
     GDEATHRT. It depends on the age structure: an older population has a higher rate
     at the same mortality. Compare mortality between populations with life
     expectancy.
+  el:
+    title: Αδρός δείκτης θνησιμότητας
+    description: >-
+      Θάνατοι μέσα στο έτος ανά 1.000 κατοίκους του μέσου πληθυσμού. Εξαρτάται από
+      την ηλικιακή δομή: ένας γηραιότερος πληθυσμός έχει υψηλότερο δείκτη με την
+      ίδια θνησιμότητα. Τη θνησιμότητα διαφορετικών πληθυσμών τη συγκρίνει το
+      προσδόκιμο ζωής.
 
 - id: crude_net_migration_rate@v1
   metric: crude_net_migration_rate
@@ -171,6 +276,11 @@
   description: >-
     Net migration plus statistical adjustment during the year per 1000 of the average
     population, as Eurostat demo_gind CNMIGRATRT. A residual, like net_migration@v1.
+  el:
+    title: Ρυθμός καθαρής μετανάστευσης και στατιστικής προσαρμογής
+    description: >-
+      Η καθαρή μετανάστευση και στατιστική προσαρμογή του έτους ανά 1.000 κατοίκους
+      του μέσου πληθυσμού. Είναι υπόλοιπο, όπως η καθαρή μετανάστευση.
 
 - id: sex_ratio@v1
   metric: sex_ratio
@@ -179,6 +289,12 @@
   description: >-
     Males per 100 females on 1 January, all ages: 100 times the male population
     divided by the female population. Derived from the population by sex.
+  el:
+    title: Λόγος φύλων
+    description: >-
+      Άνδρες ανά 100 γυναίκες την 1η Ιανουαρίου, σε όλες τις ηλικίες: ο ανδρικός
+      πληθυσμός διά τον γυναικείο, επί 100. Τον υπολογίζουμε από τον πληθυσμό κατά
+      φύλο.
 
 - id: life_expectancy@v1
   metric: life_expectancy
@@ -188,6 +304,12 @@
     Mean number of further years a person of the exact age (the age column; 0 is at
     birth) would live at the mortality rates of the reference year, as Eurostat
     demo_mlexpec.
+  el:
+    title: Προσδόκιμο ζωής
+    description: >-
+      Ο μέσος αριθμός ετών που θα ζούσε ακόμη ένα άτομο μιας ακριβούς ηλικίας (0
+      σημαίνει στη γέννηση), αν σε όλη την υπόλοιπη ζωή του ίσχυαν τα ποσοστά
+      θνησιμότητας κατά ηλικία του έτους αναφοράς.
 
 - id: infant_mortality_rate@v1
   metric: infant_mortality_rate
@@ -196,3 +318,8 @@
   description: >-
     Deaths of children under one year of age per 1000 live births in the reference
     year, as Eurostat demo_minfind INFMORRT.
+  el:
+    title: Βρεφική θνησιμότητα
+    description: >-
+      Θάνατοι παιδιών κάτω του ενός έτους ανά 1.000 γεννήσεις ζώντων του έτους
+      αναφοράς.

@@ -18,6 +18,7 @@ def entry(kind: str) -> SourceEntry:
         provider="P",
         dataset_code="c",
         title="t",
+        title_el="τ",
         access="api",
         probe_kind=kind,
         probe_url="https://example.org/data",

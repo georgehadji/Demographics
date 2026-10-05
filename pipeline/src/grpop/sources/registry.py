@@ -46,6 +46,7 @@ class SourceEntry(BaseModel):
     provider: str
     dataset_code: str
     title: str
+    title_el: str = Field(min_length=1)  # as the site shows it
     access: Literal["api", "bulk_file", "web_page", "pdf"]
     probe_kind: Literal["eurostat_jsonstat", "http"]
     probe_url: str = Field(pattern=r"^https://")

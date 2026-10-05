@@ -11,6 +11,15 @@ from pydantic import BaseModel, ConfigDict, Field
 from grpop.provenance import DEFINITION_ID_PATTERN
 
 
+class Greek(BaseModel):
+    """The definition as the site shows it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(min_length=1)
+    description: str = Field(min_length=1)
+
+
 class Definition(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -19,6 +28,7 @@ class Definition(BaseModel):
     unit: str = Field(min_length=1)
     title: str
     description: str
+    el: Greek
 
 
 @cache  # parsed once per process; callers must not mutate the result

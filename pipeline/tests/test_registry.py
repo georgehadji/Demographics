@@ -8,6 +8,7 @@ ENTRY = """
   provider: P
   dataset_code: c
   title: t
+  title_el: τ
   access: api
   probe_kind: http
   probe_url: https://example.org

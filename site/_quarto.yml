@@ -36,7 +36,7 @@ website:
       - href: ai.qmd
         text: Χρήση AI
       - href: errata.qmd
-        text: Errata
+        text: Διορθώσεις
       - icon: github
         href: https://github.com/georgehadji/Demographics
         aria-label: Κώδικας στο GitHub

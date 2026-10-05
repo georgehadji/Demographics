@@ -2,12 +2,12 @@
 // not data), and the link check on a hand-made _site.
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { brokenLinks } from "../src/links.js";
-import { latest, pages } from "../src/pages.js";
+import { latest, pages, TEXTS } from "../src/pages.js";
 
 const HEADER =
   "metric,definition_id,geo_code,geo_vintage,period,sex,age,value,unit,source,dataset_code,source_url,vintage,retrieved_at,transform_version,nature,status,break_in_series,scenario_id,interval";
@@ -58,9 +58,30 @@ test("an indicator page quotes its values through fact() and compares only areas
   assert.match(files["definitions.qmd"], /\{#population-1jan-v1\}/);
   assert.match(files["sources.qmd"], /demo_pjan/);
   assert.doesNotMatch(files["sources.qmd"], /demo_find/); // only the sources the product reads
-  assert.doesNotMatch(page, /callout-note/); // no note in the catalog
-  const noted = { ...CATALOG, indicators: [{ name: "population", title: "Πληθυσμός", note: "Δες και τη γονιμότητα." }] };
-  assert.match(pages(DIR, noted)["indicators/population.qmd"], /::: \{\.callout-note\}\nΔες και τη γονιμότητα\.\n:::/);
+});
+
+test("every page explains itself in Greek: indicators, definitions, sources, AI use", () => {
+  const files = pages(DIR, CATALOG);
+  const page = files["indicators/population.qmd"];
+  assert.ok(page.includes(TEXTS.indicators.population));
+  assert.match(page, /title="Πώς διαβάζεται το γράφημα"/);
+  assert.match(page, /## Ορισμός\n\nΟ μόνιμος πληθυσμός[^\n]*\(\[Όλοι οι ορισμοί\]\(\/definitions\.qmd#population-1jan-v1\)\)/);
+  assert.match(files["definitions.qmd"], /## Πληθυσμός την 1η Ιανουαρίου \{#population-1jan-v1\}\n\n`population_1jan@v1` · μονάδα: άτομα/);
+  assert.match(files["sources.qmd"], /## Πληθυσμός την 1η Ιανουαρίου κατά ηλικία και φύλο/);
+  assert.match(files["sources.qmd"], /Αναφορά: Source: Eurostat, dataset demo_pjan\n/); // the provider's credit line, filled in
+  assert.doesNotMatch(files["ai.qmd"], /\*\*E[LN]\.\*\*|The code/);
+  for (const name of ["index.qmd", "indicators/index.qmd", "regions/index.qmd", "regions/EL30.qmd", "projections.qmd"])
+    assert.doesNotMatch(files[name], /data product|registry\]/, name);
+});
+
+test("texts.yaml explains every indicator of the catalog, and types no value", () => {
+  const catalog = JSON.parse(readFileSync(new URL("../catalog.json", import.meta.url), "utf8"));
+  assert.deepEqual(Object.keys(TEXTS.indicators).sort(), catalog.indicators.map((i) => i.name).sort());
+  for (const [name, text] of [...Object.entries(TEXTS.pages), ...Object.entries(TEXTS.indicators)]) {
+    assert.doesNotMatch(text, /\d[.,]\d|\b\d{4}\b/, name); // no decimals, no years: values come from the data
+    assert.match(text, /[α-ω]/, name);
+  }
+  assert.throws(() => pages(DIR, { ...CATALOG, indicators: [{ name: "population_regional", title: "x" }] }), /no explanation/);
 });
 
 test("a region page compares the region with Greece, by its GISCO name; regions without data get no section", () => {
@@ -78,15 +99,18 @@ test("a region page compares the region with Greece, by its GISCO name; regions 
 
 test("a regional count gets proportional symbols; a regional rate a choropleth beside the tile grid", () => {
   const rate = (text) => text.replaceAll(",persons,", ",live births per woman,");
-  write("fertility.csv", rate(csv(row("EL", "2024", "1.3"))));
-  write("fertility_regional.csv", rate(csv(row("EL", "2024", "1.3"), row("EL30", "2024", "1.1"), row("EL43", "2024", "1.5"))));
-  const files = pages(DIR, { ...CATALOG, indicators: [...CATALOG.indicators, { name: "fertility", title: "Γονιμότητα" }] });
+  write("total_fertility_rate.csv", rate(csv(row("EL", "2024", "1.3"))));
+  write("total_fertility_rate_regional.csv", rate(csv(row("EL", "2024", "1.3"), row("EL30", "2024", "1.1"), row("EL43", "2024", "1.5"))));
+  const files = pages(DIR, { ...CATALOG, indicators: [...CATALOG.indicators, { name: "total_fertility_rate", title: "Γονιμότητα" }] });
   const map = JSON.parse(files["indicators/population-map.json"]);
   assert.deepEqual([map.type, map.geo, map.period, map.focus, map.geometry], ["symbols", ["EL30", "EL43"], "2024", null, "geometry_el_nuts2"]);
   assert.equal(files["indicators/population-tiles.json"], undefined); // the regions would lie flat under the country's line
-  assert.match(files["indicators/fertility.qmd"], /## Περιφέρειες\n\n\{\{< chart indicators\/fertility-map\.json >\}\}\n\n\{\{< chart indicators\/fertility-tiles\.json >\}\}/);
-  assert.equal(JSON.parse(files["indicators/fertility-map.json"]).type, "choropleth");
-  const tiles = JSON.parse(files["indicators/fertility-tiles.json"]);
+  assert.match(
+    files["indicators/total_fertility_rate.qmd"],
+    /## Περιφέρειες\n\n[^{]+\{\{< chart indicators\/total_fertility_rate-map\.json >\}\}\n\n\{\{< chart indicators\/total_fertility_rate-tiles\.json >\}\}/,
+  );
+  assert.equal(JSON.parse(files["indicators/total_fertility_rate-map.json"]).type, "choropleth");
+  const tiles = JSON.parse(files["indicators/total_fertility_rate-tiles.json"]);
   assert.deepEqual([tiles.type, tiles.geo, tiles.focus, tiles.layout, tiles.labels.EL43], ["tiles", ["EL30", "EL43", "EL"], "EL", "el_nuts2_tiles", "Κρήτη"]);
 });
 
@@ -94,8 +118,8 @@ test("the projections page quotes the baseline and the WPP median, and names eve
   const files = pages(DIR, CATALOG);
   const page = files["projections.qmd"];
   assert.match(page, /2025: \{\{< fact projection EL 2025 total total >\}\}· 2100: \{\{< fact projection EL 2100/);
-  assert.match(page, /2024: \{\{< fact wpp EL 2024 total total >\}\}· 2100: \{\{< fact wpp EL 2100 total total >\}\}\. Οι ζώνες/);
-  assert.match(page, /όχι προβλέψεις/);
+  assert.match(page, /2024: \{\{< fact wpp EL 2024 total total >\}\}· 2100: \{\{< fact wpp EL 2100 total total >\}\}\.\n\nΟ ΟΗΕ δίνει/);
+  assert.match(page, /\*\*όχι πρόβλεψη\*\*/);
   assert.equal(JSON.parse(files["projections/europop.json"]).labels.s1, "χαμηλότερη γονιμότητα");
   assert.throws(() => pages(DIR, { ...CATALOG, projections: { ...CATALOG.projections, scenarios: {} } }), /no Greek name for the scenarios s1/);
 });

@@ -323,3 +323,33 @@
     description: >-
       Θάνατοι παιδιών κάτω του ενός έτους ανά 1.000 γεννήσεις ζώντων του έτους
       αναφοράς.
+
+- id: age_specific_death_rate@v1
+  metric: age_specific_death_rate
+  unit: deaths per person-year
+  title: Age-specific death rate
+  description: >-
+    Deaths at the age (the age column, in completed years; 95+ is the open class) per
+    person-year lived at that age in the reference year: the central death rate m(x)
+    of the Eurostat life table, as Eurostat demo_mlifetable DEATHRATE.
+  el:
+    title: Ειδικός κατά ηλικία δείκτης θνησιμότητας
+    description: >-
+      Θάνατοι σε μια ηλικία (σε συμπληρωμένα έτη· η ομάδα 95+ είναι ανοιχτή) ανά
+      ανθρωποέτος που έζησαν τα άτομα αυτής της ηλικίας μέσα στο έτος αναφοράς: ο
+      κεντρικός δείκτης θνησιμότητας του πίνακα επιβίωσης της Eurostat.
+
+- id: probability_of_dying@v1
+  metric: probability_of_dying
+  unit: probability
+  title: Probability of dying between exact ages
+  description: >-
+    Probability that a person who reaches the exact age x (the age column) dies before
+    x+1, at the mortality rates of the reference year; 1 for the open class 95+. q(x)
+    of the Eurostat life table, as Eurostat demo_mlifetable PROBDEATH.
+  el:
+    title: Πιθανότητα θανάτου πριν από την επόμενη ηλικία
+    description: >-
+      Η πιθανότητα ένα άτομο που φτάνει την ακριβή ηλικία x να πεθάνει πριν από την
+      ηλικία x+1, με τα ποσοστά θνησιμότητας του έτους αναφοράς· για την ανοιχτή ομάδα
+      95+ είναι ίση με ένα. Η στήλη q(x) του πίνακα επιβίωσης της Eurostat.

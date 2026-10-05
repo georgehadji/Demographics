@@ -29,6 +29,7 @@ RECORDED = {
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
     "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
+    "eurostat_demo_mlifetable": "eurostat_demo_mlifetable_el_cy.json",  # Mx and qx only
     **{
         f"eurostat_demo_r_{code}": f"eurostat_demo_r_{code}_el5.json"
         for code in (
@@ -108,6 +109,24 @@ def test_sex_ratio_is_males_per_100_females(name):
         total = {s: v for s, v in by_sex.select("sex", "value").iter_rows()}
         assert value == pytest.approx(100 * total["male"] / total["female"])
     assert set(ours["sex"]) == {"total"} and set(ours["age"]) == {"total"}
+
+
+def test_life_table_death_rate_and_probability_of_dying_agree():
+    """q = m / (1 + m/2) for single years of age, the life table's own relation: it
+    fails if the two indicators or the ages are read in the wrong cells."""
+    read = {
+        n: indicators.SERIES[n].read(data({"eurostat_demo_mlifetable"}))
+        for n in ("age_specific_death_rate", "probability_of_dying")
+    }
+    key = ["geo_code", "period", "sex", "age"]
+    both = read["age_specific_death_rate"].join(read["probability_of_dying"], on=key, suffix="_q")
+    assert set(both["geo_code"]) == {"EL"}  # Greece only
+    age = pl.col("age").cast(pl.Int32, strict=False)  # null for 0-1 classes and 85+, 95+
+    single = both.filter(age.is_between(1, 90) & pl.col("value").is_not_null())
+    assert single.height > 0
+    m, q = single["value"], single["value_q"]
+    assert ((q - m / (1 + m / 2)).abs() < 1e-3).all()
+    assert set(both.filter(pl.col("age") == "95+")["value_q"].drop_nulls()) == {1.0}
 
 
 def test_inputs_from_several_sources_are_rejected():

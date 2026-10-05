@@ -124,6 +124,22 @@ test("the projections page quotes the baseline and the WPP median, and names eve
   assert.throws(() => pages(DIR, { ...CATALOG, projections: { ...CATALOG.projections, scenarios: {} } }), /no Greek name for the scenarios s1/);
 });
 
+test("the mortality page quotes the probability of dying at each age and draws the death rates as a Lexis surface", () => {
+  const at = (metric, age) =>
+    row("EL", "2024", "0.003").replace("population,population_1jan@v1", `${metric},${metric}@v1`).replace(",total,total,", `,total,${age},`).replace(",persons,", ",probability,");
+  write("q.csv", csv(at("probability_of_dying", "0"), at("probability_of_dying", "65")));
+  write("m.csv", csv(at("age_specific_death_rate", "0"), at("age_specific_death_rate", "65")));
+  const files = pages(DIR, { ...CATALOG, life_table: { rate: "m", probability: "q", ages: ["0", "65"] } });
+  const page = files["indicators/mortality_by_age.qmd"];
+  assert.match(page, /- 0 ετών: \{\{< fact q EL 2024 total 0 >\}\}\n- 65 ετών: \{\{< fact q EL 2024 total 65 >\}\}/);
+  assert.ok(page.includes(TEXTS.pages.mortality_after));
+  const spec = JSON.parse(files["indicators/mortality_by_age.json"]);
+  assert.deepEqual([spec.type, spec.data, spec.geo, spec.ages, spec.classes], ["lexis", "m", ["EL"], "single", "quantile"]);
+  assert.match(files["indicators/index.qmd"], /\[Θνησιμότητα κατά ηλικία\]\(mortality_by_age\.qmd\)/);
+  assert.match(files["definitions.qmd"], /\{#probability-of-dying-v1\}/);
+  assert.match(files["definitions.qmd"], /\{#age-specific-death-rate-v1\}/);
+});
+
 test("the link check finds a broken local link and ignores external ones", () => {
   const root = mkdtempSync(join(tmpdir(), "kohortes-site-"));
   mkdirSync(join(root, "indicators"));

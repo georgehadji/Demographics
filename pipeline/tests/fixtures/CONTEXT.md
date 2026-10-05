@@ -12,6 +12,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_demo_gind_el_cy.json` | Eurostat `demo_gind`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_minfind_el_cy.json` | Eurostat `demo_minfind`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_mlexpec_el_cy.json` | Eurostat `demo_mlexpec`, Greece and Cyprus: input of `test_indicators.py` |
+| `eurostat_demo_mlifetable_el_cy.json` | Eurostat `demo_mlifetable`, Greece and Cyprus, death rate and probability of dying, 2022 onwards: input of `test_indicators.py` |
 | `eurostat_demo_pjan_el_cy.json` | Eurostat `demo_pjan`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_pjanbroad_el_cy.json` | Eurostat `demo_pjanbroad`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_pjanind_el_cy.json` | Eurostat `demo_pjanind`, Greece and Cyprus: input of `test_indicators.py` |

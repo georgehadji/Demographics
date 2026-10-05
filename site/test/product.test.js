@@ -24,6 +24,7 @@ const FILES = {
   unsourced: [row("EL", "2023", "1.0", "observed", "final", "")],
   unlisted: [row("EL", "2023", "1.0", "observed", "final")],
   rounded: [row("EL", "2023", "46.667", "derived", "final")],
+  byAge: ["0", "1", "95+"].map((a) => row("EL", "2023", "0.5", "official_estimate", "final").replace(",total,total,", `,total,${a},`)),
 };
 // a derived indicator carries the official value's decimals in the manifest
 const DECIMALS = { rounded: 1 };
@@ -84,4 +85,12 @@ test("a chart gives the figure in both modes, its table and its CSV", () => {
   assert.match(panel, /href="https:\/\/github\.com\/[^"]+\/definitions\.yaml"/);
   assert.match(panel, /href="https:\/\/github\.com\/[^"]+\/registry\.yaml"/);
   assert.throws(() => chart(DIR, { type: "tiles", data: "population", geo: ["EL"], layout: "../x", title: "x" }), /not a reference table name/);
+});
+
+test("ages single keeps the single years of age only, for a Lexis surface", () => {
+  const spec = { type: "lexis", data: "byAge", geo: ["EL"], title: "x" };
+  assert.throws(() => chart(DIR, spec), /single years of age, not 95\+/);
+  const [, table] = chart(DIR, { ...spec, ages: "single" }).split("<table>");
+  assert.doesNotMatch(table, /95\+/);
+  assert.throws(() => chart(DIR, { ...spec, ages: "all" }), /only "single"/);
 });

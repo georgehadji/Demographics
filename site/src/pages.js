@@ -18,6 +18,16 @@ export const TEXTS = yaml.load(read("site/texts.yaml"));
 const DEFS = Object.fromEntries(yaml.load(read("pipeline/src/grpop/definitions.yaml")).map((d) => [d.id, d]));
 // a native <details>: Quarto's collapsible callout puts aria-expanded on a div, which axe rejects
 const collapsed = (title, body) => `<details class="kh-guide"><summary>${title}</summary>\n\n${body}\n</details>\n\n`;
+const list = new Intl.ListFormat("el", { type: "conjunction" });
+
+/** A chart with its explanation in plain words above it (texts.yaml charts.<kind>). */
+function explained(kind, path, vars = {}, after = "") {
+  const text = TEXTS.charts[kind].replace(/\{(\w+)\}/g, (_, k) => {
+    if (vars[k] === undefined) throw new Error(`texts.yaml charts.${kind}: nothing fills {${k}}`);
+    return vars[k];
+  });
+  return `::: {.callout-note title="Τι δείχνει το διάγραμμα"}\n${text}${after}:::\n\n{{< chart ${path} >}}\n`;
+}
 
 /** The periods with a central value for geo, sex and age, sorted. */
 const periods = (rows, geo, sex = "total", age = "total") =>
@@ -66,9 +76,9 @@ function regional(dir, catalog, { name, title, sex = "total", age = "total" }, n
       layout: catalog.regions.layout,
       title: `${title}: Περιφέρειες και ${catalog.areas.EL}`,
     });
-  const charts = Object.keys(files).map((path) => `{{< chart ${path} >}}`);
+  const charts = Object.entries(files).map(([path, spec]) => explained(JSON.parse(spec).type, path, { indicator: title }));
   return {
-    text: `## Περιφέρειες\n\n${TEXTS.pages.regional}\n${charts.join("\n\n")}\n\n[Η σελίδα κάθε Περιφέρειας](../regions/index.qmd)\n`,
+    text: `## Περιφέρειες\n\n${TEXTS.pages.regional}\n${charts.join("\n")}\n[Η σελίδα κάθε Περιφέρειας](../regions/index.qmd)\n`,
     files,
   };
 }
@@ -80,18 +90,21 @@ function indicator(dir, catalog, manifest, names, item) {
   const period = latest(rows, "EL", sex, age);
   if (!period) throw new Error(`${name}: no value for Greece (sex ${sex}, age ${age})`);
   const areas = Object.keys(catalog.areas).filter((g) => latest(rows, g, sex, age));
+  // a count beside the EU's would only show the EU's scale; its value stays in the facts
+  const count = rows[0].unit === "persons";
+  const drawn = count ? ["EL"] : areas;
   const facts = areas
     .filter((g) => latest(rows, g, sex, age) === period)
     .map((g) => `- ${catalog.areas[g]}: ${fact(name, g, period, sex, age)}`);
   const spec = {
     type: "line",
     data: name,
-    geo: areas,
+    geo: drawn,
     sex,
     age,
     focus: "EL",
-    title: `${title}: ${areas.map((g) => catalog.areas[g]).join(", ")}`,
-    labels: Object.fromEntries(areas.map((g) => [g, catalog.areas[g]])),
+    title: `${title}: ${drawn.map((g) => catalog.areas[g]).join(", ")}`,
+    labels: Object.fromEntries(drawn.map((g) => [g, catalog.areas[g]])),
   };
   const text = TEXTS.indicators[name];
   if (!text) throw new Error(`texts.yaml: no explanation of the indicator ${name}`);
@@ -100,7 +113,13 @@ function indicator(dir, catalog, manifest, names, item) {
   const page =
     front(title) +
     `Η πιο πρόσφατη τιμή για την Ελλάδα είναι του ${period}:\n\n${facts.join("\n")}\n\n` +
-    `{{< chart indicators/${name}.json >}}\n\n` +
+    explained(
+      count ? "line_alone" : "line",
+      `indicators/${name}.json`,
+      { indicator: title, areas: list.format(drawn.map((g) => catalog.areas[g])) },
+      drawn.filter((g) => TEXTS.areas[g]).map((g) => `\n${TEXTS.areas[g]}`).join(""),
+    ) +
+    "\n" +
     collapsed("Πώς διαβάζεται το γράφημα", TEXTS.pages.chart) +
     `${text}\n` +
     `## Ορισμός\n\n${def.el.description} ([Όλοι οι ορισμοί](/definitions.qmd#${anchor(def.id)}))\n\n` +
@@ -121,12 +140,14 @@ function region(dir, catalog, manifest, { geo_code: geo, name }) {
     const el = latest(rows, "EL", sex, age) === period ? `, ${catalog.areas.EL}: ${fact(data, "EL", period, sex, age)}` : "";
     const path = `regions/${geo}-${n}.json`;
     // a count beside the country's would only show the country's scale
-    const geos = rows[0].unit === "persons" ? [geo] : [geo, "EL"];
+    const alone = rows[0].unit === "persons";
+    const geos = alone ? [geo] : [geo, "EL"];
     const labels = { [geo]: name, EL: catalog.areas.EL };
     files[path] = json({ type: "line", data, geo: geos, sex, age, focus: geo, title: `${title}: ${geos.map((g) => labels[g]).join(", ")}`, labels });
     parts.push(
       `## ${title}\n\n${period}: ${fact(data, geo, period, sex, age)}${el}. ` +
-        `[Όλες οι χώρες](../indicators/${n}.qmd)\n\n{{< chart ${path} >}}\n`,
+        `[Όλες οι χώρες](../indicators/${n}.qmd)\n\n` +
+        explained(alone ? "region_alone" : "region", path, { indicator: title, region: name }),
     );
   }
   files[`regions/${geo}.qmd`] = front(name) + `Κωδικός NUTS 2: \`${geo}\`.\n\n${TEXTS.pages.region}\n` + parts.join("\n");
@@ -167,7 +188,8 @@ function mortality(dir, catalog) {
       front("Θνησιμότητα κατά ηλικία") +
       `${TEXTS.pages.mortality}\n` +
       `## Πιθανότητα θανάτου μέσα στον επόμενο χρόνο, ${EL}, ${period}\n\n${facts.join("\n")}\n\n` +
-      "{{< chart indicators/mortality_by_age.json >}}\n\n" +
+      explained("lexis", "indicators/mortality_by_age.json") +
+      "\n" +
       TEXTS.pages.mortality_after +
       "\n## Ορισμοί\n\n" +
       defs.map((d) => `- **${d.el.title}:** ${d.el.description} ([ορισμός](/definitions.qmd#${anchor(d.id)}))`).join("\n") +
@@ -208,12 +230,13 @@ function projections(dir, catalog) {
       `${TEXTS.pages.projections}\n` +
       `## Eurostat EUROPOP2025\n\nΒασική προβολή για ${EL}, ${span(europop, rows)}.\n\n` +
       `${TEXTS.pages.projections_europop}\n` +
-      "{{< chart projections/europop.json >}}\n\n" +
+      explained("europop", "projections/europop.json") +
+      "\n" +
       `## ΟΗΕ, Παγκόσμιες Πληθυσμιακές Προοπτικές 2024\n\nΔιάμεσος για ${EL}, ${span(wpp, load(dir, wpp))}.\n\n` +
       `${TEXTS.pages.projections_wpp}\n` +
       "Ο πληθυσμός εδώ είναι της 1ης Ιουλίου και δεν συγκρίνεται τιμή προς τιμή με της 1ης Ιανουαρίου " +
       "([ορισμός](definitions.qmd#population-1jul-v1)).\n\n" +
-      "{{< chart projections/wpp.json >}}\n",
+      explained("wpp", "projections/wpp.json"),
   };
 }
 

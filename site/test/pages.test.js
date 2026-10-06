@@ -52,8 +52,9 @@ test("an indicator page quotes its values through fact() and compares only areas
   assert.match(page, /\{\{< fact population EL 2024 total total >\}\}/);
   assert.doesNotMatch(page, /fact population EU27_2020 2024/); // its latest year is 2023
   assert.doesNotMatch(page, /\d{2}\.\d/); // no value typed into the page
-  const spec = JSON.parse(files["indicators/population.json"]);
-  assert.deepEqual(spec.geo, ["EL", "EU27_2020"]);
+  // a count is drawn for Greece alone: beside the EU's it would lie flat
+  assert.deepEqual(JSON.parse(files["indicators/population.json"]).geo, ["EL"]);
+  assert.ok(page.includes(TEXTS.charts.line_alone.replace("{indicator}", "Πληθυσμός")));
   assert.match(files["index.qmd"], /\{\{< fact population EL 2024 total total >\}\}/);
   assert.match(files["definitions.qmd"], /\{#population-1jan-v1\}/);
   assert.match(files["sources.qmd"], /demo_pjan/);
@@ -77,11 +78,29 @@ test("every page explains itself in Greek: indicators, definitions, sources, AI 
 test("texts.yaml explains every indicator of the catalog, and types no value", () => {
   const catalog = JSON.parse(readFileSync(new URL("../catalog.json", import.meta.url), "utf8"));
   assert.deepEqual(Object.keys(TEXTS.indicators).sort(), catalog.indicators.map((i) => i.name).sort());
-  for (const [name, text] of [...Object.entries(TEXTS.pages), ...Object.entries(TEXTS.indicators)]) {
+  for (const [name, text] of [TEXTS.pages, TEXTS.indicators, TEXTS.charts, TEXTS.areas].flatMap(Object.entries)) {
     assert.doesNotMatch(text, /\d[.,]\d|\b\d{4}\b/, name); // no decimals, no years: values come from the data
     assert.match(text, /[α-ω]/, name);
   }
   assert.throws(() => pages(DIR, { ...CATALOG, indicators: [{ name: "population_regional", title: "x" }] }), /no explanation/);
+});
+
+test("every chart has its explanation in plain words above it, every placeholder filled", () => {
+  write("total_fertility_rate.csv", csv(row("EL", "2024", "1.3"), row("EU27_2020_MEDIAN", "2024", "1.4")).replaceAll(",persons,", ",live births per woman,"));
+  const catalog = { ...CATALOG, indicators: [...CATALOG.indicators, { name: "total_fertility_rate", title: "Γονιμότητα" }] };
+  const files = pages(DIR, catalog);
+  const charts = Object.values(files).flatMap((text) => text.match(/[^\n]*\n\n\{\{< chart /g) ?? []);
+  assert.ok(charts.length >= 5, String(charts.length));
+  for (const c of charts) assert.match(c, /^:::\n\n\{\{< chart /);
+  for (const [name, text] of Object.entries(files)) {
+    assert.equal(text.match(/\{\{< chart /g)?.length ?? 0, text.match(/callout-note title="Τι δείχνει το διάγραμμα"/g)?.length ?? 0, name);
+    assert.doesNotMatch(text, /«\{|\{(indicator|areas|region)\}/, name);
+  }
+  // a rate is drawn beside the EU, and the comparison areas are explained
+  const page = files["indicators/total_fertility_rate.qmd"];
+  assert.match(page, /ο δείκτης «Γονιμότητα» από έτος σε έτος\. Κάθε\nγραμμή είναι μία περιοχή \(Ελλάδα και Διάμεσος ΕΕ-27\)/);
+  assert.ok(page.includes(TEXTS.areas.EU27_2020_MEDIAN));
+  assert.match(files["regions/EL30.qmd"], /στην Περιφέρεια «Αττική»/);
 });
 
 test("a region page compares the region with Greece, by its GISCO name; regions without data get no section", () => {
@@ -105,10 +124,8 @@ test("a regional count gets proportional symbols; a regional rate a choropleth b
   const map = JSON.parse(files["indicators/population-map.json"]);
   assert.deepEqual([map.type, map.geo, map.period, map.focus, map.geometry], ["symbols", ["EL30", "EL43"], "2024", null, "geometry_el_nuts2"]);
   assert.equal(files["indicators/population-tiles.json"], undefined); // the regions would lie flat under the country's line
-  assert.match(
-    files["indicators/total_fertility_rate.qmd"],
-    /## Περιφέρειες\n\n[^{]+\{\{< chart indicators\/total_fertility_rate-map\.json >\}\}\n\n\{\{< chart indicators\/total_fertility_rate-tiles\.json >\}\}/,
-  );
+  const regionsPart = files["indicators/total_fertility_rate.qmd"].split("## Περιφέρειες\n\n")[1];
+  assert.match(regionsPart, /\{\{< chart indicators\/total_fertility_rate-map\.json >\}\}[^#]+\{\{< chart indicators\/total_fertility_rate-tiles\.json >\}\}/);
   assert.equal(JSON.parse(files["indicators/total_fertility_rate-map.json"]).type, "choropleth");
   const tiles = JSON.parse(files["indicators/total_fertility_rate-tiles.json"]);
   assert.deepEqual([tiles.type, tiles.geo, tiles.focus, tiles.layout, tiles.labels.EL43], ["tiles", ["EL30", "EL43", "EL"], "EL", "el_nuts2_tiles", "Κρήτη"]);

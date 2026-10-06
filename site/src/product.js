@@ -48,6 +48,7 @@ const LABELS = {
     definition: "ορισμός",
     transform: "μετασχηματισμός",
     registry: "Μητρώο πηγών (άδειες και επαλήθευση)",
+    summary: "Σε αριθμούς",
   },
   en: {
     table: "Data table",
@@ -57,6 +58,7 @@ const LABELS = {
     definition: "definition",
     transform: "transformation",
     registry: "Source registry (licences and verification)",
+    summary: "In numbers",
   },
 };
 
@@ -145,8 +147,8 @@ export function panel(rows, l, t) {
 
 /**
  * A chart from a JSON spec: {type, data, geo: [...], sex?, age?, ...the chart's spec}. The
- * figure in the light and the dark mode (styles.css shows the one Quarto is in), its data
- * table and its CSV.
+ * figure in the light and the dark mode (styles.css shows the one Quarto is in), its alt
+ * text in view without the title, its data table and its CSV.
  */
 export function chart(dir, spec) {
   const { type, data, geo, sex = "total", age, ages, ...given } = spec;
@@ -170,10 +172,12 @@ export function chart(dir, spec) {
     const [light, dark] = ["light", "dark"].map((m) => draw(rows, rest, { tokens: modes[m], document: window.document }));
     const l = LABELS[(rest.locale ?? "el").slice(0, 2)];
     const href = `data:text/csv;charset=utf-8,${encodeURIComponent(light.csv)}`;
+    const summary = light.alt.startsWith(`${rest.title}. `) ? light.alt.slice(rest.title.length + 2) : light.alt;
     return [
       `<div class="kh-chart">`,
       `<div class="kh-light">${light.figure.outerHTML}</div>`,
       `<div class="kh-dark">${dark.figure.outerHTML}</div>`,
+      `<p class="kh-summary"><strong>${l.summary}:</strong> ${escape(summary)}</p>`,
       `<details><summary>${l.table}</summary>${light.table.outerHTML}</details>`,
       panel(rows, l, TEXT[(rest.locale ?? "el").slice(0, 2)]),
       `<p><a download="${escape(data)}.csv" href="${href}">${l.csv}</a></p>`,

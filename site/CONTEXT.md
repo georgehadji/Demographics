@@ -9,7 +9,7 @@ Quarto website (ADR 0005, layer L6): it reads the data product and computes noth
 | `_quarto-wrong.yml` | Profile `wrong`: adds the deliberately wrong pages of `test/` to the render list, for the `Build` workflow |
 | `catalog.json` | Page text of the generated pages: Greek title, data product file, sex and age of each indicator page; the areas compared and their labels; the home page's indicators; the life table files and the ages whose probability of dying the mortality page quotes; the geometry whose regions get a page and the tile layout; the projection files and the Greek name of each scenario |
 | `errata.qmd` | Διορθώσεις (errata): every correction with its date (none yet) |
-| `texts.yaml` | Explanatory Greek prose of the generated pages: what each page and each indicator shows, how to read it and what to watch for, and how to read a chart. Never a value of the data (tested) |
+| `texts.yaml` | Explanatory Greek prose of the generated pages: what each page and each indicator shows, how to read it and what to watch for, how to read a chart, and above every chart what it shows in plain words (`charts`, one per kind of chart, and `areas`, the comparison areas). Never a value of the data (tested) |
 | `kohortes.lua` | The `fact` and `chart` shortcodes: run `src/cli.js`, and fail the render when it fails |
 | `package-lock.json` | Locked dependency tree for `npm ci` |
 | `package.json` | Package manifest: script `test`; d3-dsv (CSV), js-yaml (definitions and registry), jsdom (charts drawn at render time); Playwright and axe for `test/axe.spec.js` |

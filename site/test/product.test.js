@@ -76,6 +76,8 @@ test("a chart gives the figure in both modes, its table and its CSV", () => {
   assert.match(html, /class="kh-dark"/);
   assert.match(html, /<details><summary>Πίνακας δεδομένων<\/summary><table>/);
   assert.match(html, /download="population.csv" href="data:text\/csv/);
+  // the alt text in view, after the figure and without the title
+  assert.match(html, /<\/div><p class="kh-summary"><strong>Σε αριθμούς:<\/strong> Ελλάδα: από [^<]+\.<\/p>/);
   assert.throws(() => chart(DIR, { type: "pie", data: "population", geo: ["EL"], title: "x" }), /the site draws line/);
   // the source panel: every field from the rows, the definition and the registry linked
   const [, panel] = html.split('<details class="kh-sources">');

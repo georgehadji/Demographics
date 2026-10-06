@@ -22,6 +22,9 @@ Baseline screenshots for `charts.spec.js`, Linux only, written by the `Visual` w
 | `symbols-dark-linux.png` | Baseline of the symbols chart in dark mode |
 | `symbols-light-linux.png` | Baseline of the symbols chart in light mode |
 | `symbols-print-linux.png` | Baseline of the symbols chart in print mode |
+| `symbols-signed-dark-linux.png` | Baseline of the symbols chart with negative and positive counts in dark mode |
+| `symbols-signed-light-linux.png` | Baseline of the symbols chart with negative and positive counts in light mode |
+| `symbols-signed-print-linux.png` | Baseline of the symbols chart with negative and positive counts in print mode |
 | `tiles-dark-linux.png` | Baseline of the tiles chart in dark mode |
 | `tiles-light-linux.png` | Baseline of the tiles chart in light mode |
 | `tiles-print-linux.png` | Baseline of the tiles chart in print mode |

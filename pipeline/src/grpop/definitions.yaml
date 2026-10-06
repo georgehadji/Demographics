@@ -249,13 +249,18 @@
   description: >-
     Stillbirths plus deaths of infants aged up to 6 days during the reference year,
     per 1000 total births (live births plus stillbirths) of the same year, as ELSTAT
-    defines it. Affected by the 2019 break in stillbirths.
+    defines it. Affected by the 2019 break in stillbirths. Not comparable with Eurostat's
+    PERIMORRT (demo_minfind), which is much lower: INFERENCE, its stillbirths are late
+    foetal deaths of 28 weeks or more (Eurostat demo_mor metadata), ELSTAT's from 22.
   el:
     title: Περιγεννητική θνησιμότητα
     description: >-
       Οι γεννήσεις νεκρών και οι θάνατοι βρεφών ηλικίας έως και 6 ημερών μέσα στο έτος
       αναφοράς, ανά 1.000 συνολικές γεννήσεις (ζώντων και νεκρών) του ίδιου έτους, όπως
       την ορίζει η ΕΛΣΤΑΤ. Την επηρεάζει η διακοπή σειράς των γεννήσεων νεκρών το 2019.
+      Δεν συγκρίνεται με τον δείκτη της Eurostat, που είναι πολύ χαμηλότερος: κατά πάσα
+      πιθανότητα η Eurostat μετρά γεννήσεις νεκρών από τις 28 εβδομάδες κύησης, η ΕΛΣΤΑΤ
+      από τις 22.
 
 - id: neonatal_mortality_rate@v1
   metric: neonatal_mortality_rate

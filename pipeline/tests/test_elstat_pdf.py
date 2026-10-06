@@ -1,13 +1,16 @@
 """ELSTAT natural movement press release, on the recorded 2025 release: its values, and
 each self-check, by changing one number of its text."""
 
+import dataclasses
 import hashlib
 from datetime import UTC, datetime
 from pathlib import Path
 
 import polars as pl
 import pytest
+from test_indicators import data
 
+from grpop import reconcile
 from grpop.harmonize import REFERENCE
 from grpop.parse import elstat_pdf
 from grpop.provenance import validate_observations
@@ -85,3 +88,19 @@ def test_reference_labels_are_greek_nuts_2024_codes():
     nuts = set(pl.read_csv(REFERENCE / "nuts2024_el.csv")["geo_code"])
     assert set(areas["geo_code"].drop_nulls()) <= nuts
     assert areas["label_el"].is_unique().all()
+
+
+@pytest.mark.parametrize("definition_id", list(reconcile.CHECKS))
+def test_elstat_agrees_with_eurostat_except_where_explained(release, definition_id):
+    """On the recorded Eurostat tables (Greece, 2021 onwards)."""
+    ours = release.filter(pl.col("definition_id") == definition_id)
+    sources = reconcile.sources(definition_id)
+    reconcile.check(definition_id, ours, data(sources))
+    # a listed difference that is no longer listed stops it
+    first = reconcile.CHECKS[definition_id]
+    known = sorted(first.known_differences)
+    unlisted = dataclasses.replace(first, known_differences=frozenset(known[:-1]))
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setitem(reconcile.CHECKS, definition_id, unlisted)
+        with pytest.raises(ValueError, match="differ where nothing explains it"):
+            reconcile.check(definition_id, ours, data(sources))

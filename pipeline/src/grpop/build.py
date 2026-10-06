@@ -25,7 +25,7 @@ from typing import Any
 
 import polars as pl
 
-from grpop import groups, harmonize, indicators, projections, snapshots
+from grpop import groups, harmonize, indicators, projections, reconcile, snapshots
 from grpop.definitions import get_definition
 from grpop.parse import elstat_pdf, gisco, un_wpp
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
@@ -164,9 +164,13 @@ PROJECTIONS = {
 def _elstat(definition_id: str, decimals: int | None = None) -> Step:
     def run(data: indicators.Data) -> pl.DataFrame:
         df = elstat_pdf.to_observations(*data[elstat_pdf.SOURCE_ID])
-        return df.filter(pl.col("definition_id") == definition_id)
+        df = df.filter(pl.col("definition_id") == definition_id)
+        if definition_id in reconcile.CHECKS:
+            reconcile.check(definition_id, df, data)  # Δ8c: against Eurostat
+        return df
 
-    return Step(frozenset({elstat_pdf.SOURCE_ID}), run, decimals)
+    sources = {elstat_pdf.SOURCE_ID, *reconcile.sources(definition_id)}
+    return Step(frozenset(sources), run, decimals)
 
 
 # ELSTAT natural movement (Δ8a-b): one file per definition; births and deaths of Greece

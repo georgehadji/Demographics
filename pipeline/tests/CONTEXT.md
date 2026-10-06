@@ -12,6 +12,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_definitions.py` | `definitions.yaml` loads; duplicate or malformed ids are rejected |
 | `test_docs.py` | README lists every source host; Eurostat codes named in live docs exist in the registry |
 | `test_elstat_xlsx.py` | The ELSTAT SPO18/10 reader on a recorded table |
+| `test_elstat_pdf.py` | The ELSTAT natural movement reader on hand-written page text: national series, revised values, merged NUTS 3 regions, Attica as a whole; every adds-up check stops a release that fails it |
 | `test_eurostat.py` | The Eurostat connector: whole-dataset URL, retries on network errors and 5xx, one snapshot per response |
 | `test_eurostat_parse.py` | Eurostat flags, sex and age codes, select guard, on recorded responses |
 | `test_gisco.py` | The Greek map geometry: regions kept and sorted, licence and attribution, Greek names, rounding, a missing region fails |

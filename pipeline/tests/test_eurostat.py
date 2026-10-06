@@ -91,3 +91,9 @@ def test_ingest_refuses_a_file_that_is_not_xlsx(tmp_path):
     c, _ = client([httpx.Response(200, content=b"<html>not found</html>")])
     with pytest.raises(ValueError, match="not an xlsx file"):
         eurostat.ingest(tmp_path, [get_source("un_wpp_2024_ppp_poptot")], c, backoff=0)
+
+
+def test_ingest_refuses_a_file_that_is_not_pdf(tmp_path):
+    c, _ = client([httpx.Response(200, content=b"<html>not found</html>")])
+    with pytest.raises(ValueError, match="not a PDF file"):
+        eurostat.ingest(tmp_path, [get_source("elstat_spo03_2025")], c, backoff=0)

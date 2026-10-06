@@ -1,21 +1,34 @@
 """ELSTAT natural movement of population, the yearly press release (SPO03) -> observations.
 
-Reads the counts of Table 1 (births, deaths and natural change of Greece, 1932 onwards
-with gaps) and Table 2 (births and deaths of the latest year by place of usual
-residence: regions and regional units), never the % columns or the prose. Located by
-content: each table by its title, each row by its year or its label
-(data/reference/elstat_areas_el.csv). The release is checked against itself, and
-anything that does not add up raises: births minus deaths equal natural change in every
-year of Table 1; the country row of Table 2 equals Table 1; the regions plus "Εξωτερικό"
-(residence abroad, read for this check only) add up to the country; and each region's
-regional units add up to the region, except Attica, given as a whole. Regional units
-that NUTS 2024 merges into one NUTS 3 region are summed into a ``derived`` value.
+Reads Tables 1-4, 6 and 7, never the % columns or the prose:
+
+1. births, deaths and natural change of Greece, 1932 onwards with gaps;
+2. births and deaths of the latest year by place of usual residence: regions and
+   regional units (data/reference/elstat_areas_el.csv);
+3. births by the mother's age group, every tenth year;
+4. births by sex, by the mother's citizenship, inside or outside marriage or
+   registered partnership, the last five years;
+6. deaths by sex and age group, the last two years;
+7. stillbirths, infant deaths and the infant, perinatal and neonatal mortality rates,
+   2015 onwards, with the break its footnote names.
+
+Each table is located by its title and each row by its year or its label. The release
+is checked against itself, and anything that does not add up raises: births minus
+deaths equal natural change; every table's totals equal Table 1; the regions plus
+"Εξωτερικό" (residence abroad, read for this check only) add up to the country and each
+region's units to the region (Attica is given as a whole); age groups, sexes,
+citizenships and marital status add up to their total; the infant mortality rate is
+infant deaths per 1,000 live births. A value printed in two tables is published once.
+Regional units that NUTS 2024 merges into one NUTS 3 region are summed into a
+``derived`` value; ELSTAT's rates are ``official_estimate``. Greek mothers and births
+inside marriage are the total minus the published counts, so they are not published.
 """
 
 from __future__ import annotations
 
 import io
 import re
+from collections.abc import Sequence
 
 import pdfplumber
 import polars as pl
@@ -29,6 +42,16 @@ from grpop.sources.registry import get_source
 SOURCE_ID = "elstat_spo03_2025"
 TRANSFORM_VERSION = "elstat_spo03_pdf@0.1"
 BIRTHS, DEATHS, NATURAL_CHANGE = "live_births@v1", "deaths@v1", "natural_change@v1"
+FOREIGN_MOTHER = "live_births_foreign_citizen_mother@v1"
+OUTSIDE_MARRIAGE = "live_births_outside_marriage@v1"
+STILLBIRTHS = "stillbirths@v1"
+INFANT_RATE = "infant_mortality_rate@v1"
+PERINATAL_RATE = "perinatal_mortality_rate@v1"
+NEONATAL_RATE = "neonatal_mortality_rate@v1"
+DEFINITIONS = (
+    BIRTHS, DEATHS, NATURAL_CHANGE, FOREIGN_MOTHER, OUTSIDE_MARRIAGE,
+    STILLBIRTHS, INFANT_RATE, PERINATAL_RATE, NEONATAL_RATE,
+)  # fmt: skip
 
 _MONTHS = [
     "Ιανουαρίου", "Φεβρουαρίου", "Μαρτίου", "Απριλίου", "Μαΐου", "Ιουνίου",
@@ -40,6 +63,21 @@ _TABLE1 = re.compile(rf"^(\d{{4}}) ({_NUM}) ({_NUM})(\*?) ({_NUM})$")
 _PCT = r"-?\d+,\d%"
 _TABLE2 = re.compile(rf"^(.+?) ({_NUM}) {_PCT} ({_NUM}) {_PCT}$")
 _TABLE2_YEAR = re.compile(r"έτους (\d{4})")
+_DEC = r"\d+,\d"
+_TABLE7 = re.compile(rf"^(\d{{4}}) ({_NUM}) ({_NUM}) ({_NUM}) ({_DEC}) ({_DEC}) ({_DEC})$")
+_TABLE7_BREAK = re.compile(r"^\* Το (\d{4}), το όριο βιωσιμότητας")  # noqa: RUF001
+# Age labels that are not "a-b" or "a+" (provenance.AGE_PATTERN)
+_AGE = {"<15": "0-14", "Άγνωστη": "unknown", "Κάτω του έτους": "0"}
+_TABLE4 = {
+    "Γεννήσεις ζώντων": "total",
+    "Αγόρια": "male",
+    "Κορίτσια": "female",
+    "Ελληνίδες μητέρες": "greek",
+    "Αλλοδαπές μητέρες": "foreign",
+    "Μη δηλωθείσα ιθαγένεια": "undeclared",
+    "Γεννήσεις εντός γάμου/συμφώνου συμβίωσης": "inside",
+    "Γεννήσεις εκτός γάμου/συμφώνου συμβίωσης": "outside",
+}
 
 
 def _int(text: str) -> int:
@@ -65,7 +103,45 @@ def _table(text: list[str], title: str) -> list[str]:
     if len(found) != 1:
         raise ValueError(f"'{title}' on {len(found)} pages, expected one")
     lines = found[0].splitlines()
-    return lines[next(i for i, line in enumerate(lines) if title in line) :]
+    start = next(i for i, line in enumerate(lines) if title in line)
+    end = next(
+        (i for i in range(start + 1, len(lines)) if lines[i].startswith(("Πίνακας ", "Γράφημα "))),
+        len(lines),
+    )
+    return lines[start:end]
+
+
+def _cells(line: str, n: int) -> tuple[str, list[int]] | None:
+    """A row's label and its last n counts ("-" is none), or None for any other line."""
+    tokens = line.split()
+    values = tokens[len(tokens) - n :]
+    if len(values) < n or not all(v == "-" or re.fullmatch(_NUM, v) for v in values):
+        return None
+    return " ".join(tokens[: len(tokens) - n]), [0 if v == "-" else _int(v) for v in values]
+
+
+def _years(lines: list[str], n: int) -> list[str]:
+    """The column heading of n years."""
+    for line in lines:
+        tokens = line.split()
+        if len(tokens) == n and all(re.fullmatch(r"\d{4}", t) for t in tokens):
+            return tokens
+    raise ValueError(f"no heading of {n} years in {lines[0]!r}")
+
+
+def _rows(lines: list[str], n: int) -> dict[str, list[int]]:
+    rows: dict[str, list[int]] = {}
+    for line in lines:
+        if cells := _cells(line, n):
+            if cells[0] in rows:
+                raise ValueError(f"{lines[0]!r}: row {cells[0]!r} twice")
+            rows[cells[0]] = cells[1]
+    return rows
+
+
+def _check(what: str, ours: object, theirs: object) -> None:
+    if ours != theirs:
+        raise ValueError(f"{what}: {ours} != {theirs}")
 
 
 def table1(text: list[str]) -> pl.DataFrame:
@@ -104,6 +180,118 @@ def table2(text: list[str]) -> tuple[str, pl.DataFrame]:
     return year.group(1), df
 
 
+def _long(rows: Sequence[tuple[str, str, str, str, float]], **fixed: object) -> pl.DataFrame:
+    """(period, sex, age, definition_id, value) rows of Greece with the other columns."""
+    df = pl.DataFrame(
+        rows, schema=["period", "sex", "age", "definition_id", "value"], orient="row"
+    ).with_columns(pl.col("value").cast(pl.Float64))
+    defaults = {"nature": Nature.OBSERVED.value, "revised": False, "break_in_series": False}
+    columns = {k: pl.lit(v) for k, v in {**defaults, **fixed}.items()}
+    return df.with_columns(geo_code=pl.lit("EL"), **columns)
+
+
+def table3(text: list[str], births: dict[str, int]) -> pl.DataFrame:
+    """Births by the mother's age group, checked against their total and Table 1."""
+    lines = _table(text, "Πίνακας 3.")
+    years = _years(lines, 5)
+    rows = _rows(lines, 5)
+    total = rows.pop("Σύνολο")
+    for i, year in enumerate(years):
+        _check(f"Table 3 {year}: age groups", sum(v[i] for v in rows.values()), total[i])
+        _check(f"Table 3 {year}: total", total[i], births[year])
+    t = Sex.TOTAL.value
+    return _long(
+        [(y, t, _AGE.get(a, a), BIRTHS, v[i]) for a, v in rows.items() for i, y in enumerate(years)]
+    )
+
+
+def table4(text: list[str], births: dict[str, int]) -> pl.DataFrame:
+    """Births by sex, by mother's citizenship, outside marriage, checked to add up."""
+    lines = _table(text, "Πίνακας 4.")
+    years = _years(lines, 5)
+    rows = _rows(lines, 5)
+    _check("Table 4: rows", sorted(rows), sorted(_TABLE4))
+    r = {_TABLE4[k]: v for k, v in rows.items()}
+    for i, year in enumerate(years):
+        _check(f"Table 4 {year}: total", r["total"][i], births[year])
+        _check(f"Table 4 {year}: boys + girls", r["male"][i] + r["female"][i], r["total"][i])
+        _check(
+            f"Table 4 {year}: Greek + foreign + undeclared",
+            r["greek"][i] + r["foreign"][i] + r["undeclared"][i],
+            r["total"][i],
+        )
+        inside, outside = r["inside"][i], r["outside"][i]
+        _check(f"Table 4 {year}: inside + outside", inside + outside, r["total"][i])
+    t, y5 = Sex.TOTAL.value, list(enumerate(years))
+    return _long(
+        [(y, sex, AGE_TOTAL, BIRTHS, r[sex][i]) for sex in ("male", "female") for i, y in y5]
+        + [(y, t, AGE_TOTAL, FOREIGN_MOTHER, r["foreign"][i]) for i, y in y5]
+        + [(y, t, AGE_TOTAL, OUTSIDE_MARRIAGE, r["outside"][i]) for i, y in y5]
+    )
+
+
+def table6(text: list[str], deaths: dict[str, int]) -> pl.DataFrame:
+    """Deaths by sex and age group, checked to add up by sex and age, and against Table 1.
+    The total of both sexes and all ages is Table 1's, so it is not repeated."""
+    lines = _table(text, "Πίνακας 6.")
+    years = _years(lines, 2)
+    rows = _rows(lines, 6)
+    total = rows.pop("")
+    sexes = (Sex.TOTAL.value, Sex.MALE.value, Sex.FEMALE.value)
+    out: list[tuple[str, str, str, str, float]] = []
+    for i, year in enumerate(years):
+        _check(f"Table 6 {year}: total", total[3 * i], deaths[year])
+        for a, v in rows.items():
+            _check(f"Table 6 {year} {a}: men + women", v[3 * i + 1] + v[3 * i + 2], v[3 * i])
+        for j, sex in enumerate(sexes):
+            k = 3 * i + j
+            _check(f"Table 6 {year} {sex}: age groups", sum(v[k] for v in rows.values()), total[k])
+            out += [(year, sex, _AGE.get(a, a), DEATHS, v[k]) for a, v in rows.items()]
+            if sex != Sex.TOTAL.value:
+                out.append((year, sex, AGE_TOTAL, DEATHS, total[k]))
+    return _long(out)
+
+
+def table7(text: list[str], births: dict[str, int], infant_deaths: dict[str, int]) -> pl.DataFrame:
+    """Stillbirths, infant deaths (those of Table 6's years are not repeated) and the
+    infant, perinatal and neonatal mortality rates; the break its footnote names."""
+    lines = _table(text, "Πίνακας 7.")
+    if "Βρεφικής Περιγεννητικής Νεογνικής" not in "\n".join(lines):
+        raise ValueError("Table 7: rate columns not in the order infant, perinatal, neonatal")
+    breaks = {m.group(1) for line in lines if (m := _TABLE7_BREAK.match(line))}
+    if len(breaks) != 1:
+        raise ValueError("Table 7: no footnote naming the year of the stillbirth break")
+    t = Sex.TOTAL.value
+    counts: list[tuple[str, str, str, str, float]] = []
+    rates: list[tuple[str, str, str, str, float]] = []
+    for line in lines:
+        if not (m := _TABLE7.match(line.strip())):
+            continue
+        year = m.group(1)
+        born, still, infant = (_int(g) for g in m.groups()[1:4])
+        infant_rate, perinatal, neonatal = (float(g.replace(",", ".")) for g in m.groups()[4:])
+        _check(f"Table 7 {year}: births", born, births[year])
+        # ELSTAT rounds half up, to one decimal
+        ours = int(infant * 10_000 / born + 0.5) / 10
+        _check(f"Table 7 {year}: infant mortality", ours, infant_rate)
+        if year in infant_deaths:
+            _check(f"Table 7 {year}: infant deaths", infant, infant_deaths[year])
+        else:
+            counts.append((year, t, "0", DEATHS, infant))
+        counts.append((year, t, AGE_TOTAL, STILLBIRTHS, still))
+        rates += [
+            (year, t, AGE_TOTAL, INFANT_RATE, infant_rate),
+            (year, t, AGE_TOTAL, PERINATAL_RATE, perinatal),
+            (year, t, AGE_TOTAL, NEONATAL_RATE, neonatal),
+        ]
+    if not counts:
+        raise ValueError("Table 7: no year rows")
+    (year,) = breaks
+    df = pl.concat([_long(counts), _long(rates, nature=Nature.OFFICIAL_ESTIMATE.value)])
+    broken = pl.col("definition_id").is_in([STILLBIRTHS, PERINATAL_RATE])
+    return df.with_columns(break_in_series=(pl.col("period") == year) & broken)
+
+
 def _areas(rows: pl.DataFrame) -> pl.DataFrame:
     """Rows of Table 2 with their NUTS code and level, after the adds-up checks."""
     areas = pl.read_csv(REFERENCE / "elstat_areas_el.csv", schema_overrides={"geo_code": pl.String})
@@ -135,8 +323,7 @@ def _areas(rows: pl.DataFrame) -> pl.DataFrame:
 
 
 def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
-    """Births, deaths and natural change of Greece (Table 1), and births and deaths of
-    the regions and NUTS 3 regions (Table 2)."""
+    """Every value the module reads (see its docstring), once."""
     text = pages(pdf)
     national = table1(text)
     year, rows = table2(text)
@@ -159,6 +346,17 @@ def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
             revised=pl.lit(False),
         )
     )
+    births = dict(national.select("period", "births").iter_rows())
+    deaths = dict(national.select("period", "deaths").iter_rows())
+    by_age = table6(text, deaths)
+    infant = by_age.filter((pl.col("age") == "0") & (pl.col("sex") == Sex.TOTAL.value))
+    infant_deaths = dict(infant.select("period", pl.col("value").cast(pl.Int64)).iter_rows())
+    tables = [
+        table3(text, births),
+        table4(text, births),
+        by_age,
+        table7(text, births, infant_deaths),
+    ]
     long = pl.concat(
         [
             national.select(
@@ -182,18 +380,24 @@ def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
             )
             for d, c in ((BIRTHS, "births"), (DEATHS, "deaths"))
         ]
+    ).with_columns(
+        sex=pl.lit(Sex.TOTAL.value), age=pl.lit(AGE_TOTAL), break_in_series=pl.lit(False)
+    )
+    columns = long.columns
+    long = pl.concat(
+        [long.with_columns(pl.col("value").cast(pl.Float64))] + [t.select(columns) for t in tables]
     )
     source = get_source(SOURCE_ID)
-    metric = {d: get_definition(d).metric for d in (BIRTHS, DEATHS, NATURAL_CHANGE)}
-    unit = {d: get_definition(d).unit for d in (BIRTHS, DEATHS, NATURAL_CHANGE)}
+    metric = {d: get_definition(d).metric for d in DEFINITIONS}
+    unit = {d: get_definition(d).unit for d in DEFINITIONS}
     return long.select(
         metric=pl.col("definition_id").replace_strict(metric),
         definition_id="definition_id",
         geo_code="geo_code",
         geo_vintage=pl.lit("NUTS2024"),
         period="period",
-        sex=pl.lit(Sex.TOTAL.value),
-        age=pl.lit(AGE_TOTAL),
+        sex="sex",
+        age="age",
         value=pl.col("value").cast(pl.Float64),
         unit=pl.col("definition_id").replace_strict(unit),
         source=pl.lit(source.provider),
@@ -206,7 +410,7 @@ def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
         status=pl.when("revised")
         .then(pl.lit(Status.REVISED.value))
         .otherwise(pl.lit(Status.FINAL.value)),
-        break_in_series=pl.lit(False),
+        break_in_series="break_in_series",
         scenario_id=pl.lit(None, dtype=pl.String),
         interval=pl.lit(None, dtype=pl.String),
-    ).sort("definition_id", "geo_code", "period")
+    ).sort("definition_id", "geo_code", "period", "sex", "age")

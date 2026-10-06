@@ -1,7 +1,5 @@
-"""ELSTAT natural movement press release: the recorded 2025 release, and hand-written
-page text in its layout (Tables 1 and 2 as pdfplumber prints them, made-up counts that
-add up, not ELSTAT data) for the cases a real release does not show.
-"""
+"""ELSTAT natural movement press release, on the recorded 2025 release: its values, and
+each self-check, by changing one number of its text."""
 
 import hashlib
 from datetime import UTC, datetime
@@ -15,111 +13,71 @@ from grpop.parse import elstat_pdf
 from grpop.provenance import validate_observations
 from grpop.snapshots import Snapshot
 
+RAW = (Path(__file__).parent / "fixtures" / "elstat_spo03_2025.pdf").read_bytes()
 SNAP = Snapshot(
-    "0" * 64, elstat_pdf.SOURCE_ID, "https://example.org/x", datetime(2026, 10, 6, tzinfo=UTC), 1
+    hashlib.sha256(RAW).hexdigest(),
+    elstat_pdf.SOURCE_ID,
+    "https://example.org/x",
+    datetime(2026, 10, 6, tzinfo=UTC),
+    len(RAW),
 )
-PAGE1 = "ΕΛΛΗΝΙΚΗ ΔΗΜΟΚΡΑΤΙΑ\nΠειραιάς, 1 Οκτωβρίου 2026\nΣΤΟΙΧΕΙΑ ΦΥΣΙΚΗΣ ΚΙΝΗΣΗΣ ΠΛΗΘΥΣΜΟΥ: 2025"  # noqa: RUF001
-TABLE1 = """Πίνακας 1. Γεννήσεις ζώντων και Θάνατοι
-Γεννήσεις Θάνατοι Φυσική Μεταβολή
-1932 185.523 117.593 67.930
-2023 71.455 128.097* -56.642
-2024 1.000 1.200 -200
-2025 {births} {deaths} {change}
-* Τα στοιχεία έχουν αναθεωρηθεί κατόπιν δημοσίευσης
-Γράφημα 1."""  # noqa: RUF001
+TEXT = elstat_pdf.pages(RAW)
 
 
-def _num(n: int) -> str:
-    return f"{n:,}".replace(",", ".")
+@pytest.fixture(scope="module")
+def release() -> pl.DataFrame:
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(elstat_pdf, "pages", lambda _: TEXT)  # read once, above
+        return validate_observations(elstat_pdf.to_observations(SNAP, RAW))
 
 
-def table2(change: dict[str, tuple[int, int]] | None = None) -> tuple[str, int, int]:
-    """Table 2 from the reference labels: each unit i gets i+10 births and 2i+20 deaths,
-    regions their units' sum (Attica 500 and 900), abroad 7 and 30."""
-    areas = pl.read_csv(REFERENCE / "elstat_areas_el.csv", schema_overrides={"geo_code": pl.String})
-    counts: dict[str, tuple[int, int]] = {"Εξωτερικό": (7, 30), "Αττική": (500, 900)}
-    units = areas.filter(pl.col("geo_code").str.len_chars() == 5)
-    for i, label in enumerate(units["label_el"]):
-        counts[label] = (i + 10, 2 * i + 20)
-    for region in areas.filter(pl.col("geo_code").str.len_chars() == 4).iter_rows(named=True):
-        children = units.filter(pl.col("geo_code").str.head(4) == region["geo_code"])["label_el"]
-        if len(children):
-            counts[region["label_el"]] = (
-                sum(counts[c][0] for c in children),
-                sum(counts[c][1] for c in children),
-            )
-    regions = [lbl for lbl, code in areas.iter_rows() if code is None or len(code) == 4]
-    total = (sum(counts[r][0] for r in regions), sum(counts[r][1] for r in regions))
-    counts["ΣΥΝΟΛΟ ΧΩΡΑΣ"] = total
-    counts.update(change or {})
-    lines = [
-        f"{lbl} {_num(counts[lbl][0])} -4,2% {_num(counts[lbl][1])} 0,1%"
-        for lbl in areas["label_el"]
+def test_the_recorded_2025_release(release):
+    df = release
+    key = df["definition_id"] + " " + df["period"] + " " + df["sex"] + " " + df["age"]
+    value = dict(zip(key + " " + df["geo_code"], df["value"], strict=True))
+    status = dict(zip(key + " " + df["geo_code"], df["status"], strict=True))
+    assert (df.height, set(df["vintage"])) == (447, {"2026-10-01"})
+    assert value["natural_change@v1 2025 total total EL"] == -56223
+    assert status["deaths@v1 2023 total total EL"] == "revised"
+    assert value["live_births@v1 2025 total total EL531"] == 719 + 109  # Κοζάνη + Γρεβενά
+    assert value["live_births@v1 2025 total 0-14 EL"] == 95  # mother under 15
+    assert value["live_births@v1 1985 total unknown EL"] == 46
+    assert value["live_births@v1 1995 total unknown EL"] == 0  # "-"
+    assert value["live_births@v1 2025 male total EL"] == 33633
+    assert value["live_births_foreign_citizen_mother@v1 2025 total total EL"] == 6644
+    assert value["live_births_outside_marriage@v1 2025 total total EL"] == 6667
+    assert value["deaths@v1 2025 male 0 EL"] == 115
+    assert value["deaths@v1 2017 total 0 EL"] == 306  # Table 7 only
+    assert value["deaths@v1 2025 female 100+ EL"] == 864
+    assert value["infant_mortality_rate@v1 2025 total total EL"] == 3.2
+    broken = df.filter(pl.col("break_in_series"))
+    assert sorted(zip(broken["definition_id"], broken["period"], strict=True)) == [
+        ("perinatal_mortality_rate@v1", "2019"),
+        ("stillbirths@v1", "2019"),
     ]
-    head = (
-        "Πίνακας 2. Γεννήσεις ζώντων και Θάνατοι κατά τόπο μόνιμης κατοικίας\n"
-        "μητέρας/θανόντα, έτους 2025, και μεταβολές (%) 2025/2024\n"
-    )
-    return head + "\n".join(lines), *total
+    rates = df.filter(pl.col("definition_id").str.contains("rate"))
+    assert set(rates["nature"]) == {"official_estimate"}
 
 
-def pdf_text(change: dict[str, tuple[int, int]] | None = None, table1: str = TABLE1) -> list[str]:
-    t2, births, deaths = table2(change)
-    return [
-        PAGE1,
-        table1.format(births=_num(births), deaths=_num(deaths), change=_num(births - deaths)),
-        t2,
-    ]
-
-
-@pytest.fixture
-def observations(monkeypatch):
-    def run(text: list[str]) -> pl.DataFrame:
-        monkeypatch.setattr(elstat_pdf, "pages", lambda _: text)
-        return validate_observations(elstat_pdf.to_observations(SNAP, b"%PDF"))
-
-    return run
-
-
-def test_national_series_regions_and_merged_nuts3(observations):
-    df = observations(pdf_text())
-
-    def at(definition: str, geo: str, period: str) -> pl.DataFrame:
-        return df.filter(
-            (pl.col("definition_id") == definition)
-            & (pl.col("geo_code") == geo)
-            & (pl.col("period") == period)
-        )
-
-    assert at("deaths@v1", "EL", "2023")["status"].item() == "revised"
-    assert at("natural_change@v1", "EL", "2023")["status"].item() == "revised"
-    assert at("live_births@v1", "EL", "2023")["status"].item() == "final"
-    assert set(df["vintage"]) == {"2026-10-01"}
-    # Γρεβενά and Κοζάνη are one NUTS 3 region: their sum, derived
-    assert at("live_births@v1", "EL531", "2025")["nature"].item() == "derived"
-    assert at("live_births@v1", "EL532", "2025")["nature"].item() == "observed"
-    # Attica as a whole, its NUTS 3 regions not given; abroad not published
-    assert at("deaths@v1", "EL30", "2025")["value"].item() == 900
-    assert not df.filter(
-        pl.col("geo_code").str.starts_with("EL30") & (pl.col("geo_code") != "EL30")
-    ).height
-    assert df.filter(pl.col("period") == "2025")["geo_code"].n_unique() == 1 + 13 + 45
-    assert set(df.filter(pl.col("period") == "1932")["definition_id"]) == {
-        "live_births@v1",
-        "deaths@v1",
-        "natural_change@v1",
-    }
-
-
-def test_a_release_that_does_not_add_up_stops(observations):
-    with pytest.raises(ValueError, match="regional units do not add up"):
-        observations(pdf_text({"Χίος": (1, 1)}))
-    with pytest.raises(ValueError, match="regions and abroad"):
-        observations(pdf_text({"Εξωτερικό": (8, 30)}))
-    with pytest.raises(ValueError, match="births minus deaths"):
-        observations(pdf_text(table1=TABLE1.replace("1.200 -200", "1.200 -201")))
-    with pytest.raises(ValueError, match="country row differs from Table 1"):
-        observations(pdf_text(table1=TABLE1.replace("{births} {deaths} {change}", "1 2 -1")))
+@pytest.mark.parametrize(
+    ("old", "new", "error"),
+    [
+        ("Χίος 350 -12,3%", "Χίος 351 -12,3%", "regional units do not add up"),
+        ("Εξωτερικό 167 ", "Εξωτερικό 168 ", "regions and abroad"),
+        ("2024 68.467 126.916 -58.449", "2024 68.467 126.916 -58.448", "births minus deaths"),
+        ("<15 93 58 60 51 95", "<15 93 58 60 51 96", "Table 3 2025: age groups"),
+        ("Αγόρια 43.998", "Αγόρια 43.999", "boys \\+ girls"),
+        ("Κάτω του έτους 261 149 112", "Κάτω του έτους 261 150 112", "men \\+ women"),
+        ("2025 65.618 422 208 3,2", "2025 65.618 422 208 3,3", "infant mortality"),
+        ("* Το 2019, το όριο", "* Το όριο", "stillbirth break"),  # noqa: RUF001
+    ],
+)
+def test_a_release_that_does_not_add_up_stops(monkeypatch, old, new, error):
+    changed = [page.replace(old, new) for page in TEXT]
+    assert changed != TEXT, old
+    monkeypatch.setattr(elstat_pdf, "pages", lambda _: changed)
+    with pytest.raises(ValueError, match=error):
+        elstat_pdf.to_observations(SNAP, RAW)
 
 
 def test_reference_labels_are_greek_nuts_2024_codes():
@@ -127,27 +85,3 @@ def test_reference_labels_are_greek_nuts_2024_codes():
     nuts = set(pl.read_csv(REFERENCE / "nuts2024_el.csv")["geo_code"])
     assert set(areas["geo_code"].drop_nulls()) <= nuts
     assert areas["label_el"].is_unique().all()
-
-
-def test_the_recorded_2025_release():
-    raw = (Path(__file__).parent / "fixtures" / "elstat_spo03_2025.pdf").read_bytes()
-    snap = Snapshot(
-        hashlib.sha256(raw).hexdigest(),
-        elstat_pdf.SOURCE_ID,
-        "https://example.org/x",
-        SNAP.retrieved_at,
-        len(raw),
-    )
-    df = validate_observations(elstat_pdf.to_observations(snap, raw))
-    value = dict(
-        zip(
-            df["definition_id"] + " " + df["geo_code"] + " " + df["period"],
-            df["value"],
-            strict=True,
-        )
-    )
-    assert value["natural_change@v1 EL 2025"] == -56223
-    assert value["live_births@v1 EL 2025"] == 65618
-    assert value["deaths@v1 EL30 2025"] == 40879
-    assert value["live_births@v1 EL531 2025"] == 719 + 109  # Κοζάνη + Γρεβενά
-    assert (df.height, set(df["vintage"])) == (188, {"2026-10-01"})

@@ -52,6 +52,17 @@ test("projected values get a dashed boundary; provisional ones a hollow marker",
   assert.equal(figure.querySelectorAll('g[data-mark="dot"] circle').length, 1);
 });
 
+test("symbols size a negative count by its absolute value and colour it by sign, with a key", () => {
+  const signed = CODES.map((geo, i) => row(geo, "2024", (i % 2 ? 1 : -1) * (i + 1) * 1000));
+  const { figure } = map(symbols, signed, { ...SPEC, focus: null });
+  const radii = [...figure.querySelectorAll("circle")].map((c) => +attr(c, "r"));
+  // every region drawn, none beyond the largest, the largest size the largest circle
+  assert.ok(radii.filter((r) => r > 0 && r <= 28).length >= CODES.length, radii.join(" "));
+  const text = figure.textContent;
+  assert.ok(text.includes("αρνητική τιμή") && text.includes("θετική τιμή"));
+  assert.ok(!map(symbols, counts).figure.textContent.includes("αρνητική τιμή")); // no key when all are positive
+});
+
 test("a choropleth refuses counts; symbols refuse rates", () => {
   assert.throws(() => map(choropleth, counts), /rates only/);
   assert.throws(() => map(symbols, rate()), /counts/);

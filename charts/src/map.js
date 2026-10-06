@@ -102,17 +102,29 @@ function drawSymbols(rows, s, options) {
   if (rows.some((r) => RATE.test(r.unit))) throw new Error(`proportional symbols show counts, not ${rows[0].unit}`);
   const { features } = regions(rows, s);
   const { projection, under, over } = base(features, s, tokens);
-  const valued = features.filter((f) => f.row?.value != null).sort((a, b) => b.row.value - a.row.value);
-  const max = Math.max(...valued.map((f) => f.row.value));
+  const size = (f) => Math.abs(f.row.value);
+  const valued = features.filter((f) => f.row?.value != null).sort((a, b) => size(b) - size(a));
+  const max = Math.max(...valued.map(size));
   const radius = (v) => MAX_RADIUS * Math.sqrt(v / max);
-  const color = (f) => (f.id === s.focus ? tokens["color-accent"] : tokens["color-comparator"]);
+  // A count can be negative (natural change, net migration): the area shows its size and
+  // the colour its sign, from the two ends of the diverging palette, with a key.
+  const signed = valued.some((f) => f.row.value < 0);
+  const ends = { negative: tokens["palette-diverging"][0], positive: tokens["palette-diverging"].at(-1) };
+  const sign = (f) => (f.row.value < 0 ? "negative" : "positive");
+  const color = (f) => (signed ? ends[sign(f)] : f.id === s.focus ? tokens["color-accent"] : tokens["color-comparator"]);
   const hollow = (f) => style(f.row.nature, f.row.status).hollow;
   const legend = [max, max / 4].map((v) => ({ v, r: radius(v) }));
   const muted = tokens["color-text-muted"];
+  const signKey = signed
+    ? ["negative", "positive"].flatMap((k, i) => [
+        Plot.dot([0], { frameAnchor: "bottom-right", dx: -150, dy: -8 - 18 * i, r: 6, fill: ends[k] }),
+        Plot.text([s.text.sign[k]], { frameAnchor: "bottom-right", dx: -140, dy: -8 - 18 * i, fill: muted, textAnchor: "start" }),
+      ])
+    : [];
   return Plot.plot({
     ...frame(s, { ...options, caption: caption(options, s) }),
     projection,
-    // area proportional to the value; the key's constant radii are pixels, so they match
+    // area proportional to the size of the value; the key's constant radii are pixels, so they match
     r: { type: "sqrt", domain: [0, max], range: [0, MAX_RADIUS] },
     marginBottom: 2 * MAX_RADIUS + 16,
     marks: [
@@ -122,7 +134,7 @@ function drawSymbols(rows, s, options) {
       Plot.dot(
         valued,
         Plot.centroid({
-          r: (f) => f.row.value,
+          r: size,
           fill: (f) => (hollow(f) ? tokens["color-background"] : color(f)),
           stroke: (f) => (hollow(f) ? color(f) : tokens["color-background"]),
           strokeWidth: tokens["stroke-width-context"],
@@ -136,6 +148,7 @@ function drawSymbols(rows, s, options) {
       ...legend.map(({ v, r }) =>
         Plot.text([s.format(v)], { frameAnchor: "bottom-left", dx: 2 * MAX_RADIUS + 12, dy: MAX_RADIUS + 12 - 2 * r, fill: muted, textAnchor: "start" }),
       ),
+      ...signKey,
     ],
   });
 }

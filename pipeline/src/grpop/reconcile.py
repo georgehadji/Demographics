@@ -17,11 +17,13 @@ from grpop import indicators
 from grpop.indicators import SERIES, Indicator, Series, _cells, _gind
 from grpop.provenance import Nature
 
-# INFERENCE: since 2022 Eurostat counts only residents of Greece and ELSTAT also counts
-# events of residents abroad. Evidence: 2025, the one year whose release gives them
-# ("Εξωτερικό", Table 2): ELSTAT minus Eurostat is +179 births and +1,016 deaths,
-# residents abroad 167 births and 1,041 deaths, leaving 12 and -25. SPO03/2024's tables
-# would test 2022-2024. The rates follow: other numerators and denominators.
+# VERIFIED for 2022-2024: since 2022 Eurostat counts only residents of Greece, ELSTAT's
+# total also counts events of residents abroad. ELSTAT's tables by place of residence
+# (SPO03/2024 Table 03, births; SPO09/2024 Table 03, deaths) give "Εσωτερικό" equal to
+# Eurostat LBIRTH 2022-2024 and DEATH 2023-2024 (2022: 4 deaths apart, UNKNOWN), and
+# before 2022 their total equal to Eurostat's except the years below. INFERENCE for 2025,
+# provisional: residents abroad 167 births and 1,041 deaths (release Table 2) leave 12 and
+# -25. The rates follow: other numerators and denominators.
 _RESIDENTS = "EL 2022-2025"
 # UNKNOWN: differences of 4 to 117 events, in both directions, in years before 2022
 # (Eurostat demo_gind updated 2026-09-30, ELSTAT release of 2026-10-01).

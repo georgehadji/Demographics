@@ -177,12 +177,13 @@
   title: Live births
   description: >-
     Live births during the reference year, by the place of usual residence of the
-    mother. Stillbirths are not included.
+    mother. Stillbirths are not included. By age, the age is the mother's.
   el:
     title: Γεννήσεις ζώντων
     description: >-
       Οι γεννήσεις ζώντων μέσα στο έτος αναφοράς, κατά τόπο μόνιμης κατοικίας της
-      μητέρας. Δεν περιλαμβάνονται οι γεννήσεις νεκρών.
+      μητέρας. Δεν περιλαμβάνονται οι γεννήσεις νεκρών. Κατά ηλικία, η ηλικία είναι
+      της μητέρας.
 
 - id: deaths@v1
   metric: deaths
@@ -197,6 +198,77 @@
       Οι θάνατοι μέσα στο έτος αναφοράς, κατά τόπο μόνιμης κατοικίας του θανόντα. Η
       ΕΛΣΤΑΤ δεν μετρά τους θανάτους μεταναστών και προσφύγων κατά την προσπάθεια να
       φτάσουν σε ευρωπαϊκή χώρα.
+
+- id: live_births_foreign_citizen_mother@v1
+  metric: live_births_foreign_citizen_mother
+  unit: persons
+  title: Live births to mothers of foreign citizenship
+  description: >-
+    Live births during the reference year whose mother is not a Greek citizen, by
+    citizenship as registered (not country of birth). Births whose mother's
+    citizenship was not declared are counted neither here nor as Greek.
+  el:
+    title: Γεννήσεις ζώντων από μητέρες με αλλοδαπή υπηκοότητα
+    description: >-
+      Οι γεννήσεις ζώντων του έτους αναφοράς από μητέρες που δεν έχουν ελληνική
+      υπηκοότητα, όπως δηλώθηκε (όχι κατά χώρα γέννησης). Οι γεννήσεις χωρίς δηλωμένη
+      υπηκοότητα της μητέρας δεν μετρούν ούτε εδώ ούτε στις ελληνίδες μητέρες.
+
+- id: live_births_outside_marriage@v1
+  metric: live_births_outside_marriage
+  unit: persons
+  title: Live births outside marriage or registered partnership
+  description: >-
+    Live births during the reference year whose parents are neither married nor in a
+    registered partnership (σύμφωνο συμβίωσης), as ELSTAT groups them.
+  el:
+    title: Γεννήσεις ζώντων εκτός γάμου ή συμφώνου συμβίωσης
+    description: >-
+      Οι γεννήσεις ζώντων του έτους αναφοράς από γονείς που δεν είναι ούτε παντρεμένοι
+      ούτε σε σύμφωνο συμβίωσης, όπως τις ομαδοποιεί η ΕΛΣΤΑΤ.
+
+- id: stillbirths@v1
+  metric: stillbirths
+  unit: stillbirths
+  title: Stillbirths
+  description: >-
+    Fetal deaths registered during the reference year, as ELSTAT counts them. In 2019
+    ELSTAT lowered the gestational age from which a fetus counts as viable from 25 to
+    22 weeks: counts before and after are not fully comparable (break in series).
+  el:
+    title: Γεννήσεις νεκρών
+    description: >-
+      Οι εμβρυϊκοί θάνατοι που καταχωρίστηκαν μέσα στο έτος αναφοράς, όπως τους μετρά
+      η ΕΛΣΤΑΤ. Το 2019 η ΕΛΣΤΑΤ μείωσε το όριο βιωσιμότητας από τις 25 στις 22
+      εβδομάδες κύησης: οι τιμές πριν και μετά δεν συγκρίνονται πλήρως (διακοπή σειράς).
+
+- id: perinatal_mortality_rate@v1
+  metric: perinatal_mortality_rate
+  unit: per 1000 total births
+  title: Perinatal mortality rate
+  description: >-
+    Stillbirths plus deaths of infants aged up to 6 days during the reference year,
+    per 1000 total births (live births plus stillbirths) of the same year, as ELSTAT
+    defines it. Affected by the 2019 break in stillbirths.
+  el:
+    title: Περιγεννητική θνησιμότητα
+    description: >-
+      Οι γεννήσεις νεκρών και οι θάνατοι βρεφών ηλικίας έως και 6 ημερών μέσα στο έτος
+      αναφοράς, ανά 1.000 συνολικές γεννήσεις (ζώντων και νεκρών) του ίδιου έτους, όπως
+      την ορίζει η ΕΛΣΤΑΤ. Την επηρεάζει η διακοπή σειράς των γεννήσεων νεκρών το 2019.
+
+- id: neonatal_mortality_rate@v1
+  metric: neonatal_mortality_rate
+  unit: per 1000 live births
+  title: Neonatal mortality rate
+  description: >-
+    Deaths of infants aged under 28 days during the reference year per 1000 live
+    births of the same year, as ELSTAT defines it.
+  el:
+    title: Νεογνική θνησιμότητα
+    description: >-
+      Οι θάνατοι βρεφών ηλικίας κάτω των 28 ημερών μέσα στο έτος αναφοράς, ανά 1.000
+      γεννήσεις ζώντων του ίδιου έτους, όπως την ορίζει η ΕΛΣΤΑΤ.
 
 - id: net_migration@v1
   metric: net_migration
@@ -345,7 +417,7 @@
   title: Infant mortality rate
   description: >-
     Deaths of children under one year of age per 1000 live births in the reference
-    year, as Eurostat demo_minfind INFMORRT.
+    year (Eurostat demo_minfind INFMORRT; ELSTAT natural movement of population).
   el:
     title: Βρεφική θνησιμότητα
     description: >-

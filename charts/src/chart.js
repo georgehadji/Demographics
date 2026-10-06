@@ -86,6 +86,8 @@ export const TEXT = {
       "per 100 persons aged 15-64": "ανά 100 άτομα 15–64 ετών",
       "per 1000 average population": "ανά 1.000 κατοίκους (μέσος πληθυσμός)",
       "per 1000 live births": "ανά 1.000 γεννήσεις ζώντων",
+      "per 1000 total births": "ανά 1.000 συνολικές γεννήσεις (ζώντων και νεκρών)",
+      stillbirths: "γεννήσεις νεκρών",
       persons: "άτομα",
       years: "έτη",
     },

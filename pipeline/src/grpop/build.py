@@ -161,21 +161,28 @@ PROJECTIONS = {
 }
 
 
-def _elstat(definition_id: str) -> Step:
+def _elstat(definition_id: str, decimals: int | None = None) -> Step:
     def run(data: indicators.Data) -> pl.DataFrame:
         df = elstat_pdf.to_observations(*data[elstat_pdf.SOURCE_ID])
         return df.filter(pl.col("definition_id") == definition_id)
 
-    return Step(frozenset({elstat_pdf.SOURCE_ID}), run)
+    return Step(frozenset({elstat_pdf.SOURCE_ID}), run, decimals)
 
 
-# ELSTAT natural movement (Δ8a): births and deaths of Greece and its regions, natural
-# change of Greece, one file per definition. Not in ADDS_UP: Greece's counts include
-# residents abroad, whom no region holds; the parser checks that sum itself.
+# ELSTAT natural movement (Δ8a-b): one file per definition; births and deaths of Greece
+# and its regions, with Greece's by sex and age, the rest of Greece only. ELSTAT's rates
+# have one decimal. Not in ADDS_UP: Greece's counts include residents abroad, whom no
+# region holds; the parser checks every sum itself.
 ELSTAT = {
     "live_births_elstat": _elstat(elstat_pdf.BIRTHS),
     "deaths_elstat": _elstat(elstat_pdf.DEATHS),
     "natural_change_elstat": _elstat(elstat_pdf.NATURAL_CHANGE),
+    "live_births_foreign_citizen_mother_elstat": _elstat(elstat_pdf.FOREIGN_MOTHER),
+    "live_births_outside_marriage_elstat": _elstat(elstat_pdf.OUTSIDE_MARRIAGE),
+    "stillbirths_elstat": _elstat(elstat_pdf.STILLBIRTHS),
+    "infant_mortality_rate_elstat": _elstat(elstat_pdf.INFANT_RATE, 1),
+    "perinatal_mortality_rate_elstat": _elstat(elstat_pdf.PERINATAL_RATE, 1),
+    "neonatal_mortality_rate_elstat": _elstat(elstat_pdf.NEONATAL_RATE, 1),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

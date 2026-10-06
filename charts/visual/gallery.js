@@ -125,6 +125,8 @@ const RATES = LAYOUT.map(({ geo_code }, i) =>
   row(geo_code, 2024, 9 + ((i * 7) % 13) / 2, { unit: "per 1000 average population", ...(geo_code === "EL43" ? { status: "provisional" } : {}) }),
 );
 const COUNTS = LAYOUT.map(({ geo_code }, i) => row(geo_code, 2024, geo_code === "EL30" ? 3800000 : 180000 + ((i * 5) % 13) * 110000, { unit: "persons" }));
+// a count of both signs, as natural change by region: most regions lose, two gain
+const SIGNED = LAYOUT.map(({ geo_code }, i) => row(geo_code, 2024, (i % 6 === 0 ? 1 : -1) * (300 + ((i * 7) % 13) * 900), { unit: "persons" }));
 
 const DUMBBELL = [
   ["EL", 1.4, 1.24],
@@ -148,6 +150,7 @@ export const CHARTS = {
   lexis: [lexis, LEXIS, { title: "Η γονιμότητα μετατοπίζεται σε μεγαλύτερες ηλικίες", subtitle: "Γεννήσεις ανά γυναίκα, κατά ηλικία και έτος", format: { maximumFractionDigits: 2 } }],
   choropleth: [choropleth, RATES, { title: "Η θνησιμότητα είναι υψηλότερη στις αγροτικές περιφέρειες", subtitle: "Θάνατοι ανά 1.000 κατοίκους, 2024", focus: "EL30", geometry: GEOMETRY, format: { maximumFractionDigits: 1 } }],
   symbols: [symbols, COUNTS, { title: "Η Αττική συγκεντρώνει πάνω από το ένα τρίτο του πληθυσμού", subtitle: "Πληθυσμός, 2024", focus: "EL30", geometry: GEOMETRY }],
+  "symbols-signed": [symbols, SIGNED, { title: "Οι περισσότερες περιφέρειες έχουν περισσότερους θανάτους από γεννήσεις", subtitle: "Φυσική μεταβολή, 2024", focus: null, geometry: GEOMETRY }],
   dumbbell: [dumbbell, DUMBBELL, { title: "Η γονιμότητα έπεσε σε τρεις από τις τέσσερις", subtitle: "Γεννήσεις ανά γυναίκα, 2011 και 2024", format: { maximumFractionDigits: 2 } }],
   waterfall: [waterfall, WATERFALL, { title: "Οι θάνατοι ξεπερνούν γεννήσεις και μετανάστευση", subtitle: "Συνιστώσες της μεταβολής του πληθυσμού, 2025", parts: ["births", "deaths", "migration"], total: "change" }],
   tiles: [tiles, TILES, { title: "Όλες οι περιφέρειες χάνουν πληθυσμό", subtitle: "Πληθυσμός, 2011 = 100", layout: LAYOUT, format: { maximumFractionDigits: 0 } }],

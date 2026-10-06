@@ -646,4 +646,4 @@ sources:
       births (checked 2026-10-06); the 2025 xlsx tables are not out yet. One entry per
       edition: each year's release has its own documentID. parse/elstat_pdf.py reads
       Tables 1 and 2 only (counts, never the % columns or the prose).
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-06, evidence: 'Source probe run 37475442497: HTTP 200, application/pdf (834915 bytes, the size of the release parsed in Δ8a)'}

@@ -35,7 +35,9 @@ licences:
   elstat:
     name: ELSTAT copyright and reuse policy
     terms_url: https://www.statistics.gr/documents/20181/1412250/Copyright_Reuse_Policy_EN.pdf/dfacb7d1-3d9b-471f-851a-8b8b09994a74
-    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr'
+    # The terms ask that a modification be stated with ELSTAT's disclaimer: the
+    # values Kohortes sums or computes are the rows whose nature is "derived".
+    attribution: 'Source: ELSTAT (Hellenic Statistical Authority), www.statistics.gr. Values marked derived were computed by Kohortes from ELSTAT data; ELSTAT bears no responsibility for them.'
     commercial_reuse: true
     checked_at: 2026-09-28
     notes: >-

@@ -27,7 +27,7 @@ import polars as pl
 
 from grpop import groups, harmonize, indicators, projections, snapshots
 from grpop.definitions import get_definition
-from grpop.parse import gisco, un_wpp
+from grpop.parse import elstat_pdf, gisco, un_wpp
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
 from grpop.snapshots import Snapshot
 
@@ -159,12 +159,31 @@ PROJECTIONS = {
         lambda data: projections.totals(projections.read(data), _POPULATION.read(data)),
     ),
 }
+
+
+def _elstat(definition_id: str) -> Step:
+    def run(data: indicators.Data) -> pl.DataFrame:
+        df = elstat_pdf.to_observations(*data[elstat_pdf.SOURCE_ID])
+        return df.filter(pl.col("definition_id") == definition_id)
+
+    return Step(frozenset({elstat_pdf.SOURCE_ID}), run)
+
+
+# ELSTAT natural movement (Δ8a): births and deaths of Greece and its regions, natural
+# change of Greece, one file per definition. Not in ADDS_UP: Greece's counts include
+# residents abroad, whom no region holds; the parser checks that sum itself.
+ELSTAT = {
+    "live_births_elstat": _elstat(elstat_pdf.BIRTHS),
+    "deaths_elstat": _elstat(elstat_pdf.DEATHS),
+    "natural_change_elstat": _elstat(elstat_pdf.NATURAL_CHANGE),
+}
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},
     **{name: _series(s) for name, s in indicators.SERIES.items()},
     **GEOMETRY,
     "peer_groups": PEER_GROUPS,
     **PROJECTIONS,
+    **ELSTAT,
 }
 STEPS = {
     name: _with_median(step) if name in MEDIAN else _adds_up(step) if name in ADDS_UP else step

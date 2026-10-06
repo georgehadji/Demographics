@@ -1,11 +1,11 @@
-"""ELSTAT natural movement press release, on hand-written page text (not ELSTAT data).
-
-The release PDF is not committed; these pages follow its layout (Tables 1 and 2 as
-pdfplumber prints them) with made-up counts that add up. The parser ran on the real
-2025 release when it was written (Δ8a).
+"""ELSTAT natural movement press release: the recorded 2025 release, and hand-written
+page text in its layout (Tables 1 and 2 as pdfplumber prints them, made-up counts that
+add up, not ELSTAT data) for the cases a real release does not show.
 """
 
+import hashlib
 from datetime import UTC, datetime
+from pathlib import Path
 
 import polars as pl
 import pytest
@@ -127,3 +127,27 @@ def test_reference_labels_are_greek_nuts_2024_codes():
     nuts = set(pl.read_csv(REFERENCE / "nuts2024_el.csv")["geo_code"])
     assert set(areas["geo_code"].drop_nulls()) <= nuts
     assert areas["label_el"].is_unique().all()
+
+
+def test_the_recorded_2025_release():
+    raw = (Path(__file__).parent / "fixtures" / "elstat_spo03_2025.pdf").read_bytes()
+    snap = Snapshot(
+        hashlib.sha256(raw).hexdigest(),
+        elstat_pdf.SOURCE_ID,
+        "https://example.org/x",
+        SNAP.retrieved_at,
+        len(raw),
+    )
+    df = validate_observations(elstat_pdf.to_observations(snap, raw))
+    value = dict(
+        zip(
+            df["definition_id"] + " " + df["geo_code"] + " " + df["period"],
+            df["value"],
+            strict=True,
+        )
+    )
+    assert value["natural_change@v1 EL 2025"] == -56223
+    assert value["live_births@v1 EL 2025"] == 65618
+    assert value["deaths@v1 EL30 2025"] == 40879
+    assert value["live_births@v1 EL531 2025"] == 719 + 109  # Κοζάνη + Γρεβενά
+    assert (df.height, set(df["vintage"])) == (188, {"2026-10-01"})

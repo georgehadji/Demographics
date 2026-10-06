@@ -22,6 +22,7 @@ const list = new Intl.ListFormat("el", { type: "conjunction" });
 
 /** A chart with its explanation in plain words above it (texts.yaml charts.<kind>). */
 function explained(kind, path, vars = {}, after = "") {
+  if (!TEXTS.charts[kind]) throw new Error(`texts.yaml: no explanation of the chart ${kind}`);
   const text = TEXTS.charts[kind].replace(/\{(\w+)\}/g, (_, k) => {
     if (vars[k] === undefined) throw new Error(`texts.yaml charts.${kind}: nothing fills {${k}}`);
     return vars[k];

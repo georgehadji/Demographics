@@ -37,6 +37,10 @@ def _check(entry: SourceEntry, data: bytes) -> None:
         if not data.startswith(b"PK"):  # an xlsx file is a zip archive
             raise ValueError(f"{entry.id}: response is not an xlsx file")
         return
+    if entry.ingest == "pdf":
+        if not data.startswith(b"%PDF"):
+            raise ValueError(f"{entry.id}: response is not a PDF file")
+        return
     doc = json.loads(data)
     if entry.ingest == "geojson":
         if doc.get("type") != "FeatureCollection" or not doc.get("features"):

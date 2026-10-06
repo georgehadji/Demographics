@@ -10,6 +10,7 @@ dependencies = [
     "fastexcel>=0.11",
     "httpx>=0.27",
     "pandera[polars]>=0.20",
+    "pdfplumber>=0.11.10",
     "polars>=1.0",
     "pydantic>=2.7",
     "pyyaml>=6.0",

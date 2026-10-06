@@ -164,11 +164,39 @@
   unit: persons
   title: Natural change
   description: >-
-    Live births minus deaths during the reference year, as Eurostat demo_gind NATGROW.
+    Live births minus deaths during the reference year (Eurostat demo_gind NATGROW;
+    ELSTAT natural movement of population).
   el:
     title: Φυσική μεταβολή
     description: >-
       Οι γεννήσεις ζώντων μείον τους θανάτους μέσα στο έτος αναφοράς.
+
+- id: live_births@v1
+  metric: live_births
+  unit: persons
+  title: Live births
+  description: >-
+    Live births during the reference year, by the place of usual residence of the
+    mother. Stillbirths are not included.
+  el:
+    title: Γεννήσεις ζώντων
+    description: >-
+      Οι γεννήσεις ζώντων μέσα στο έτος αναφοράς, κατά τόπο μόνιμης κατοικίας της
+      μητέρας. Δεν περιλαμβάνονται οι γεννήσεις νεκρών.
+
+- id: deaths@v1
+  metric: deaths
+  unit: persons
+  title: Deaths
+  description: >-
+    Deaths during the reference year, by the place of usual residence of the deceased.
+    ELSTAT's count excludes migrants and refugees who died trying to reach Europe.
+  el:
+    title: Θάνατοι
+    description: >-
+      Οι θάνατοι μέσα στο έτος αναφοράς, κατά τόπο μόνιμης κατοικίας του θανόντα. Η
+      ΕΛΣΤΑΤ δεν μετρά τους θανάτους μεταναστών και προσφύγων κατά την προσπάθεια να
+      φτάσουν σε ευρωπαϊκή χώρα.
 
 - id: net_migration@v1
   metric: net_migration

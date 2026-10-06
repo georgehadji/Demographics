@@ -628,3 +628,22 @@ sources:
     phase: 1
     notes: Stable portal URL whose content is updated in place; see docs/spikes/elstat-ingestion.md.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36482771328: HTTP 200, xlsx (99735 bytes). Content parsed and checked in the A2 spike'}
+
+  - id: elstat_spo03_2025
+    provider: ELSTAT
+    dataset_code: SPO03 press release 2025
+    title: Natural movement of population, 2025 (press release of 1 October 2026)
+    title_el: "Φυσική κίνηση πληθυσμού, 2025 (ανακοίνωση της 1ης Οκτωβρίου 2026)"
+    access: pdf
+    probe_kind: http
+    probe_url: https://www.statistics.gr/el/statistics?p_p_id=documents_WAR_publicationsportlet_INSTANCE_qDQ8fBKKo4lN&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-2&p_p_col_count=4&p_p_col_pos=1&_documents_WAR_publicationsportlet_INSTANCE_qDQ8fBKKo4lN_javax.faces.resource=document&_documents_WAR_publicationsportlet_INSTANCE_qDQ8fBKKo4lN_ln=downloadResources&_documents_WAR_publicationsportlet_INSTANCE_qDQ8fBKKo4lN_documentID=602115&_documents_WAR_publicationsportlet_INSTANCE_qDQ8fBKKo4lN_locale=el
+    ingest: pdf
+    licence: elstat
+    used_for: [births, deaths, natural_change, reconciliation]
+    phase: 2
+    notes: >-
+      The only file on the SPO03/2025 publication page besides monthly provisional
+      births (checked 2026-10-06); the 2025 xlsx tables are not out yet. One entry per
+      edition: each year's release has its own documentID. parse/elstat_pdf.py reads
+      Tables 1 and 2 only (counts, never the % columns or the prose).
+    verification: {status: unverified}

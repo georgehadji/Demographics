@@ -275,6 +275,141 @@
       Οι θάνατοι βρεφών ηλικίας κάτω των 28 ημερών μέσα στο έτος αναφοράς, ανά 1.000
       γεννήσεις ζώντων του ίδιου έτους, όπως την ορίζει η ΕΛΣΤΑΤ.
 
+- id: live_births_normal_delivery@v1
+  metric: live_births_normal_delivery
+  unit: persons
+  title: Live births by normal delivery
+  description: >-
+    Live births during the reference year by normal delivery, that is not by caesarean
+    section, as ELSTAT records the method of birth (since 2018). Births whose method
+    was not declared are counted neither here nor as caesarean.
+  el:
+    title: Γεννήσεις ζώντων με φυσιολογικό τοκετό
+    description: >-
+      Οι γεννήσεις ζώντων του έτους αναφοράς με φυσιολογικό τοκετό, δηλαδή όχι με
+      καισαρική τομή, όπως καταγράφει η ΕΛΣΤΑΤ τη μέθοδο γέννησης (από το 2018). Οι
+      γεννήσεις χωρίς δηλωμένη μέθοδο δεν μετρούν ούτε εδώ ούτε στις καισαρικές.
+
+- id: live_births_caesarean@v1
+  metric: live_births_caesarean
+  unit: persons
+  title: Live births by caesarean section
+  description: >-
+    Live births during the reference year by caesarean section, as ELSTAT records the
+    method of birth (since 2018). Births whose method was not declared are counted
+    neither here nor as normal deliveries.
+  el:
+    title: Γεννήσεις ζώντων με καισαρική τομή
+    description: >-
+      Οι γεννήσεις ζώντων του έτους αναφοράς με καισαρική τομή, όπως καταγράφει η
+      ΕΛΣΤΑΤ τη μέθοδο γέννησης (από το 2018). Οι γεννήσεις χωρίς δηλωμένη μέθοδο δεν
+      μετρούν ούτε εδώ ούτε στους φυσιολογικούς τοκετούς.
+
+- id: marriages@v1
+  metric: marriages
+  unit: marriages
+  title: Marriages
+  description: >-
+    Marriages that took place in Greece during the reference year, religious and civil.
+    A couple married in both forms is counted once, by the first. Since 2024 (Law
+    5089/2024) they include marriages between two men or two women. Civil partnerships
+    are not marriages.
+  el:
+    title: Γάμοι
+    description: >-
+      Οι γάμοι που τελέστηκαν στην Ελλάδα μέσα στο έτος αναφοράς, θρησκευτικοί και
+      πολιτικοί. Ζευγάρι που παντρεύτηκε και με τους δύο τύπους μετρά μία φορά, με τον
+      γάμο που τελέστηκε πρώτος. Από το 2024 (Νόμος 5089/2024) περιλαμβάνουν και γάμους
+      μεταξύ ανδρών ή μεταξύ γυναικών. Τα σύμφωνα συμβίωσης δεν είναι γάμοι.
+
+- id: civil_marriages@v1
+  metric: civil_marriages
+  unit: marriages
+  title: Civil marriages
+  description: >-
+    The civil marriages among the marriages of the reference year (see marriages@v1).
+    Religious marriages are the rest.
+  el:
+    title: Πολιτικοί γάμοι
+    description: >-
+      Οι πολιτικοί γάμοι ανάμεσα στους γάμους του έτους αναφοράς (βλ. marriages@v1). Οι
+      υπόλοιποι είναι θρησκευτικοί.
+
+- id: civil_partnerships@v1
+  metric: civil_partnerships
+  unit: civil partnerships
+  title: Civil partnerships
+  description: >-
+    Civil partnership agreements (σύμφωνα συμβίωσης) concluded in Greece during the
+    reference year, between persons of different or of the same sex.
+  el:
+    title: Σύμφωνα συμβίωσης
+    description: >-
+      Τα σύμφωνα συμβίωσης που συνάφθηκαν στην Ελλάδα μέσα στο έτος αναφοράς, μεταξύ
+      προσώπων διαφορετικού ή του ίδιου φύλου.
+
+- id: first_marriages@v1
+  metric: first_marriages
+  unit: persons
+  title: Spouses at their first marriage
+  description: >-
+    Persons who married for the first time during the reference year, by sex and age at
+    the marriage. A marriage counts only its spouses not married before, so their
+    number is not twice the number of marriages.
+  el:
+    title: Σύζυγοι κατά τον πρώτο γάμο
+    description: >-
+      Τα πρόσωπα που παντρεύτηκαν για πρώτη φορά μέσα στο έτος αναφοράς, κατά φύλο και
+      ηλικία κατά τον γάμο. Κάθε γάμος μετρά μόνο όσους συζύγους δεν είχαν παντρευτεί
+      ξανά, γι' αυτό ο αριθμός τους δεν είναι διπλάσιος των γάμων.
+
+- id: divorces@v1
+  metric: divorces
+  unit: divorces
+  title: Divorces
+  description: >-
+    Divorces issued during the reference year: consensual (by notarial deed) and
+    contested (by final court ruling). Until 2017 ELSTAT collected divorces from the
+    courts, since 2018 from the Ministry of the Interior: values from 2018 are not fully
+    comparable with earlier ones.
+  el:
+    title: Διαζύγια
+    description: >-
+      Τα διαζύγια που εκδόθηκαν μέσα στο έτος αναφοράς: συναινετικά (με
+      συμβολαιογραφική πράξη) και κατ' αντιδικία (με αμετάκλητη δικαστική απόφαση). Ως
+      το 2017 η ΕΛΣΤΑΤ τα συνέλεγε από τα πρωτοδικεία, από το 2018 από το Υπουργείο
+      Εσωτερικών: οι τιμές από το 2018 δεν συγκρίνονται πλήρως με τις προηγούμενες.
+
+- id: divorces_per_100_marriages@v1
+  metric: divorces_per_100_marriages
+  unit: per 100 marriages
+  title: Divorces per 100 marriages
+  description: >-
+    Divorces during the reference year per 100 marriages of the same year, as ELSTAT
+    defines it. The divorces end marriages of many earlier years, so this is not the
+    share of marriages that end in divorce.
+  el:
+    title: Διαζύγια ανά 100 γάμους
+    description: >-
+      Τα διαζύγια του έτους αναφοράς ανά 100 γάμους του ίδιου έτους, όπως την ορίζει η
+      ΕΛΣΤΑΤ. Τα διαζύγια λύνουν γάμους πολλών προηγούμενων ετών, γι' αυτό η αναλογία
+      δεν είναι το ποσοστό των γάμων που καταλήγουν σε διαζύγιο.
+
+- id: divorced_persons@v1
+  metric: divorced_persons
+  unit: persons
+  title: Divorced persons
+  description: >-
+    Persons divorced during the reference year, by sex and age at the divorce. Each
+    divorce counts two persons; a divorce of two men or of two women counts two of the
+    same sex.
+  el:
+    title: Διαζευγμένοι
+    description: >-
+      Τα πρόσωπα που πήραν διαζύγιο μέσα στο έτος αναφοράς, κατά φύλο και ηλικία κατά
+      τη λύση του γάμου. Κάθε διαζύγιο μετρά δύο πρόσωπα· διαζύγιο δύο ανδρών ή δύο
+      γυναικών μετρά δύο του ίδιου φύλου.
+
 - id: net_migration@v1
   metric: net_migration
   unit: persons

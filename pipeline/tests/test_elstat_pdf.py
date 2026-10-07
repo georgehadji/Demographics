@@ -39,7 +39,7 @@ def test_the_recorded_2025_release(release):
     key = df["definition_id"] + " " + df["period"] + " " + df["sex"] + " " + df["age"]
     value = dict(zip(key + " " + df["geo_code"], df["value"], strict=True))
     status = dict(zip(key + " " + df["geo_code"], df["status"], strict=True))
-    assert (df.height, set(df["vintage"])) == (447, {"2026-10-01"})
+    assert (df.height, set(df["vintage"])) == (560, {"2026-10-01"})
     assert value["natural_change@v1 2025 total total EL"] == -56223
     assert status["deaths@v1 2023 total total EL"] == "revised"
     assert value["live_births@v1 2025 total total EL531"] == 719 + 109  # Κοζάνη + Γρεβενά
@@ -53,6 +53,16 @@ def test_the_recorded_2025_release(release):
     assert value["deaths@v1 2017 total 0 EL"] == 306  # Table 7 only
     assert value["deaths@v1 2025 female 100+ EL"] == 864
     assert value["infant_mortality_rate@v1 2025 total total EL"] == 3.2
+    assert value["live_births_caesarean@v1 2025 total total EL"] == 41202
+    assert value["live_births_normal_delivery@v1 2021 total total EL"] == 33604
+    assert value["marriages@v1 1932 total total EL"] == 39283
+    assert "civil_marriages@v1 1981 total total EL" not in value  # "-": none yet
+    assert value["civil_partnerships@v1 2025 total total EL"] == 16627
+    assert value["first_marriages@v1 2025 female 0-19 EL"] == 355
+    assert value["first_marriages@v1 2025 male total EL"] == 31730
+    assert value["divorces@v1 2025 total total EL"] == 15853
+    assert value["divorces_per_100_marriages@v1 2025 total total EL"] == 43.1
+    assert value["divorced_persons@v1 2025 female 65+ EL"] == 636
     broken = df.filter(pl.col("break_in_series"))
     assert sorted(zip(broken["definition_id"], broken["period"], strict=True)) == [
         ("perinatal_mortality_rate@v1", "2019"),
@@ -60,6 +70,7 @@ def test_the_recorded_2025_release(release):
     ]
     rates = df.filter(pl.col("definition_id").str.contains("rate"))
     assert set(rates["nature"]) == {"official_estimate"}
+    assert set(df.filter(pl.col("unit").str.starts_with("per "))["nature"]) == {"official_estimate"}
 
 
 @pytest.mark.parametrize(
@@ -73,6 +84,14 @@ def test_the_recorded_2025_release(release):
         ("Κάτω του έτους 261 149 112", "Κάτω του έτους 261 150 112", "men \\+ women"),
         ("2025 65.618 422 208 3,2", "2025 65.618 422 208 3,3", "infant mortality"),
         ("* Το 2019, το όριο", "* Το όριο", "stillbirth break"),  # noqa: RUF001
+        ("Καισαρική Τομή 51.607", "Καισαρική Τομή 51.608", "Table 5 2021: methods"),
+        ("2025 53.437 36.810 20.868", "2025 53.437 36.810 20.869", "religious \\+ civil"),
+        ("16.627 31,1", "16.628 31,1", "marriages \\+ partnerships"),
+        ("<20 89 0,3 355 1,1", "<20 90 0,3 355 1,1", "Table 9 male: age groups"),
+        ("42,4 43,1", "42,4 43,2", "divorces per 100 marriages"),
+        ("Σύνολο 15.532 100,0", "Σύνολο 15.533 100,0", "Table 11 2024: total"),
+        ("10+ έτη 10.314", "10+ έτη 10.315", "Table 11 2024: duration"),
+        ("65+ 1.322 8,3", "65+ 1.323 8,3", "Table 12 2025: men \\+ women"),
     ],
 )
 def test_a_release_that_does_not_add_up_stops(monkeypatch, old, new, error):

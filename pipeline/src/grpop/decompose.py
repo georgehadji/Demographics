@@ -115,7 +115,8 @@ def _parts(data: Data) -> pl.DataFrame:
     totals = parts.group_by("period").agg(
         pl.lit("total").alias("age"),
         pl.col("source_url").first(),
-        pl.col("women", "fertility", "change").sum(),
+        # sorted first: a float sum in group_by order differs between runs (test_build)
+        pl.col("women", "fertility", "change").sort().sum(),
         pl.col(*_FLAGS).any(),
         pl.col(*_DATES).max(),
     )

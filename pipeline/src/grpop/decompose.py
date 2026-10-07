@@ -44,23 +44,28 @@ def _read(series: Series, data: Data) -> pl.DataFrame:
 
 
 def _births(data: Data) -> pl.DataFrame:
-    """Births by mother's age class per year, checked to add up to the year's total."""
+    """Births by mother's age class, in the years where every class is given and no birth
+    is of unknown age (Greece: 1989 and from 1991), checked to add up
+    to the year's total."""
     df = _read(BIRTHS, data)
-    unknown = df.filter((pl.col("age") == "unknown") & (pl.col("value") != 0))
-    if unknown.height:
-        # ponytail: Greece has no births of unknown age; spread them by age if it ever does
-        raise ValueError(f"births of unknown mother's age:\n{unknown}")
     classes = df.filter(pl.col("age").is_in(list(CLASSES)))
-    total = df.filter(pl.col("age") == "total").select("period", total="value")
-    wrong = (
+    years = (
         classes.group_by("period")
         .agg(pl.col("value").sum(), n=pl.len())
-        .join(total, on="period")
-        .filter((pl.col("value") != pl.col("total")) | (pl.col("n") != len(CLASSES)))
+        .join(df.filter(pl.col("age") == "total").select("period", total="value"), on="period")
+        .join(
+            df.filter(pl.col("age") == "unknown").select("period", unknown="value"),
+            on="period",
+            how="left",
+        )
+        .filter(pl.col("n") == len(CLASSES), pl.col("unknown").fill_null(0) == 0)
     )
+    wrong = years.filter(pl.col("value") != pl.col("total"))
     if wrong.height:
         raise ValueError(f"births by age class do not add up to the total:\n{wrong}")
-    return classes.select("period", "age", "value", "source_url", *_FLAGS, *_DATES)
+    return classes.join(years.select("period"), on="period").select(
+        "period", "age", "value", "source_url", *_FLAGS, *_DATES
+    )
 
 
 def _women(data: Data) -> pl.DataFrame:

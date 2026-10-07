@@ -140,7 +140,7 @@ sources:
     licence: eurostat
     used_for: [births_decomposition]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-07, evidence: 'Source probe run 37588992767: HTTP 200, JSON-stat with 184 Greek values (age has 46 codes, indic_de 4); confirms the code exists'}
 
   - id: eurostat_demo_mlexpec
     provider: Eurostat

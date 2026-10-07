@@ -569,6 +569,49 @@
       Η μέση ηλικία των γυναικών όταν γεννούν το πρώτο τους παιδί, όπως τη
       δημοσιεύει η Eurostat.
 
+- id: mean_age_first_marriage@v1
+  metric: mean_age_first_marriage
+  unit: years
+  title: Mean age at first marriage
+  description: >-
+    The mean age of women or men at their first marriage in the reference year, as
+    Eurostat demo_nind FAGEMAR1 and MAGEMAR1 (the sex column).
+  el:
+    title: Μέση ηλικία στον πρώτο γάμο
+    description: >-
+      Η μέση ηλικία των γυναικών ή των ανδρών όταν παντρεύονται για πρώτη φορά, στο
+      έτος αναφοράς, όπως τη δημοσιεύει η Eurostat.
+
+- id: total_first_marriage_rate@v1
+  metric: total_first_marriage_rate
+  unit: first marriages per person
+  title: Total first marriage rate
+  description: >-
+    The sum of the age-specific first marriage rates of the reference year, for women
+    or men (the sex column): the share who would ever marry if those rates held for a
+    whole life, as Eurostat demo_nind FMAR1CUM and MMAR1CUM.
+  el:
+    title: Συνολικός δείκτης πρώτων γάμων
+    description: >-
+      Το άθροισμα των ειδικών κατά ηλικία δεικτών πρώτων γάμων ενός έτους, για γυναίκες
+      ή άνδρες: το μερίδιο που θα παντρευόταν κάποτε αν ίσχυαν σε όλη τη ζωή οι δείκτες
+      εκείνου του έτους, όπως τον δημοσιεύει η Eurostat.
+
+- id: age_leaving_parental_home@v1
+  metric: age_leaving_parental_home
+  unit: years
+  title: Age of young people leaving the parental household
+  description: >-
+    Eurostat's estimate of the average age at which young people leave the parental
+    household, from the Labour Force Survey (yth_demo_030): the age at which half no
+    longer live with their parents. A survey estimate, with its breaks in series.
+  el:
+    title: Ηλικία αποχώρησης από το πατρικό σπίτι
+    description: >-
+      Η εκτίμηση της Eurostat για τη μέση ηλικία στην οποία οι νέοι φεύγουν από το
+      πατρικό τους σπίτι, από την Έρευνα Εργατικού Δυναμικού: η ηλικία στην οποία οι
+      μισοί δεν ζουν πια με τους γονείς τους. Εκτίμηση από δειγματοληπτική έρευνα.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

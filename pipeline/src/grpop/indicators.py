@@ -480,6 +480,24 @@ SERIES = {
     "crude_birth_rate": _gind("crude_birth_rate@v1", "GBIRTHRT"),
     "crude_death_rate": _gind("crude_death_rate@v1", "GDEATHRT"),
     "crude_net_migration_rate": _gind("crude_net_migration_rate@v1", "CNMIGRATRT"),
+    # Δ9c: first marriage by sex, and the age of leaving the parental household
+    **{
+        f"{name}_{sex}": Series(
+            "eurostat_demo_nind",
+            f"{name}@v1",
+            Nature.OFFICIAL_ESTIMATE,
+            select={"indic_de": code},
+            fixed={"sex": sex},
+        )
+        for name, codes in (
+            ("mean_age_first_marriage", {"female": "FAGEMAR1", "male": "MAGEMAR1"}),
+            ("total_first_marriage_rate", {"female": "FMAR1CUM", "male": "MMAR1CUM"}),
+        )
+        for sex, code in codes.items()
+    },
+    "age_leaving_parental_home": Series(
+        "eurostat_yth_demo_030", "age_leaving_parental_home@v1", Nature.OFFICIAL_ESTIMATE
+    ),
     **{
         f"life_expectancy_{age}": Series(
             "eurostat_demo_mlexpec",

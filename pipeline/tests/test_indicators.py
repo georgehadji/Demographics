@@ -25,6 +25,7 @@ RECORDED = {
     "eurostat_demo_gind": "eurostat_demo_gind_el_cy.json",
     "eurostat_demo_find": "eurostat_demo_find_el_cy.json",
     "eurostat_demo_frate": "eurostat_demo_frate_el_cy.json",
+    "eurostat_demo_fagec": "eurostat_demo_fagec_el_cy.json",  # 2022-2024
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
     "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",

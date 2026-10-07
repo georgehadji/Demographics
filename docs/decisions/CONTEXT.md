@@ -12,3 +12,4 @@ Architecture decision records (ADR), dated. A new decision is a new file.
 | `0006-single-source-of-truth.md` | Every fact has exactly one home; the table of homes |
 | `0007-uncertainty-intervals.md` | Interval bounds as rows: the `interval` column of the provenance contract |
 | `0008-europop-variants.md` | EUROPOP2025: the baseline is `projected`, each sensitivity test a `scenario` with its `scenario_id` |
+| `0009-multi-source-provenance.md` | A derived value from several tables: `dataset_code` joins their codes with `+`, numerator first; the manifest keeps every snapshot |

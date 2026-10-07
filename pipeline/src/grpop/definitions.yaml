@@ -410,6 +410,43 @@
       τη λύση του γάμου. Κάθε διαζύγιο μετρά δύο πρόσωπα· διαζύγιο δύο ανδρών ή δύο
       γυναικών μετρά δύο του ίδιου φύλου.
 
+- id: births_change_women@v1
+  metric: births_change_women
+  unit: persons
+  title: Change in live births from the number of women
+  description: >-
+    The part of the change in live births from the year before that comes from the
+    number and age structure of women: for each mother's age, the change in the mean
+    number of women of that age times the mean fertility rate of the two years. With
+    births_change_fertility@v1 it adds up exactly to the change in births, at each age
+    and in total. Rates are births by mother's age (Eurostat demo_fagec) per mean female
+    population of 1 January of the year and the next (demo_pjan).
+  el:
+    title: Μεταβολή των γεννήσεων από τον αριθμό των γυναικών
+    description: >-
+      Το μέρος της μεταβολής των γεννήσεων ζώντων από το προηγούμενο έτος που οφείλεται
+      στον αριθμό και την ηλικιακή δομή των γυναικών: για κάθε ηλικία της μητέρας, η
+      μεταβολή του μέσου αριθμού γυναικών της ηλικίας επί τον μέσο δείκτη γονιμότητας
+      των δύο ετών. Μαζί με τη μεταβολή από τη γονιμότητα αθροίζει ακριβώς στη μεταβολή
+      των γεννήσεων, σε κάθε ηλικία και συνολικά.
+
+- id: births_change_fertility@v1
+  metric: births_change_fertility
+  unit: persons
+  title: Change in live births from fertility
+  description: >-
+    The part of the change in live births from the year before that comes from
+    age-specific fertility: for each mother's age, the change in the fertility rate
+    times the mean number of women of that age in the two years. With
+    births_change_women@v1 it adds up exactly to the change in births.
+  el:
+    title: Μεταβολή των γεννήσεων από τη γονιμότητα
+    description: >-
+      Το μέρος της μεταβολής των γεννήσεων ζώντων από το προηγούμενο έτος που οφείλεται
+      στη γονιμότητα κατά ηλικία: για κάθε ηλικία της μητέρας, η μεταβολή του δείκτη
+      γονιμότητας επί τον μέσο αριθμό γυναικών της ηλικίας στα δύο έτη. Μαζί με τη
+      μεταβολή από τον αριθμό των γυναικών αθροίζει ακριβώς στη μεταβολή των γεννήσεων.
+
 - id: net_migration@v1
   metric: net_migration
   unit: persons

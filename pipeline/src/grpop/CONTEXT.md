@@ -14,6 +14,7 @@ The package, in layers (ADR 0005): sources and snapshots (L1), parse (L2), harmo
 | `harmonize.py` | Greek NUTS codes: NUTS 2010 recodes, rejection of unknown codes, hierarchy check; `age_gaps`: age groups add up to the total |
 | `indicators.py` | `INDICATORS` (derived, with official counterpart and corroboration) and `SERIES` (official, published as given); `compute`, `disagreements`, `check` |
 | `parse` | Source bytes to long-format tables: see `parse/CONTEXT.md` |
+| `birth_order.py` | Δ9b: total fertility rate by birth order (1, 2, 3, 4+) for Greece: `demo_frate` rates split by the order shares of `demo_fordagec` births; each order's mean age checked against `demo_find`; provenance per ADR 0009 |
 | `decompose.py` | Δ9a: each year's change in Greek live births split, by mother's age, into the part from the number of women and the part from fertility (`demo_fagec`, `demo_pjan`), adding up exactly; provenance of two tables per ADR 0009 |
 | `reconcile.py` | ELSTAT's natural movement against Eurostat (`demo_gind`, `demo_minfind`), run by each ELSTAT build step: every difference listed with its explanation, an unlisted or vanished one stops the build |
 | `projections.py` | Official projections. EUROPOP2025 (`proj_25np`): baseline `projected`, sensitivity tests `scenario` (ADR 0008), base-year check against `demo_pjan`. UN WPP 2024: check of its medians against `demo_pjan` (`wpp_checked`) |

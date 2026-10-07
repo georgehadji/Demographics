@@ -8,8 +8,9 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `elstat_spo03_2025.pdf` | ELSTAT press release "Φυσική Κίνηση Πληθυσμού 2025" (1 October 2026), unmodified, sha256 `7d465036…`: input of `test_elstat_pdf.py` |
 | `elstat_spo18_t10_2025.xlsx` | ELSTAT SPO18 table 10: input of `test_elstat_xlsx.py` |
 | `eurostat_demo_fagec_el_cy.json` | Eurostat `demo_fagec` (births by mother's age), Greece and Cyprus, 2022 onwards: input of `test_decompose.py` |
+| `eurostat_demo_fordagec_el_cy.json` | Eurostat `demo_fordagec` (births by mother's age and birth order), Greece and Cyprus, 2021 onwards: input of `test_birth_order.py` |
 | `eurostat_demo_find_el.json` | Eurostat `demo_find`, Greece: connector and parser tests |
-| `eurostat_demo_find_el_cy.json` | Eurostat `demo_find`, Greece and Cyprus: input of `test_indicators.py` |
+| `eurostat_demo_find_el_cy.json` | Eurostat `demo_find`, Greece and Cyprus, 2021 onwards: total fertility rate and mean ages at birth, all orders and by order; input of `test_indicators.py` and `test_birth_order.py` |
 | `eurostat_demo_frate_el_cy.json` | Eurostat `demo_frate`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_gind_el_cy.json` | Eurostat `demo_gind`, Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_minfind_el_cy.json` | Eurostat `demo_minfind` (infant and neonatal mortality), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |

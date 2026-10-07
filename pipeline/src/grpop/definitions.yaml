@@ -489,6 +489,74 @@
       αριθμός παιδιών που θα αποκτούσε μια γυναίκα αν σε όλη την αναπαραγωγική της
       ζωή ίσχυαν οι δείκτες εκείνου του έτους.
 
+- id: total_fertility_rate_order1@v1
+  metric: total_fertility_rate_order1
+  unit: live births per woman
+  title: Total fertility rate, first births
+  description: >-
+    The part of the total fertility rate made of first births: each age-specific
+    fertility rate (Eurostat demo_frate) times the share of first births among the
+    births of known order at that age (demo_fordagec), summed over ages. The four orders
+    add up to the total fertility rate.
+  el:
+    title: Συνολικός δείκτης γονιμότητας, πρώτο παιδί
+    description: >-
+      Το μέρος του συνολικού δείκτη γονιμότητας που αντιστοιχεί σε πρώτες γεννήσεις: κάθε
+      ειδικός κατά ηλικία δείκτης γονιμότητας επί το μερίδιο αυτών των γεννήσεων στις
+      γεννήσεις γνωστής σειράς της ηλικίας, αθροισμένο σε όλες τις ηλικίες. Οι τέσσερις
+      σειρές αθροίζουν στον συνολικό δείκτη γονιμότητας.
+
+- id: total_fertility_rate_order2@v1
+  metric: total_fertility_rate_order2
+  unit: live births per woman
+  title: Total fertility rate, second births
+  description: >-
+    The part of the total fertility rate made of second births: each age-specific
+    fertility rate (Eurostat demo_frate) times the share of second births among the
+    births of known order at that age (demo_fordagec), summed over ages. The four orders
+    add up to the total fertility rate.
+  el:
+    title: Συνολικός δείκτης γονιμότητας, δεύτερο παιδί
+    description: >-
+      Το μέρος του συνολικού δείκτη γονιμότητας που αντιστοιχεί σε δεύτερες γεννήσεις: κάθε
+      ειδικός κατά ηλικία δείκτης γονιμότητας επί το μερίδιο αυτών των γεννήσεων στις
+      γεννήσεις γνωστής σειράς της ηλικίας, αθροισμένο σε όλες τις ηλικίες. Οι τέσσερις
+      σειρές αθροίζουν στον συνολικό δείκτη γονιμότητας.
+
+- id: total_fertility_rate_order3@v1
+  metric: total_fertility_rate_order3
+  unit: live births per woman
+  title: Total fertility rate, third births
+  description: >-
+    The part of the total fertility rate made of third births: each age-specific
+    fertility rate (Eurostat demo_frate) times the share of third births among the
+    births of known order at that age (demo_fordagec), summed over ages. The four orders
+    add up to the total fertility rate.
+  el:
+    title: Συνολικός δείκτης γονιμότητας, τρίτο παιδί
+    description: >-
+      Το μέρος του συνολικού δείκτη γονιμότητας που αντιστοιχεί σε τρίτες γεννήσεις: κάθε
+      ειδικός κατά ηλικία δείκτης γονιμότητας επί το μερίδιο αυτών των γεννήσεων στις
+      γεννήσεις γνωστής σειράς της ηλικίας, αθροισμένο σε όλες τις ηλικίες. Οι τέσσερις
+      σειρές αθροίζουν στον συνολικό δείκτη γονιμότητας.
+
+- id: total_fertility_rate_order4plus@v1
+  metric: total_fertility_rate_order4plus
+  unit: live births per woman
+  title: Total fertility rate, fourth and later births
+  description: >-
+    The part of the total fertility rate made of fourth and later births: each age-specific
+    fertility rate (Eurostat demo_frate) times the share of fourth and later births among the
+    births of known order at that age (demo_fordagec), summed over ages. The four orders
+    add up to the total fertility rate.
+  el:
+    title: Συνολικός δείκτης γονιμότητας, τέταρτο και επόμενο παιδί
+    description: >-
+      Το μέρος του συνολικού δείκτη γονιμότητας που αντιστοιχεί σε τέταρτες και επόμενες γεννήσεις: κάθε
+      ειδικός κατά ηλικία δείκτης γονιμότητας επί το μερίδιο αυτών των γεννήσεων στις
+      γεννήσεις γνωστής σειράς της ηλικίας, αθροισμένο σε όλες τις ηλικίες. Οι τέσσερις
+      σειρές αθροίζουν στον συνολικό δείκτη γονιμότητας.
+
 - id: mean_age_first_birth@v1
   metric: mean_age_first_birth
   unit: years

@@ -129,6 +129,19 @@ sources:
     phase: 1
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
+  - id: eurostat_demo_fagec
+    provider: Eurostat
+    dataset_code: demo_fagec
+    title: Live births by mother's age and legal marital status
+    title_el: "Γεννήσεις ζώντων κατά ηλικία και νομική οικογενειακή κατάσταση της μητέρας"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fagec?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [births_decomposition]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_demo_mlexpec
     provider: Eurostat
     dataset_code: demo_mlexpec

@@ -7,6 +7,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `csl_kohler2002.json` | CSL-JSON of DOI 10.1111/j.1728-4457.2002.00641.x from doi.org, trimmed by hand (abstract and unread fields removed; see its `_comment`): input of `test_bibliography.py` |
 | `elstat_spo03_2025.pdf` | ELSTAT press release "Φυσική Κίνηση Πληθυσμού 2025" (1 October 2026), unmodified, sha256 `7d465036…`: input of `test_elstat_pdf.py` |
 | `elstat_spo18_t10_2025.xlsx` | ELSTAT SPO18 table 10: input of `test_elstat_xlsx.py` |
+| `eurostat_demo_fagec_el_cy.json` | Eurostat `demo_fagec` (births by mother's age), Greece and Cyprus, 2022 onwards: input of `test_decompose.py` |
 | `eurostat_demo_find_el.json` | Eurostat `demo_find`, Greece: connector and parser tests |
 | `eurostat_demo_find_el_cy.json` | Eurostat `demo_find`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_frate_el_cy.json` | Eurostat `demo_frate`, Greece and Cyprus: input of `test_indicators.py` |

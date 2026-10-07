@@ -25,7 +25,7 @@ from typing import Any
 
 import polars as pl
 
-from grpop import groups, harmonize, indicators, projections, reconcile, snapshots
+from grpop import decompose, groups, harmonize, indicators, projections, reconcile, snapshots
 from grpop.definitions import get_definition
 from grpop.parse import elstat_pdf, gisco, un_wpp
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
@@ -197,6 +197,8 @@ ELSTAT = {
     "divorces_per_100_marriages_elstat": _elstat(elstat_pdf.DIVORCE_RATIO, 1),
     "divorced_persons_elstat": _elstat(elstat_pdf.DIVORCED),
 }
+# Δ9a: two Eurostat tables in one derived value (ADR 0009)
+DECOMPOSITION = {"births_change": Step(decompose.SOURCES, decompose.births_change, 0)}
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},
     **{name: _series(s) for name, s in indicators.SERIES.items()},
@@ -204,6 +206,7 @@ _STEPS = {
     "peer_groups": PEER_GROUPS,
     **PROJECTIONS,
     **ELSTAT,
+    **DECOMPOSITION,
 }
 STEPS = {
     name: _with_median(step) if name in MEDIAN else _adds_up(step) if name in ADDS_UP else step

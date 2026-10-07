@@ -458,7 +458,7 @@ sources:
     licence: eurostat
     used_for: [projection_accuracy]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-08, evidence: 'Source probe run 37694580429: HTTP 200, JSON-stat with the Greek baseline total, dataset updated 2026-05-04; confirms the code exists'}
 
   - id: eurostat_proj_23np
     provider: Eurostat
@@ -471,7 +471,7 @@ sources:
     licence: eurostat
     used_for: [projection_accuracy]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-08, evidence: 'Source probe run 37694580429: HTTP 200, JSON-stat with the Greek baseline total, dataset updated 2026-05-12; confirms the code exists'}
 
   - id: gisco_nuts_2024
     provider: Eurostat GISCO

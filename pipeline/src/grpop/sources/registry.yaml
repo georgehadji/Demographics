@@ -233,6 +233,45 @@ sources:
     phase: 1
     verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36561110360: HTTP 200, JSON-stat with 4 Greek values (indic_de has 5 codes); confirms the code exists'}
 
+  - id: eurostat_demo_nind
+    provider: Eurostat
+    dataset_code: demo_nind
+    title: Marriage indicators
+    title_el: "Δείκτες γάμων"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_nind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [marriages_check, first_marriage]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_demo_ndivind
+    provider: Eurostat
+    dataset_code: demo_ndivind
+    title: Divorce indicators
+    title_el: "Δείκτες διαζυγίων"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_ndivind?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [divorces_check]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_yth_demo_030
+    provider: Eurostat
+    dataset_code: yth_demo_030
+    title: Estimated average age of young people leaving the parental household by sex
+    title_el: "Εκτιμώμενη μέση ηλικία αποχώρησης των νέων από το πατρικό σπίτι κατά φύλο"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/yth_demo_030?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [age_leaving_parental_home]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_demo_r_gind3
     provider: Eurostat
     dataset_code: demo_r_gind3

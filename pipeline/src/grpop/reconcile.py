@@ -41,7 +41,7 @@ def _check(definition_id: str, official: Series, decimals: int, known: str) -> I
         formula=lambda _: pl.DataFrame(),
         official=(official,),
         decimals=decimals,
-        known_differences=_cells(known),
+        known_differences=_cells(known) if known else frozenset(),
     )
 
 
@@ -67,6 +67,21 @@ CHECKS = {
         "infant_mortality_rate@v1", SERIES["infant_mortality_rate"], 1, "EL 2022-2024"
     ),
     # UNKNOWN: 2017, 0.1 apart
+    # Δ8e. VERIFIED: equal wherever both publish (marriages 1971-2024; Eurostat has no
+    # Greek divorces for 2018-2022, so divorces and the ratio are compared in 2023-2024).
+    **{
+        definition_id: _check(
+            definition_id,
+            Series(source_id, definition_id, Nature.OFFICIAL_ESTIMATE, select={"indic_de": code}),
+            decimals,
+            "",
+        )
+        for definition_id, source_id, code, decimals in (
+            ("marriages@v1", "eurostat_demo_nind", "MARRIAGE", 0),
+            ("divorces@v1", "eurostat_demo_ndivind", "DIV", 0),
+            ("divorces_per_100_marriages@v1", "eurostat_demo_ndivind", "DIVMARPCT", 1),
+        )
+    },
     "neonatal_mortality_rate@v1": _check(
         "neonatal_mortality_rate@v1",
         Series(

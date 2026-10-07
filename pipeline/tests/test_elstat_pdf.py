@@ -118,6 +118,8 @@ def test_elstat_agrees_with_eurostat_except_where_explained(release, definition_
     # a listed difference that is no longer listed stops it
     first = reconcile.CHECKS[definition_id]
     known = sorted(first.known_differences)
+    if not known:  # equal wherever both publish
+        return
     unlisted = dataclasses.replace(first, known_differences=frozenset(known[:-1]))
     with pytest.MonkeyPatch.context() as mp:
         mp.setitem(reconcile.CHECKS, definition_id, unlisted)

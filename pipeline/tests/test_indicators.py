@@ -29,6 +29,9 @@ RECORDED = {
     "eurostat_demo_fordagec": "eurostat_demo_fordagec_el_cy.json",  # 2021-2024
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
+    "eurostat_demo_nind": "eurostat_demo_nind_el_cy.json",  # 2021-2024
+    "eurostat_demo_ndivind": "eurostat_demo_ndivind_el_cy.json",  # 2021-2024
+    "eurostat_yth_demo_030": "eurostat_yth_demo_030_el_cy.json",  # 2021-2025
     "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
     "eurostat_demo_mlifetable": "eurostat_demo_mlifetable_el_cy.json",  # Mx and qx only

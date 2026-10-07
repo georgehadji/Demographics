@@ -88,6 +88,7 @@ export const TEXT = {
       "per 1000 live births": "ανά 1.000 γεννήσεις ζώντων",
       "per 1000 total births": "ανά 1.000 συνολικές γεννήσεις (ζώντων και νεκρών)",
       "per 100 marriages": "ανά 100 γάμους",
+      "first marriages per person": "πρώτοι γάμοι ανά άτομο",
       marriages: "γάμοι",
       "civil partnerships": "σύμφωνα συμβίωσης",
       divorces: "διαζύγια",

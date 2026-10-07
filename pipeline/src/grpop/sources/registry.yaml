@@ -140,7 +140,7 @@ sources:
     licence: eurostat
     used_for: [tfr_by_birth_order]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-07, evidence: 'Source probe run 37602666958: HTTP 200, JSON-stat with 276 Greek values (age has 46 codes, ord_brth 6); confirms the code exists'}
 
   - id: eurostat_demo_fagec
     provider: Eurostat

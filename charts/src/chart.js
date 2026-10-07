@@ -88,6 +88,7 @@ export const TEXT = {
       "per 1000 live births": "ανά 1.000 γεννήσεις ζώντων",
       "per 1000 total births": "ανά 1.000 συνολικές γεννήσεις (ζώντων και νεκρών)",
       "per 100 marriages": "ανά 100 γάμους",
+      "per 100 persons aged 20 to the old-age threshold": "ανά 100 άτομα από 20 ετών ως το όριο γήρατος",
       "first marriages per person": "πρώτοι γάμοι ανά άτομο",
       marriages: "γάμοι",
       "civil partnerships": "σύμφωνα συμβίωσης",

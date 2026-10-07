@@ -32,6 +32,7 @@ from grpop import (
     harmonize,
     indicators,
     projections,
+    prospective,
     reconcile,
     snapshots,
 )
@@ -212,6 +213,10 @@ DECOMPOSITION = {
     # Δ9b
     "total_fertility_rate_by_order": Step(
         birth_order.SOURCES, birth_order.total_fertility_rate_by_order, 2
+    ),
+    # Δ9d
+    "prospective_old_age_dependency": Step(
+        prospective.SOURCES, prospective.prospective_old_age_dependency, 1
     ),
 }
 _STEPS = {

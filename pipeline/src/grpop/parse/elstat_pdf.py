@@ -1,6 +1,6 @@
 """ELSTAT natural movement of population, the yearly press release (SPO03) -> observations.
 
-Reads Tables 1-4, 6 and 7, never the % columns or the prose:
+Reads Tables 1-10 and 12, and Table 11 as a check, never the % columns or the prose:
 
 1. births, deaths and natural change of Greece, 1932 onwards with gaps;
 2. births and deaths of the latest year by place of usual residence: regions and
@@ -9,19 +9,34 @@ Reads Tables 1-4, 6 and 7, never the % columns or the prose:
 4. births by sex, by the mother's citizenship, inside or outside marriage or
    registered partnership, the last five years;
 6. deaths by sex and age group, the last two years;
+5. births by delivery method (normal or caesarean), the last five years;
 7. stillbirths, infant deaths and the infant, perinatal and neonatal mortality rates,
-   2015 onwards, with the break its footnote names.
+   2015 onwards, with the break its footnote names;
+8. marriages, civil marriages and civil partnerships, selected years from 1932 ("-",
+   before civil marriage or partnerships existed, is not published);
+9. spouses at their first marriage by sex and age group, the latest year;
+10. divorces and divorces per 100 marriages, the last five years;
+11. divorces by type and by duration of the marriage, the last two years: read for
+    their totals only, as the contract has no dimension for type or duration;
+12. divorced persons by sex and age group, the latest year.
 
 Each table is located by its title and each row by its year or its label. The release
 is checked against itself, and anything that does not add up raises: births minus
 deaths equal natural change; every table's totals equal Table 1; the regions plus
 "Εξωτερικό" (residence abroad, read for this check only) add up to the country and each
 region's units to the region (Attica is given as a whole); age groups, sexes,
-citizenships and marital status add up to their total; the infant mortality rate is
-infant deaths per 1,000 live births. A value printed in two tables is published once.
+citizenships, marital status and delivery methods add up to their total; the infant
+mortality rate is infant deaths per 1,000 live births; religious and civil marriages add
+up to marriages, and marriages and partnerships to their sum; divorces per 100 marriages
+follow from Tables 8 and 10; Table 11's types and durations add up to Table 10's
+divorces, and the divorced men and women of Table 12 to two per divorce (a divorce of
+two men or two women counts two of one sex). A value printed in two tables is published
+once.
 Regional units that NUTS 2024 merges into one NUTS 3 region are summed into a
 ``derived`` value; ELSTAT's rates are ``official_estimate``. Greek mothers and births
-inside marriage are the total minus the published counts, so they are not published.
+inside marriage are the total minus the published counts, so they are not published;
+so are religious marriages. Births whose delivery method was not declared are the total
+minus normal and caesarean births.
 """
 
 from __future__ import annotations
@@ -48,9 +63,20 @@ STILLBIRTHS = "stillbirths@v1"
 INFANT_RATE = "infant_mortality_rate@v1"
 PERINATAL_RATE = "perinatal_mortality_rate@v1"
 NEONATAL_RATE = "neonatal_mortality_rate@v1"
+NORMAL_DELIVERY = "live_births_normal_delivery@v1"
+CAESAREAN = "live_births_caesarean@v1"
+MARRIAGES = "marriages@v1"
+CIVIL_MARRIAGES = "civil_marriages@v1"
+PARTNERSHIPS = "civil_partnerships@v1"
+FIRST_MARRIAGES = "first_marriages@v1"
+DIVORCES = "divorces@v1"
+DIVORCE_RATIO = "divorces_per_100_marriages@v1"
+DIVORCED = "divorced_persons@v1"
 DEFINITIONS = (
     BIRTHS, DEATHS, NATURAL_CHANGE, FOREIGN_MOTHER, OUTSIDE_MARRIAGE,
     STILLBIRTHS, INFANT_RATE, PERINATAL_RATE, NEONATAL_RATE,
+    NORMAL_DELIVERY, CAESAREAN, MARRIAGES, CIVIL_MARRIAGES, PARTNERSHIPS,
+    FIRST_MARRIAGES, DIVORCES, DIVORCE_RATIO, DIVORCED,
 )  # fmt: skip
 
 _MONTHS = [
@@ -66,8 +92,16 @@ _TABLE2_YEAR = re.compile(r"έτους (\d{4})")
 _DEC = r"\d+,\d"
 _TABLE7 = re.compile(rf"^(\d{{4}}) ({_NUM}) ({_NUM}) ({_NUM}) ({_DEC}) ({_DEC}) ({_DEC})$")
 _TABLE7_BREAK = re.compile(r"^\* Το (\d{4}), το όριο βιωσιμότητας")  # noqa: RUF001
+_OR_NONE = rf"({_NUM}|-) (?:{_DEC}|-)"
+_TABLE8 = re.compile(rf"^(\d{{4}}) ({_NUM}) ({_NUM}) ({_NUM}) {_DEC} {_OR_NONE} {_OR_NONE}$")
+_BY_TWO = re.compile(rf"^(.+?) ({_NUM}) {_DEC} ({_NUM}) {_DEC}$")  # two (count, %) columns
 # Age labels that are not "a-b" or "a+" (provenance.AGE_PATTERN)
-_AGE = {"<15": "0-14", "Άγνωστη": "unknown", "Κάτω του έτους": "0"}
+_AGE = {"<15": "0-14", "<20": "0-19", "Άγνωστη": "unknown", "Κάτω του έτους": "0"}
+_TABLE5 = {"Φυσιολογικός τοκετός": NORMAL_DELIVERY, "Καισαρική Τομή": CAESAREAN}
+_TABLE11 = {
+    "type": ("Συναινετικά", "Κατ’ αντιδικία", "Δεν δηλώθηκε"),  # noqa: RUF001
+    "duration": ("Έως 2 έτη", "2 - 4 έτη", "5 - 9 έτη", "10+ έτη"),
+}
 _TABLE4 = {
     "Γεννήσεις ζώντων": "total",
     "Αγόρια": "male",
@@ -292,6 +326,132 @@ def table7(text: list[str], births: dict[str, int], infant_deaths: dict[str, int
     return df.with_columns(break_in_series=(pl.col("period") == year) & broken)
 
 
+def table5(text: list[str], births: dict[str, int]) -> pl.DataFrame:
+    """Births by delivery method, checked against Table 1 with the undeclared ones."""
+    lines = _table(text, "Πίνακας 5.")
+    years = _years(lines, 5)
+    rows = _rows(lines, 5)
+    _check("Table 5: rows", sorted(rows), sorted([*_TABLE5, "Δεν δηλώθηκε"]))
+    for i, year in enumerate(years):
+        _check(f"Table 5 {year}: methods", sum(v[i] for v in rows.values()), births[year])
+    t = Sex.TOTAL.value
+    return _long(
+        [(y, t, AGE_TOTAL, d, rows[k][i]) for k, d in _TABLE5.items() for i, y in enumerate(years)]
+    )
+
+
+def table8(text: list[str]) -> pl.DataFrame:
+    """Marriages, civil marriages and civil partnerships by year, checked to add up."""
+    lines = _table(text, "Πίνακας 8.")
+    if "Θρησκευτικοί Πολιτικοί Σύμφωνα Συμβίωσης" not in "\n".join(lines):
+        raise ValueError("Table 8: columns not in the order religious, civil, partnerships")
+    t = Sex.TOTAL.value
+    out: list[tuple[str, str, str, str, float]] = []
+    for line in lines:
+        if not (m := _TABLE8.match(line.strip())):
+            continue
+        year, both, married, religious = m.group(1), *(_int(g) for g in m.groups()[1:4])
+        civil, partners = (None if g == "-" else _int(g) for g in m.groups()[4:])
+        _check(f"Table 8 {year}: religious + civil", religious + (civil or 0), married)
+        _check(f"Table 8 {year}: marriages + partnerships", married + (partners or 0), both)
+        out.append((year, t, AGE_TOTAL, MARRIAGES, married))
+        out += [
+            (year, t, AGE_TOTAL, d, v)
+            for d, v in ((CIVIL_MARRIAGES, civil), (PARTNERSHIPS, partners))
+            if v is not None
+        ]
+    if not out:
+        raise ValueError("Table 8: no year rows")
+    return _long(out)
+
+
+_SEXES = (Sex.MALE.value, Sex.FEMALE.value)  # the columns "Άνδρες Γυναίκες"
+
+
+def _by_two(lines: list[str], heading: str) -> dict[str, tuple[int, int]]:
+    """Rows of two (count, %) columns under ``heading``: label -> the two counts."""
+    if not any(line.strip() == heading for line in lines[1:3]):
+        raise ValueError(f"{lines[0]!r}: columns not {heading!r}")
+    rows = {
+        m.group(1): (_int(m.group(2)), _int(m.group(3)))
+        for line in lines
+        if (m := _BY_TWO.match(line.strip()))
+    }
+    if not rows:
+        raise ValueError(f"{lines[0]!r}: no rows")
+    return rows
+
+
+def _year(lines: list[str], latest: str) -> str:
+    year = _TABLE2_YEAR.search(lines[0])
+    if not year or year.group(1) != latest:
+        raise ValueError(f"{lines[0]!r}: not of the latest year, {latest}")
+    return year.group(1)
+
+
+def table9(text: list[str], latest: str) -> pl.DataFrame:
+    """Spouses at their first marriage by sex and age group, checked to add up by sex."""
+    lines = _table(text, "Πίνακας 9.")
+    year, rows = _year(lines, latest), _by_two(lines, "Άνδρες Γυναίκες")
+    total = rows.pop("Σύνολα")
+    for j, sex in enumerate(_SEXES):
+        _check(f"Table 9 {sex}: age groups", sum(v[j] for v in rows.values()), total[j])
+    return _long(
+        [(year, s, AGE_TOTAL, FIRST_MARRIAGES, total[j]) for j, s in enumerate(_SEXES)]
+        + [
+            (year, s, _AGE.get(a, a), FIRST_MARRIAGES, v[j])
+            for a, v in rows.items()
+            for j, s in enumerate(_SEXES)
+        ]
+    )
+
+
+def table10(text: list[str], marriages: dict[str, int]) -> pl.DataFrame:
+    """Divorces and divorces per 100 marriages, checked against Table 8's marriages."""
+    lines = _table(text, "Πίνακας 10.")
+    years = _years(lines, 5)
+    divorces = _rows(lines, 5)["Διαζύγια"]
+    label = "Διαζύγια ανά 100 γάμους "
+    ratio = next((line[len(label) :].split() for line in lines if line.startswith(label)), [])
+    _check("Table 10: divorces per 100 marriages, values", len(ratio), 5)
+    t, counts, rates = Sex.TOTAL.value, [], []
+    for i, year in enumerate(years):
+        printed = float(ratio[i].replace(",", "."))
+        ours = int(divorces[i] * 1000 / marriages[year] + 0.5) / 10  # half up, as Table 7
+        _check(f"Table 10 {year}: divorces per 100 marriages", ours, printed)
+        counts.append((year, t, AGE_TOTAL, DIVORCES, divorces[i]))
+        rates.append((year, t, AGE_TOTAL, DIVORCE_RATIO, printed))
+    return pl.concat([_long(counts), _long(rates, nature=Nature.OFFICIAL_ESTIMATE.value)])
+
+
+def table11(text: list[str], divorces: dict[str, int]) -> None:
+    """Divorces by type and by duration of the marriage, each adding up to Table 10."""
+    lines = _table(text, "Πίνακας 11.")
+    years = _years(lines, 2)
+    rows = _by_two(lines, " ".join(years))
+    _check(
+        "Table 11: rows", sorted(rows), sorted(["Σύνολο", *_TABLE11["type"], *_TABLE11["duration"]])
+    )
+    for i, year in enumerate(years):
+        _check(f"Table 11 {year}: total", rows["Σύνολο"][i], divorces[year])
+        for by, labels in _TABLE11.items():
+            _check(f"Table 11 {year}: {by}", sum(rows[k][i] for k in labels), divorces[year])
+
+
+def table12(text: list[str], divorces: dict[str, int], latest: str) -> pl.DataFrame:
+    """Divorced persons by sex and age group: two per divorce of Table 10."""
+    lines = _table(text, "Πίνακας 12.")
+    year, rows = _year(lines, latest), _by_two(lines, "Άνδρες Γυναίκες")
+    _check(f"Table 12 {year}: men + women", sum(sum(v) for v in rows.values()), 2 * divorces[year])
+    return _long(
+        [
+            (year, s, _AGE.get(a, a), DIVORCED, v[j])
+            for a, v in rows.items()
+            for j, s in enumerate(_SEXES)
+        ]
+    )
+
+
 def _areas(rows: pl.DataFrame) -> pl.DataFrame:
     """Rows of Table 2 with their NUTS code and level, after the adds-up checks."""
     areas = pl.read_csv(REFERENCE / "elstat_areas_el.csv", schema_overrides={"geo_code": pl.String})
@@ -320,6 +480,11 @@ def _areas(rows: pl.DataFrame) -> pl.DataFrame:
     if units.height:
         raise ValueError(f"Table 2: regional units do not add up to their region:\n{units}")
     return df
+
+
+def _yearly(df: pl.DataFrame, definition_id: str) -> dict[str, int]:
+    one = df.filter(pl.col("definition_id") == definition_id)
+    return dict(one.select("period", pl.col("value").cast(pl.Int64)).iter_rows())
 
 
 def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
@@ -351,11 +516,21 @@ def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
     by_age = table6(text, deaths)
     infant = by_age.filter((pl.col("age") == "0") & (pl.col("sex") == Sex.TOTAL.value))
     infant_deaths = dict(infant.select("period", pl.col("value").cast(pl.Int64)).iter_rows())
+    nuptiality = table8(text)
+    marriages = _yearly(nuptiality, MARRIAGES)
+    divorce = table10(text, marriages)
+    divorces = _yearly(divorce, DIVORCES)
+    table11(text, divorces)
     tables = [
         table3(text, births),
         table4(text, births),
+        table5(text, births),
         by_age,
         table7(text, births, infant_deaths),
+        nuptiality,
+        table9(text, year),
+        divorce,
+        table12(text, divorces, year),
     ]
     long = pl.concat(
         [

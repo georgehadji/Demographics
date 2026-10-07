@@ -173,7 +173,7 @@ def _elstat(definition_id: str, decimals: int | None = None) -> Step:
     return Step(frozenset(sources), run, decimals)
 
 
-# ELSTAT natural movement (Δ8a-b): one file per definition; births and deaths of Greece
+# ELSTAT natural movement (Δ8a-b, d): one file per definition; births and deaths of Greece
 # and its regions, with Greece's by sex and age, the rest of Greece only. ELSTAT's rates
 # have one decimal. Not in ADDS_UP: Greece's counts include residents abroad, whom no
 # region holds; the parser checks every sum itself.
@@ -187,6 +187,15 @@ ELSTAT = {
     "infant_mortality_rate_elstat": _elstat(elstat_pdf.INFANT_RATE, 1),
     "perinatal_mortality_rate_elstat": _elstat(elstat_pdf.PERINATAL_RATE, 1),
     "neonatal_mortality_rate_elstat": _elstat(elstat_pdf.NEONATAL_RATE, 1),
+    "live_births_normal_delivery_elstat": _elstat(elstat_pdf.NORMAL_DELIVERY),
+    "live_births_caesarean_elstat": _elstat(elstat_pdf.CAESAREAN),
+    "marriages_elstat": _elstat(elstat_pdf.MARRIAGES),
+    "civil_marriages_elstat": _elstat(elstat_pdf.CIVIL_MARRIAGES),
+    "civil_partnerships_elstat": _elstat(elstat_pdf.PARTNERSHIPS),
+    "first_marriages_elstat": _elstat(elstat_pdf.FIRST_MARRIAGES),
+    "divorces_elstat": _elstat(elstat_pdf.DIVORCES),
+    "divorces_per_100_marriages_elstat": _elstat(elstat_pdf.DIVORCE_RATIO, 1),
+    "divorced_persons_elstat": _elstat(elstat_pdf.DIVORCED),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

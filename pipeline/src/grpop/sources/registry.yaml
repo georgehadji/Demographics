@@ -244,7 +244,7 @@ sources:
     licence: eurostat
     used_for: [marriages_check, first_marriage]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-07, evidence: 'Source probe run 37621236792: HTTP 200, JSON-stat with 8 Greek values (indic_de has 8 codes); confirms the code exists'}
 
   - id: eurostat_demo_ndivind
     provider: Eurostat
@@ -257,7 +257,7 @@ sources:
     licence: eurostat
     used_for: [divorces_check]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-07, evidence: 'Source probe run 37621236792: HTTP 200, JSON-stat with 3 Greek values (indic_de has 3 codes); confirms the code exists'}
 
   - id: eurostat_yth_demo_030
     provider: Eurostat
@@ -270,7 +270,7 @@ sources:
     licence: eurostat
     used_for: [age_leaving_parental_home]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-07, evidence: 'Source probe run 37621236792: HTTP 200, JSON-stat with 3 Greek values (sex T, M, F); confirms the code exists'}
 
   - id: eurostat_demo_r_gind3
     provider: Eurostat

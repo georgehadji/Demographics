@@ -34,6 +34,8 @@ RECORDED = {
     "eurostat_yth_demo_030": "eurostat_yth_demo_030_el_cy.json",  # 2021-2025
     "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
+    "eurostat_proj_19np": "eurostat_proj_19np_el_cy.json",  # totals, 2019-2026
+    "eurostat_proj_23np": "eurostat_proj_23np_el_cy.json",  # totals, 2022-2026
     "eurostat_demo_mlifetable": "eurostat_demo_mlifetable_el_cy.json",  # Mx and qx only
     **{
         f"eurostat_demo_r_{code}": f"eurostat_demo_r_{code}_el5.json"

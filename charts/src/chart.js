@@ -78,6 +78,8 @@ export const TEXT = {
     // the units of pipeline/src/grpop/definitions.yaml (test/grammar.test.js checks them all)
     units: {
       "% of persons of known age": "% των ατόμων γνωστής ηλικίας",
+      "% of the observed population": "% του παρατηρούμενου πληθυσμού",
+      "% of the observed population in the base year": "% του παρατηρούμενου πληθυσμού του έτους βάσης",
       "deaths per person-year": "θάνατοι ανά ανθρωποέτος",
       probability: "πιθανότητα",
       "live births per woman": "γεννήσεις ζώντων ανά γυναίκα",

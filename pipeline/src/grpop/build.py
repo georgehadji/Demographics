@@ -31,6 +31,7 @@ from grpop import (
     groups,
     harmonize,
     indicators,
+    projection_accuracy,
     projections,
     prospective,
     reconcile,
@@ -217,6 +218,10 @@ DECOMPOSITION = {
     # Δ9d
     "prospective_old_age_dependency": Step(
         prospective.SOURCES, prospective.prospective_old_age_dependency, 1
+    ),
+    # Δ9e
+    "projection_accuracy": Step(
+        projection_accuracy.SOURCES, projection_accuracy.projection_accuracy, 2
     ),
 }
 _STEPS = {

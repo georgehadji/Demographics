@@ -647,6 +647,43 @@
       δημοσιευμένα· ο ίδιος ο δείκτης δεν αναπαράγει τον δημοσιευμένο για το 2013, που
       χρησιμοποίησε πληθυσμό άλλης έκδοσης (INFERENCE).
 
+- id: projection_deviation_level@v1
+  metric: projection_deviation_level
+  unit: "% of the observed population"
+  title: Deviation of a projected population from the observed one
+  description: >-
+    The baseline of an earlier Eurostat projection (EUROPOP2019, EUROPOP2023; the
+    dataset_code says which) minus today's population on 1 January (demo_pjan), as a
+    percentage of the latter. In the projection's base year it is the revision of the
+    base population since the projection was made, not a deviation of the projection.
+    A projection shows the consequences of its assumptions; it is not a forecast.
+  el:
+    title: Απόκλιση του προβαλλόμενου πληθυσμού από τον παρατηρούμενο
+    description: >-
+      Ο πληθυσμός μιας παλαιότερης προβολής της Eurostat (βασικό σενάριο) μείον τον
+      σημερινό πληθυσμό της 1ης Ιανουαρίου, ως ποσοστό του δεύτερου. Στο έτος βάσης της
+      προβολής είναι η αναθεώρηση του πληθυσμού βάσης μετά την προβολή, όχι απόκλιση
+      της προβολής. Μια προβολή δείχνει τις συνέπειες των υποθέσεών της· δεν είναι
+      πρόβλεψη.
+
+- id: projection_deviation_change@v1
+  metric: projection_deviation_change
+  unit: "% of the observed population in the base year"
+  title: Deviation of a projected population change from the observed one
+  description: >-
+    The change in population from the base year of an earlier Eurostat projection to
+    the reference year as projected (baseline), minus the change observed today
+    (demo_pjan), as a percentage of today's population in the base year. Unlike
+    projection_deviation_level, it leaves out the revision of the base population.
+  el:
+    title: Απόκλιση της προβαλλόμενης μεταβολής του πληθυσμού από την παρατηρούμενη
+    description: >-
+      Η μεταβολή του πληθυσμού από το έτος βάσης μιας παλαιότερης προβολής της Eurostat
+      ως το έτος αναφοράς κατά την προβολή (βασικό σενάριο), μείον τη σημερινή
+      παρατηρούμενη μεταβολή, ως ποσοστό του σημερινού πληθυσμού του έτους βάσης. Σε
+      αντίθεση με την απόκλιση του πληθυσμού, αφήνει έξω την αναθεώρηση του πληθυσμού
+      βάσης.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

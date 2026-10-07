@@ -612,6 +612,41 @@
       πατρικό τους σπίτι, από την Έρευνα Εργατικού Δυναμικού: η ηλικία στην οποία οι
       μισοί δεν ζουν πια με τους γονείς τους. Εκτίμηση από δειγματοληπτική έρευνα.
 
+- id: old_age_threshold@v1
+  metric: old_age_threshold
+  unit: years
+  title: Old-age threshold
+  description: >-
+    The age at which remaining life expectancy is 15 years, for women or men (the sex
+    column), from the period life table of the reference year (Eurostat demo_mlifetable),
+    interpolated linearly between single ages. A threshold of old age that moves with
+    longevity, instead of a fixed 65.
+  el:
+    title: Όριο γήρατος
+    description: >-
+      Η ηλικία στην οποία το υπόλοιπο προσδόκιμο ζωής είναι 15 έτη, για γυναίκες ή
+      άνδρες, από τον πίνακα επιβίωσης του έτους αναφοράς. Ένα όριο γήρατος που
+      μετακινείται μαζί με τη μακροζωία, αντί για τα σταθερά 65.
+
+- id: prospective_old_age_dependency_ratio@v1
+  metric: prospective_old_age_dependency_ratio
+  unit: per 100 persons aged 20 to the old-age threshold
+  title: Prospective old-age dependency ratio
+  description: >-
+    People older than the old-age threshold of their sex (old_age_threshold@v1) per 100
+    people aged 20 to that threshold, on 1 January of the reference year (Eurostat
+    demo_pjan). The old-age dependency ratio with a threshold that moves with longevity.
+    Its thresholds reproduce published ones; the ratio itself does not reproduce the one
+    published for 2013, which used a population of another vintage (INFERENCE).
+  el:
+    title: Δείκτης εξάρτησης ηλικιωμένων με κινητό όριο γήρατος
+    description: >-
+      Τα άτομα πάνω από το όριο γήρατος του φύλου τους ανά 100 άτομα από 20 ετών ως
+      αυτό το όριο, την 1η Ιανουαρίου του έτους αναφοράς. Ο δείκτης εξάρτησης
+      ηλικιωμένων με όριο γήρατος που ακολουθεί τη μακροζωία. Τα όριά του αναπαράγουν
+      δημοσιευμένα· ο ίδιος ο δείκτης δεν αναπαράγει τον δημοσιευμένο για το 2013, που
+      χρησιμοποίησε πληθυσμό άλλης έκδοσης (INFERENCE).
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

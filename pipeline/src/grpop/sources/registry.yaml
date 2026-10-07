@@ -447,6 +447,32 @@ sources:
       dataset updated 2026-06-11.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
+  - id: eurostat_proj_19np
+    provider: Eurostat
+    dataset_code: proj_19np
+    title: EUROPOP2019 population on 1 January by age, sex and projection type
+    title_el: "EUROPOP2019: πληθυσμός την 1η Ιανουαρίου κατά ηλικία, φύλο και τύπο προβολής"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_19np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [projection_accuracy]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_proj_23np
+    provider: Eurostat
+    dataset_code: proj_23np
+    title: EUROPOP2023 population on 1 January by age, sex and projection type
+    title_el: "EUROPOP2023: πληθυσμός την 1η Ιανουαρίου κατά ηλικία, φύλο και τύπο προβολής"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_23np?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&projection=BSL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [projection_accuracy]
+    phase: 2
+    verification: {status: unverified}
+
   - id: gisco_nuts_2024
     provider: Eurostat GISCO
     dataset_code: NUTS 2024

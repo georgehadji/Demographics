@@ -18,6 +18,7 @@ The package, in layers (ADR 0005): sources and snapshots (L1), parse (L2), harmo
 | `decompose.py` | Δ9a: each year's change in Greek live births split, by mother's age, into the part from the number of women and the part from fertility (`demo_fagec`, `demo_pjan`), adding up exactly; provenance of two tables per ADR 0009 |
 | `reconcile.py` | ELSTAT's natural movement against Eurostat (`demo_gind`, `demo_minfind`, `demo_nind`, `demo_ndivind`), run by each ELSTAT build step: every difference listed with its explanation, an unlisted or vanished one stops the build |
 | `prospective.py` | Δ9d: old-age threshold by sex (remaining life expectancy 15 years, `demo_mlifetable`) and the prospective old-age dependency ratio (`demo_pjan`), Greece; reproduction evidence in its docstring; provenance per ADR 0009 |
+| `projection_accuracy.py` | Δ9e: deviation of the EUROPOP2019 and EUROPOP2023 baselines from today's `demo_pjan`, as level and as change since the base year (which leaves out the revision of the base population); provenance per ADR 0009 |
 | `projections.py` | Official projections. EUROPOP2025 (`proj_25np`): baseline `projected`, sensitivity tests `scenario` (ADR 0008), base-year check against `demo_pjan`. UN WPP 2024: check of its medians against `demo_pjan` (`wpp_checked`) |
 | `provenance.py` | The provenance contract: `Nature`, `Status`, `Sex`, age pattern, observation key, `validate_observations` |
 | `snapshots.py` | Content-addressed store of raw downloads with an append-only `manifest.jsonl` |

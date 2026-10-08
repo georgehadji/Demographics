@@ -155,6 +155,19 @@ sources:
     phase: 2
     verification: {status: verified, checked_at: 2026-10-07, evidence: 'Source probe run 37588992767: HTTP 200, JSON-stat with 184 Greek values (age has 46 codes, indic_de 4); confirms the code exists'}
 
+  - id: eurostat_demo_fasec
+    provider: Eurostat
+    dataset_code: demo_fasec
+    title: Live births by mother's age and newborn's sex
+    title_el: "Γεννήσεις ζώντων κατά ηλικία της μητέρας και φύλο του νεογνού"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fasec?format=JSON&lang=EN&geo=EL&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [reproduction_rates]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_demo_mlexpec
     provider: Eurostat
     dataset_code: demo_mlexpec

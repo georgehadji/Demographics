@@ -236,6 +236,50 @@ def _growth_rate(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
     )
 
 
+EXCESS_BASELINE = range(2016, 2020)
+
+
+def _excess_mortality(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
+    """Deaths of each month from the weekly deaths, each ISO week spread evenly over its
+    seven days; only months whose every day is covered. Then the percentage above the
+    mean of the same month in EXCESS_BASELINE, from the first month after it."""
+    weeks = (
+        inputs["deaths"]
+        .filter((pl.col("sex") == "total") & pl.col("value").is_not_null())
+        .with_columns(monday=(pl.col("period") + "-1").str.to_date("%G-W%V-%u"))
+    )
+    days = (
+        weeks.with_columns(day=pl.date_ranges("monday", pl.col("monday") + pl.duration(days=6)))
+        .explode("day", empty_as_null=True)
+        .with_columns(period=pl.col("day").dt.strftime("%Y-%m"), value=pl.col("value") / 7)
+        .sort("geo_code", "day")  # a float sum in a fixed order: same bytes each build
+    )
+    months = (
+        days.group_by("geo_code", "period", "sex", "age", maintain_order=True)
+        .agg(
+            *carried(),
+            value=pl.col("value").sum(),
+            covered=pl.col("day").n_unique(),
+            length=pl.col("day").first().dt.month_end().dt.day(),
+        )
+        .filter(pl.col("covered") == pl.col("length"))
+        .with_columns(
+            year=pl.col("period").str.head(4).cast(pl.Int32), month=pl.col("period").str.tail(2)
+        )
+    )
+    baseline = (
+        months.filter(pl.col("year").is_in(list(EXCESS_BASELINE)))
+        .group_by("geo_code", "month", maintain_order=True)
+        .agg(baseline=pl.col("value").mean(), n=pl.len())
+        .filter(pl.col("n") == len(EXCESS_BASELINE))
+    )
+    return (
+        months.filter(pl.col("year") > EXCESS_BASELINE[-1])
+        .join(baseline, on=["geo_code", "month"])
+        .with_columns(value=100 * (pl.col("value") - pl.col("baseline")) / pl.col("baseline"))
+    )
+
+
 def _sex_ratio(inputs: dict[str, pl.DataFrame]) -> pl.DataFrame:
     """Males per 100 females, all ages, per geo_code and period."""
     value, sex = pl.col("value"), pl.col("sex")
@@ -449,6 +493,40 @@ INDICATORS = {
         # TOTAL equals our sum within 0.0001, and demo_find TOTFERRT differs by up to 0.033.
         # INFERENCE: the two tables were built from different versions of the Italian data.
         known_differences=_cells("IT 1960-1966, IT 1968-1969, IT 1997-1998"),
+    ),
+    # Δ9h: Greece. VERIFIED 2026-10-09 (both tables updated 2026-09-16): 67 of 78 months
+    # equal demo_mexrt to its decimal. The rest differ, cause UNKNOWN: by 0.1-0.3 in 2022
+    # (5 months), and in 2026 by 0.4 (January-April, ours lower), 0.9 (May) and 2.5 (June,
+    # whose last weeks are provisional). INFERENCE for 2026: weekly deaths revised after
+    # demo_mexrt was computed.
+    "excess_mortality": Indicator(
+        definition_id="excess_mortality@v1",
+        transform_version="excess_mortality@0.1",
+        inputs={
+            "deaths": Series(
+                "eurostat_demo_r_mwk_ts", "deaths@v1", Nature.OBSERVED, geo_prefix="EL"
+            )
+        },
+        formula=_excess_mortality,
+        official=(
+            Series(
+                "eurostat_demo_mexrt",
+                "excess_mortality@v1",
+                Nature.OFFICIAL_ESTIMATE,
+                geo_prefix="EL",
+            ),
+        ),
+        known_differences=frozenset(
+            ("EL", p)
+            for p in (
+                "2022-01",
+                "2022-02",
+                "2022-05",
+                "2022-11",
+                "2022-12",
+                *(f"2026-{m:02d}" for m in range(1, 7)),
+            )
+        ),
     ),
     # Δ7. Eurostat publishes no sex ratio, so there is no official value to match.
     **{

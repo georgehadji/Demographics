@@ -441,8 +441,21 @@ sources:
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_r_mwk_ts?format=JSON&lang=EN&geo=EL&sex=T&sinceTimePeriod=2025-W01
     licence: eurostat
     used_for: [r4_excess_mortality]
-    phase: 3
+    phase: 2
     verification: {status: verified, checked_at: 2026-09-29, evidence: 'Source probe run 36541561359: HTTP 200, JSON-stat with 79 Greek values (2025-W01 onwards); confirms the code exists'}
+
+  - id: eurostat_demo_mexrt
+    provider: Eurostat
+    dataset_code: demo_mexrt
+    title: Excess mortality by month
+    title_el: "Υπερβάλλουσα θνησιμότητα κατά μήνα"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mexrt?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [r4_excess_mortality]
+    phase: 2
+    verification: {status: unverified}
 
   - id: eurostat_proj_25np
     provider: Eurostat

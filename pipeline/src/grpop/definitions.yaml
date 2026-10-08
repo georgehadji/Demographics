@@ -749,6 +749,23 @@
       σφάλματα της ίδιας εκτίμησης σε προηγούμενα έτη. Εκτίμηση από δημοσιευμένα
       στοιχεία, όχι πρόβλεψη.
 
+- id: excess_mortality@v1
+  metric: excess_mortality
+  unit: "% of the 2016-2019 mean of the month"
+  title: Excess mortality
+  description: >-
+    Deaths of a month minus the mean deaths of the same month in 2016-2019, as a
+    percentage of that mean, as Eurostat demo_mexrt. The month's deaths come from the
+    weekly deaths (demo_r_mwk_ts), each week spread evenly over its seven days. Not
+    adjusted for the ageing or the size of the population.
+  el:
+    title: Υπερβάλλουσα θνησιμότητα
+    description: >-
+      Οι θάνατοι ενός μήνα μείον τον μέσο όρο θανάτων του ίδιου μήνα την περίοδο
+      2016–2019, ως ποσοστό αυτού του μέσου όρου. Οι θάνατοι του μήνα προκύπτουν από τους
+      εβδομαδιαίους θανάτους, με κάθε εβδομάδα μοιρασμένη ισόποσα στις επτά ημέρες της.
+      Χωρίς διόρθωση για τη γήρανση ή το μέγεθος του πληθυσμού.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

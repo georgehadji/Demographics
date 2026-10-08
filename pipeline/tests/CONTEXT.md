@@ -26,6 +26,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_prospective.py` | Prospective old-age dependency: thresholds by sex, the ratio below the 65+ ratio, provenance of two tables (ADR 0009) |
 | `test_projection_accuracy.py` | Deviation of earlier projections: Greek values computed by hand, the base-year revision, no change row in a base year |
 | `test_nowcast.py` | Births nowcast: the 2025 estimate by hand and against ELSTAT, ordered bounds, backtest errors shrinking with more months, empty once the total is published |
+| `test_excess_mortality.py` | Excess mortality: only months whose every day the weekly deaths cover, from the first month after the 2016-2019 baseline |
 | `test_reproduction.py` | Reproduction rates: Greek values, the ratio to the total fertility rate against UN WPP, a year with an age missing from the life table left out |
 | `test_projections.py` | EUROPOP2025: baseline and scenarios, Greece's base year equals `demo_pjan`, unexplained or vanished base-year differences, unknown projection types |
 | `test_un_wpp.py` | UN WPP 2024: Greece's median and ordered bounds, ISO2 mapping, years, the check against `demo_pjan` |

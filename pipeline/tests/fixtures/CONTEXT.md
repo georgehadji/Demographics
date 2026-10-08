@@ -18,6 +18,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_demo_minfind_el_cy.json` | Eurostat `demo_minfind` (infant and neonatal mortality), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_mlexpec_el_cy.json` | Eurostat `demo_mlexpec`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_mlifetable_el_cy.json` | Eurostat `demo_mlifetable`, Greece and Cyprus, death rate, probability of dying and life expectancy, 2022 onwards: input of `test_indicators.py` and `test_prospective.py` |
+| `eurostat_demo_mexrt_el.json` | Eurostat `demo_mexrt`, Greece, excess mortality by month, 2020-01 to 2026-06: official counterpart in `test_indicators.py` |
 | `eurostat_demo_nind_el_cy.json` | Eurostat `demo_nind` (marriage indicators), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_ndivind_el_cy.json` | Eurostat `demo_ndivind` (divorce indicators), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_pjan_el_cy.json` | Eurostat `demo_pjan`, Greece and Cyprus: input of `test_indicators.py` |
@@ -25,6 +26,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_demo_pjanbroad_el_cy.json` | Eurostat `demo_pjanbroad`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_pjanind_el_cy.json` | Eurostat `demo_pjanind`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_r_d2jan_el5.json` | Eurostat `demo_r_d2jan`, EL, EL5 and some of its regions: input of `test_indicators.py` |
+| `eurostat_demo_r_mwk_ts_el.json` | Eurostat `demo_r_mwk_ts`, Greece, total deaths by week, 2015-W53 to 2026-W27: input of `test_indicators.py` and `test_excess_mortality.py` |
 | `eurostat_demo_r_find2_el5.json` | Eurostat `demo_r_find2`, EL, EL5 and some of its regions: input of `test_indicators.py` |
 | `eurostat_demo_r_gind3_el5.json` | Eurostat `demo_r_gind3`, EL, EL5 and some of its regions: input of `test_indicators.py` |
 | `eurostat_demo_r_minfind_el5.json` | Eurostat `demo_r_minfind`, EL, EL5 and some of its regions: input of `test_indicators.py` |

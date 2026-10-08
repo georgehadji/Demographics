@@ -13,6 +13,7 @@ The package, in layers (ADR 0005): sources and snapshots (L1), parse (L2), harmo
 | `groups.py` | Peer groups (PROPOSAL §6) from `data/reference/peer_groups.csv`; the EU-27 median as `derived` rows (`EU27_2020_MEDIAN`); the build's check of members and of the very-low-fertility rule |
 | `harmonize.py` | Greek NUTS codes: NUTS 2010 recodes, rejection of unknown codes, hierarchy check; `age_gaps`: age groups add up to the total |
 | `indicators.py` | `INDICATORS` (derived, with official counterpart and corroboration) and `SERIES` (official, published as given); `compute`, `disagreements`, `check` |
+| `nowcast.py` | Δ9g: live births of the latest year from its published months (`demo_fmonth`), with 80/95% bounds from the backtest of the same estimate over past years; checked out of sample against ELSTAT's 2025 total; empty when there is no year to estimate |
 | `parse` | Source bytes to long-format tables: see `parse/CONTEXT.md` |
 | `birth_order.py` | Δ9b: total fertility rate by birth order (1, 2, 3, 4+) for Greece: `demo_frate` rates split by the order shares of `demo_fordagec` births; each order's mean age checked against `demo_find`; provenance per ADR 0009 |
 | `decompose.py` | Δ9a: each year's change in Greek live births split, by mother's age, into the part from the number of women and the part from fertility (`demo_fagec`, `demo_pjan`), adding up exactly; provenance of two tables per ADR 0009 |

@@ -31,6 +31,7 @@ from grpop import (
     groups,
     harmonize,
     indicators,
+    nowcast,
     projection_accuracy,
     projections,
     prospective,
@@ -226,6 +227,8 @@ DECOMPOSITION = {
     ),
     # Δ9f
     "reproduction_rates": Step(reproduction.SOURCES, reproduction.reproduction_rates, 3),
+    # Δ9g: one Eurostat table, a model with its backtest
+    "births_nowcast": Step(nowcast.SOURCES, nowcast.births_nowcast, 0),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

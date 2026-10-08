@@ -166,7 +166,7 @@ sources:
     licence: eurostat
     used_for: [reproduction_rates]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-08, evidence: 'Source probe run 37739697550: HTTP 200, JSON-stat with 3 Greek values (sex T, M, F), dataset updated 2026-09-30; confirms the code exists'}
 
   - id: eurostat_demo_mlexpec
     provider: Eurostat

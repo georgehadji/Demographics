@@ -35,6 +35,7 @@ from grpop import (
     projections,
     prospective,
     reconcile,
+    reproduction,
     snapshots,
 )
 from grpop.definitions import get_definition
@@ -223,6 +224,8 @@ DECOMPOSITION = {
     "projection_accuracy": Step(
         projection_accuracy.SOURCES, projection_accuracy.projection_accuracy, 2
     ),
+    # Δ9f
+    "reproduction_rates": Step(reproduction.SOURCES, reproduction.reproduction_rates, 3),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

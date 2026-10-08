@@ -684,6 +684,51 @@
       αντίθεση με την απόκλιση του πληθυσμού, αφήνει έξω την αναθεώρηση του πληθυσμού
       βάσης.
 
+- id: general_fertility_rate@v1
+  metric: general_fertility_rate
+  unit: live births per 1000 women aged 15-49
+  title: General fertility rate
+  description: >-
+    Live births of the year at every age of the mother (Eurostat demo_fagec) per 1,000
+    women aged 15-49, the mean of 1 January of the year and of the next (demo_pjan).
+  el:
+    title: Γενικός δείκτης γονιμότητας
+    description: >-
+      Οι γεννήσεις ζώντων του έτους, σε κάθε ηλικία της μητέρας, ανά 1.000 γυναίκες
+      15–49 ετών (μέσος όρος της 1ης Ιανουαρίου του έτους και του επόμενου).
+
+- id: gross_reproduction_rate@v1
+  metric: gross_reproduction_rate
+  unit: daughters per woman
+  title: Gross reproduction rate
+  description: >-
+    The daughters a woman would have at the age-specific fertility rates of the year
+    (Eurostat demo_frate): the total fertility rate times the share of girls among the
+    year's live births (demo_fasec), the same at every age of the mother.
+  el:
+    title: Ακαθάριστος δείκτης αναπαραγωγής
+    description: >-
+      Οι κόρες που θα έφερνε στον κόσμο μια γυναίκα με τη γονιμότητα κατά ηλικία του
+      έτους: ο συνολικός δείκτης γονιμότητας επί το μερίδιο των κοριτσιών στις
+      γεννήσεις ζώντων του έτους.
+
+- id: net_reproduction_rate@v1
+  metric: net_reproduction_rate
+  unit: daughters per woman
+  title: Net reproduction rate
+  description: >-
+    The gross reproduction rate with each age's daughters weighted by a woman's chance
+    of living to that age, from the female life table of the year (Eurostat
+    demo_mlifetable). Below 1, a generation of women is not replaced by the next at
+    the fertility and mortality of the year.
+  el:
+    title: Καθαρός δείκτης αναπαραγωγής
+    description: >-
+      Ο ακαθάριστος δείκτης αναπαραγωγής, με τις κόρες κάθε ηλικίας σταθμισμένες με την
+      πιθανότητα μιας γυναίκας να ζήσει ως αυτή την ηλικία, από τον πίνακα επιβίωσης
+      των γυναικών του έτους. Κάτω από 1, μια γενιά γυναικών δεν αντικαθίσταται από την
+      επόμενη με τη γονιμότητα και τη θνησιμότητα του έτους.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

@@ -56,10 +56,9 @@ class Series:
             nature=self.nature,
             geo_vintage=self.geo_vintage,
             select=self.select or None,
+            geo_prefix=self.geo_prefix,
         )
-        obs = harmonize.recode_nuts2010(
-            obs.filter(pl.col("geo_code").str.starts_with(self.geo_prefix))
-        )
+        obs = harmonize.recode_nuts2010(obs)
         harmonize.check_greek_codes(obs)
         return obs.with_columns(**{k: pl.lit(v) for k, v in self.fixed.items()})
 

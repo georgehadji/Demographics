@@ -101,12 +101,15 @@ def to_observations(
     nature: Nature,
     geo_vintage: str,
     select: dict[str, str] | None = None,
+    geo_prefix: str = "",
 ) -> pl.DataFrame:
     """One metric of a Eurostat snapshot as observations.
 
     ``select`` fixes every dimension other than geo, time, sex and age that has more
     than one category (e.g. ``{"indic_de": "TOTFERRT"}``). ``nature`` is the nature of
     an unflagged value; an estimated flag turns ``observed`` into ``official_estimate``.
+    ``geo_prefix`` keeps only the geo codes that start with it, before the flags are
+    read: a flag is translated, or raises, only where a value is used.
     """
     if hashlib.sha256(data).hexdigest() != snapshot.sha256:
         raise ValueError("data does not belong to this snapshot")
@@ -115,6 +118,7 @@ def to_observations(
         if code not in doc["dimension"][dim]["category"]["index"]:
             raise ValueError(f"{code!r} is not a {dim!r} category of {snapshot.source_id}")
         df = df.filter(pl.col(dim) == code).drop(dim)
+    df = df.filter(pl.col("geo").str.starts_with(geo_prefix))
     extra = [d for d in doc["id"] if d in df.columns and d not in _OBSERVATION_DIMS]
     for d in extra:
         if df[d].n_unique() > 1:

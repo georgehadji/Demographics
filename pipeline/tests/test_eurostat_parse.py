@@ -96,6 +96,19 @@ def test_flags_become_status_nature_and_break(tmp_path):
     assert obs["nature"].to_list() == ["observed", "official_estimate", "observed"]
 
 
+def test_flags_are_read_only_where_a_value_is_kept(tmp_path):
+    # An unknown flag (e.g. "f", forecast, on EU aggregates in demo_fmonth) outside
+    # geo_prefix is never read; inside it, it still stops the parse.
+    doc = json.loads(PJAN)
+    geo = doc["dimension"]["geo"]["category"]["index"]
+    times = doc["size"][-1]
+    doc["status"] = {str(geo["CY"] * times): "f"}  # first cell of CY
+    data = json.dumps(doc).encode()
+    assert set(parse(data, tmp_path, geo_prefix="EL")["geo_code"]) == {"EL"}
+    with pytest.raises(ValueError, match="unknown Eurostat flag 'f'"):
+        parse(data, tmp_path, geo_prefix="CY")
+
+
 def test_multi_category_dimension_must_be_selected(tmp_path):
     data = (FIXTURES / "eurostat_demo_find_el.json").read_bytes()
     with pytest.raises(ValueError, match="select a single 'indic_de'"):

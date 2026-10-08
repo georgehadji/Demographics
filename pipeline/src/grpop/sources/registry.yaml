@@ -414,7 +414,7 @@ sources:
     probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_fmonth?format=JSON&lang=EN&geo=EL&lastTimePeriod=1
     licence: eurostat
     used_for: [nowcasting]
-    phase: 3
+    phase: 2
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
   - id: eurostat_demo_mmonth

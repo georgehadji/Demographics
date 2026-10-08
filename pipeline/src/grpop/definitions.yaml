@@ -729,6 +729,26 @@
       των γυναικών του έτους. Κάτω από 1, μια γενιά γυναικών δεν αντικαθίσταται από την
       επόμενη με τη γονιμότητα και τη θνησιμότητα του έτους.
 
+- id: live_births_nowcast@v1
+  metric: live_births_nowcast
+  unit: persons
+  title: Live births of the year estimated from its published months
+  description: >-
+    Live births of the latest year whose total Eurostat has not yet published, from its
+    published months (demo_fmonth): last year's total times the ratio of this year's
+    months to the same months of last year. It assumes the remaining months change as
+    the published ones did; the 80% and 95% bounds come from the errors of the same
+    estimate in past years. An estimate from published data, not a forecast.
+  el:
+    title: Γεννήσεις του έτους, εκτίμηση από τους δημοσιευμένους μήνες
+    description: >-
+      Οι γεννήσεις ζώντων του τελευταίου έτους, πριν δημοσιευτεί το σύνολό του, από τους
+      μήνες που έχουν δημοσιευτεί: το σύνολο του προηγούμενου έτους επί τον λόγο των
+      μηνών του έτους προς τους ίδιους μήνες του προηγούμενου. Υποθέτει ότι οι υπόλοιποι
+      μήνες μεταβάλλονται όπως οι δημοσιευμένοι· τα όρια 80% και 95% προκύπτουν από τα
+      σφάλματα της ίδιας εκτίμησης σε προηγούμενα έτη. Εκτίμηση από δημοσιευμένα
+      στοιχεία, όχι πρόβλεψη.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

@@ -811,6 +811,34 @@
       στα μέρη που οφείλονται στη μεταβολή της θνησιμότητας κάθε ηλικιακής ομάδας. Τα
       μέρη αθροίζουν ακριβώς στη μεταβολή.
 
+- id: live_births_outside_marriage_share@v1
+  metric: live_births_outside_marriage_share
+  unit: "% of live births"
+  title: Share of live births outside marriage
+  description: >-
+    Live births to mothers neither married nor in a civil partnership, as a percentage
+    of all live births of the year, as ELSTAT prints it (natural movement release,
+    Table 4). Eurostat's demo_find NMARPCT is the same share where both count alike.
+  el:
+    title: Ποσοστό γεννήσεων εκτός γάμου
+    description: >-
+      Οι γεννήσεις ζώντων από μητέρες ούτε έγγαμες ούτε σε σύμφωνο συμβίωσης, ως
+      ποσοστό όλων των γεννήσεων ζώντων του έτους, όπως το δημοσιεύει η ΕΛΣΤΑΤ.
+
+- id: caesarean_share@v1
+  metric: caesarean_share
+  unit: "% of live births"
+  title: Share of live births by caesarean section
+  description: >-
+    Live births by caesarean section as a percentage of all live births of the year,
+    those of undeclared delivery method included, as ELSTAT prints it (natural movement
+    release, Graph 3).
+  el:
+    title: Ποσοστό γεννήσεων με καισαρική τομή
+    description: >-
+      Οι γεννήσεις ζώντων με καισαρική τομή ως ποσοστό όλων των γεννήσεων ζώντων του
+      έτους, μαζί με όσες δεν δηλώθηκε ο τρόπος τοκετού, όπως το δημοσιεύει η ΕΛΣΤΑΤ.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

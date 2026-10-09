@@ -30,8 +30,9 @@ mortality rate is infant deaths per 1,000 live births; religious and civil marri
 up to marriages, and marriages and partnerships to their sum; divorces per 100 marriages
 follow from Tables 8 and 10; Table 11's types and durations add up to Table 10's
 divorces, and the divorced men and women of Table 12 to two per divorce (a divorce of
-two men or two women counts two of one sex). A value printed in two tables is published
-once.
+two men or two women counts two of one sex); the printed shares of births outside
+marriage (Table 4) and of normal and caesarean births (Graph 3) follow from the counts,
+rounded half up. A value printed in two tables is published once.
 Regional units that NUTS 2024 merges into one NUTS 3 region are summed into a
 ``derived`` value; ELSTAT's rates are ``official_estimate``. Greek mothers and births
 inside marriage are the total minus the published counts, so they are not published;
@@ -59,12 +60,14 @@ TRANSFORM_VERSION = "elstat_spo03_pdf@0.1"
 BIRTHS, DEATHS, NATURAL_CHANGE = "live_births@v1", "deaths@v1", "natural_change@v1"
 FOREIGN_MOTHER = "live_births_foreign_citizen_mother@v1"
 OUTSIDE_MARRIAGE = "live_births_outside_marriage@v1"
+OUTSIDE_SHARE = "live_births_outside_marriage_share@v1"
 STILLBIRTHS = "stillbirths@v1"
 INFANT_RATE = "infant_mortality_rate@v1"
 PERINATAL_RATE = "perinatal_mortality_rate@v1"
 NEONATAL_RATE = "neonatal_mortality_rate@v1"
 NORMAL_DELIVERY = "live_births_normal_delivery@v1"
 CAESAREAN = "live_births_caesarean@v1"
+CAESAREAN_SHARE = "caesarean_share@v1"
 MARRIAGES = "marriages@v1"
 CIVIL_MARRIAGES = "civil_marriages@v1"
 PARTNERSHIPS = "civil_partnerships@v1"
@@ -76,7 +79,7 @@ DEFINITIONS = (
     BIRTHS, DEATHS, NATURAL_CHANGE, FOREIGN_MOTHER, OUTSIDE_MARRIAGE,
     STILLBIRTHS, INFANT_RATE, PERINATAL_RATE, NEONATAL_RATE,
     NORMAL_DELIVERY, CAESAREAN, MARRIAGES, CIVIL_MARRIAGES, PARTNERSHIPS,
-    FIRST_MARRIAGES, DIVORCES, DIVORCE_RATIO, DIVORCED,
+    FIRST_MARRIAGES, DIVORCES, DIVORCE_RATIO, DIVORCED, OUTSIDE_SHARE, CAESAREAN_SHARE,
 )  # fmt: skip
 
 _MONTHS = [
@@ -95,6 +98,7 @@ _TABLE7_BREAK = re.compile(r"^\* Το (\d{4}), το όριο βιωσιμότη�
 _OR_NONE = rf"({_NUM}|-) (?:{_DEC}|-)"
 _TABLE8 = re.compile(rf"^(\d{{4}}) ({_NUM}) ({_NUM}) ({_NUM}) {_DEC} {_OR_NONE} {_OR_NONE}$")
 _BY_TWO = re.compile(rf"^(.+?) ({_NUM}) {_DEC} ({_NUM}) {_DEC}$")  # two (count, %) columns
+_GRAPH3 = re.compile(rf"^(\d{{4}}) ({_DEC}) ({_DEC})$")  # year, normal %, caesarean %
 # Age labels that are not "a-b" or "a+" (provenance.AGE_PATTERN)
 _AGE = {"<15": "0-14", "<20": "0-19", "Άγνωστη": "unknown", "Κάτω του έτους": "0"}
 _TABLE5 = {"Φυσιολογικός τοκετός": NORMAL_DELIVERY, "Καισαρική Τομή": CAESAREAN}
@@ -178,6 +182,15 @@ def _check(what: str, ours: object, theirs: object) -> None:
         raise ValueError(f"{what}: {ours} != {theirs}")
 
 
+def _percent(part: int, whole: int) -> float:
+    """part / whole in %, to one decimal, half up, as ELSTAT rounds (Tables 7 and 10)."""
+    return int(part * 1000 / whole + 0.5) / 10
+
+
+def _decimal(text: str) -> float:
+    return float(text.replace(",", "."))
+
+
 def table1(text: list[str]) -> pl.DataFrame:
     """Greece by year: births, deaths, natural change, and whether deaths are revised."""
     lines = _table(text, "Πίνακας 1.")
@@ -256,11 +269,32 @@ def table4(text: list[str], births: dict[str, int]) -> pl.DataFrame:
         )
         inside, outside = r["inside"][i], r["outside"][i]
         _check(f"Table 4 {year}: inside + outside", inside + outside, r["total"][i])
+    # the "% Συμμετοχή" line right below the births outside marriage
+    outside_row = next(i for i, line in enumerate(lines) if line.startswith("Γεννήσεις εκτός"))
+    share = lines[outside_row + 1].split()
+    _check("Table 4: share outside marriage, label", share[:2], ["%", "Συμμετοχή"])
+    printed = [_decimal(v) for v in share[2:]]
+    _check("Table 4: share outside marriage, values", len(printed), len(years))
+    for i, year in enumerate(years):
+        ours = _percent(r["outside"][i], r["total"][i])
+        _check(f"Table 4 {year}: share outside marriage", ours, printed[i])
     t, y5 = Sex.TOTAL.value, list(enumerate(years))
-    return _long(
-        [(y, sex, AGE_TOTAL, BIRTHS, r[sex][i]) for sex in ("male", "female") for i, y in y5]
-        + [(y, t, AGE_TOTAL, FOREIGN_MOTHER, r["foreign"][i]) for i, y in y5]
-        + [(y, t, AGE_TOTAL, OUTSIDE_MARRIAGE, r["outside"][i]) for i, y in y5]
+    return pl.concat(
+        [
+            _long(
+                [
+                    (y, sex, AGE_TOTAL, BIRTHS, r[sex][i])
+                    for sex in ("male", "female")
+                    for i, y in y5
+                ]
+                + [(y, t, AGE_TOTAL, FOREIGN_MOTHER, r["foreign"][i]) for i, y in y5]
+                + [(y, t, AGE_TOTAL, OUTSIDE_MARRIAGE, r["outside"][i]) for i, y in y5]
+            ),
+            _long(
+                [(y, t, AGE_TOTAL, OUTSIDE_SHARE, printed[i]) for i, y in y5],
+                nature=Nature.OFFICIAL_ESTIMATE.value,
+            ),
+        ]
     )
 
 
@@ -334,9 +368,32 @@ def table5(text: list[str], births: dict[str, int]) -> pl.DataFrame:
     _check("Table 5: rows", sorted(rows), sorted([*_TABLE5, "Δεν δηλώθηκε"]))
     for i, year in enumerate(years):
         _check(f"Table 5 {year}: methods", sum(v[i] for v in rows.values()), births[year])
+    # Graph 3 prints each year's shares of all births: normal, caesarean
+    shares = {
+        m[1]: (_decimal(m[2]), _decimal(m[3]))
+        for line in _table(text, "Γράφημα 3.")
+        if (m := _GRAPH3.match(line.strip()))
+    }
+    _check("Graph 3: years", sorted(shares), sorted(years))
+    for i, year in enumerate(years):
+        normal = _percent(rows["Φυσιολογικός τοκετός"][i], births[year])
+        caesarean = _percent(rows["Καισαρική Τομή"][i], births[year])
+        _check(f"Graph 3 {year}: normal, caesarean %", (normal, caesarean), shares[year])
     t = Sex.TOTAL.value
-    return _long(
-        [(y, t, AGE_TOTAL, d, rows[k][i]) for k, d in _TABLE5.items() for i, y in enumerate(years)]
+    return pl.concat(
+        [
+            _long(
+                [
+                    (y, t, AGE_TOTAL, d, rows[k][i])
+                    for k, d in _TABLE5.items()
+                    for i, y in enumerate(years)
+                ]
+            ),
+            _long(
+                [(y, t, AGE_TOTAL, CAESAREAN_SHARE, shares[y][1]) for y in years],
+                nature=Nature.OFFICIAL_ESTIMATE.value,
+            ),
+        ]
     )
 
 

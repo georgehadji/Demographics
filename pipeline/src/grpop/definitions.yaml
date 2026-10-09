@@ -984,3 +984,68 @@
       Η πιθανότητα ένα άτομο που φτάνει την ακριβή ηλικία x να πεθάνει πριν από την
       ηλικία x+1, με τα ποσοστά θνησιμότητας του έτους αναφοράς· για την ανοιχτή ομάδα
       95+ είναι ίση με ένα. Η στήλη q(x) του πίνακα επιβίωσης της Eurostat.
+
+- id: immigration@v1
+  metric: immigration
+  unit: persons
+  title: Immigrants
+  description: >-
+    Persons who during the reference year took up usual residence in the country for
+    at least 12 months, having been usually resident in another country, as Eurostat
+    migr_imm8 (age in completed years). For Greece an ELSTAT estimate.
+  el:
+    title: Εισροές μεταναστών
+    description: >-
+      Τα άτομα που μέσα στο έτος αναφοράς εγκαταστάθηκαν στη χώρα για τουλάχιστον 12
+      μήνες, ενώ πριν κατοικούσαν σε άλλη χώρα. Για την Ελλάδα, εκτίμηση της ΕΛΣΤΑΤ.
+
+- id: emigration@v1
+  metric: emigration
+  unit: persons
+  title: Emigrants
+  description: >-
+    Persons usually resident in the country who during the reference year left it to
+    take up usual residence in another country for at least 12 months, as Eurostat
+    migr_emi2 (age in completed years). For Greece an ELSTAT estimate.
+  el:
+    title: Εκροές μεταναστών
+    description: >-
+      Τα άτομα που κατοικούσαν στη χώρα και μέσα στο έτος αναφοράς έφυγαν για να
+      εγκατασταθούν σε άλλη χώρα για τουλάχιστον 12 μήνες. Για την Ελλάδα, εκτίμηση της
+      ΕΛΣΤΑΤ.
+
+- id: deaths_by_age_reached@v1
+  metric: deaths_by_age_reached
+  unit: persons
+  title: Deaths by age reached during the year
+  description: >-
+    Deaths during the reference year by the age the deceased reached or would have
+    reached during it (the year minus the year of birth), as Eurostat demo_mager. An
+    input of net migration by age; not published on its own.
+  el:
+    title: Θάνατοι κατά ηλικία που συμπληρώνεται μέσα στο έτος
+    description: >-
+      Οι θάνατοι μέσα στο έτος αναφοράς κατά την ηλικία που ο θανών συμπλήρωσε ή θα
+      συμπλήρωνε μέσα σε αυτό (το έτος μείον το έτος γέννησης).
+
+- id: net_migration_by_age@v1
+  metric: net_migration_by_age
+  unit: persons
+  title: Net migration plus statistical adjustment by age
+  description: >-
+    Net migration of the people of each age reached during the reference year (born in
+    the year minus the age), as a residual of the cohort: its population on 1 January
+    of the next year minus its population on 1 January of the year (its live births,
+    at age 0) plus its deaths during the year. Like net_migration@v1, to which the ages
+    add up, it is not a count of migrants: it also absorbs the statistical adjustments
+    of the population estimates, which at old ages can exceed migration itself.
+  el:
+    title: Καθαρή μετανάστευση και στατιστική προσαρμογή κατά ηλικία
+    description: >-
+      Η καθαρή μετανάστευση όσων συμπληρώνουν κάθε ηλικία μέσα στο έτος αναφοράς, ως
+      υπόλοιπο της γενεάς τους: ο πληθυσμός της την 1η Ιανουαρίου του επόμενου έτους
+      μείον τον πληθυσμό της την 1η Ιανουαρίου του έτους (τις γεννήσεις του έτους, στην
+      ηλικία 0) συν τους θανάτους της μέσα στο έτος. Όπως η καθαρή μετανάστευση, στην
+      οποία αθροίζουν οι ηλικίες, δεν είναι καταμέτρηση μεταναστών: περιέχει και τις
+      στατιστικές προσαρμογές των εκτιμήσεων πληθυσμού, που στις μεγάλες ηλικίες
+      μπορεί να ξεπερνούν την ίδια τη μετανάστευση.

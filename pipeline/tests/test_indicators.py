@@ -30,6 +30,9 @@ RECORDED = {
     "eurostat_demo_fmonth": "eurostat_demo_fmonth_el_cy.json",  # 1960-2025
     "eurostat_demo_r_mwk_ts": "eurostat_demo_r_mwk_ts_el.json",  # total, 2015-W53 onwards
     "eurostat_demo_mexrt": "eurostat_demo_mexrt_el.json",  # 2020-01 onwards
+    "eurostat_demo_mager": "eurostat_demo_mager_el.json",  # 2023-2024
+    "eurostat_migr_imm8": "eurostat_migr_imm8_el.json",  # 2023-2024
+    "eurostat_migr_emi2": "eurostat_migr_emi2_el.json",  # 2023-2024
     "eurostat_demo_fordagec": "eurostat_demo_fordagec_el_cy.json",  # 2021-2024
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",

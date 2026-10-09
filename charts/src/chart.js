@@ -100,6 +100,7 @@ export const TEXT = {
       divorces: "διαζύγια",
       stillbirths: "γεννήσεις νεκρών",
       persons: "άτομα",
+      "person-years": "ανθρωποέτη",
       years: "έτη",
     },
   },

@@ -766,6 +766,51 @@
       εβδομαδιαίους θανάτους, με κάθε εβδομάδα μοιρασμένη ισόποσα στις επτά ημέρες της.
       Χωρίς διόρθωση για τη γήρανση ή το μέγεθος του πληθυσμού.
 
+- id: life_table_survivors@v1
+  metric: life_table_survivors
+  unit: persons
+  title: Survivors of the life table
+  description: >-
+    Of 100,000 born, those alive at the exact age, in the period life table of the
+    year, as Eurostat demo_mlifetable SURVIVORS (lx). An input of the decomposition of
+    life expectancy; not published on its own.
+  el:
+    title: Επιζώντες του πίνακα επιβίωσης
+    description: >-
+      Από 100.000 γεννήσεις, όσοι ζουν στην ακριβή ηλικία, στον πίνακα επιβίωσης του
+      έτους.
+
+- id: life_table_person_years_above@v1
+  metric: life_table_person_years_above
+  unit: person-years
+  title: Person-years lived above an age
+  description: >-
+    Person-years the 100,000 born of the period life table live above the exact age, as
+    Eurostat demo_mlifetable TOTPYLIVED (Tx). An input of the decomposition of life
+    expectancy; not published on its own.
+  el:
+    title: Ανθρωποέτη ζωής πάνω από μια ηλικία
+    description: >-
+      Τα ανθρωποέτη που ζουν οι 100.000 γεννήσεις του πίνακα επιβίωσης πάνω από την
+      ακριβή ηλικία.
+
+- id: life_expectancy_change_by_age@v1
+  metric: life_expectancy_change_by_age
+  unit: years
+  title: Change in life expectancy at birth by age
+  description: >-
+    The change in life expectancy at birth from the year before, split into the parts
+    that the change in mortality at each age group contributes (the age column; total
+    is the whole change). The decomposition of Arriaga (1984), from the period life
+    tables of the two years (Eurostat demo_mlifetable). The parts add up exactly to the
+    change.
+  el:
+    title: Μεταβολή του προσδόκιμου ζωής κατά ηλικία
+    description: >-
+      Η μεταβολή του προσδόκιμου ζωής στη γέννηση από το προηγούμενο έτος, χωρισμένη
+      στα μέρη που οφείλονται στη μεταβολή της θνησιμότητας κάθε ηλικιακής ομάδας. Τα
+      μέρη αθροίζουν ακριβώς στη μεταβολή.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

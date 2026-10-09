@@ -1,5 +1,8 @@
 """Prospective old-age dependency (Δ9d): old age measured by remaining life expectancy.
 
+The measures of Sanderson and Scherbov (2005, 2010), ``sanderson2005`` and
+``sanderson2010`` in data/bibliography.
+
 The old-age threshold of a sex and year is the age at which its remaining life
 expectancy (Eurostat demo_mlifetable LIFEXP, period life table of the year) is 15 years,
 interpolated linearly between the two single ages around it. The prospective old-age

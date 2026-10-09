@@ -40,7 +40,7 @@ RECORDED = {
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
     "eurostat_proj_19np": "eurostat_proj_19np_el_cy.json",  # totals, 2019-2026
     "eurostat_proj_23np": "eurostat_proj_23np_el_cy.json",  # totals, 2022-2026
-    "eurostat_demo_mlifetable": "eurostat_demo_mlifetable_el_cy.json",  # Mx and qx only
+    "eurostat_demo_mlifetable": "eurostat_demo_mlifetable_el_cy.json",  # Mx, qx, ex, lx, Tx
     **{
         f"eurostat_demo_r_{code}": f"eurostat_demo_r_{code}_el5.json"
         for code in (

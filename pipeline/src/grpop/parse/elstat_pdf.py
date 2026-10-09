@@ -34,7 +34,8 @@ two men or two women counts two of one sex); the printed shares of births outsid
 marriage (Table 4) and of normal and caesarean births (Graph 3) follow from the counts,
 rounded half up. A value printed in two tables is published once.
 Regional units that NUTS 2024 merges into one NUTS 3 region are summed into a
-``derived`` value; ELSTAT's rates are ``official_estimate``. Greek mothers and births
+``derived`` value; deaths per 100 live births (the country every year, the regions the
+latest year) are ``derived`` too; ELSTAT's rates are ``official_estimate``. Greek mothers and births
 inside marriage are the total minus the published counts, so they are not published;
 so are religious marriages. Births whose delivery method was not declared are the total
 minus normal and caesarean births.
@@ -58,6 +59,7 @@ from grpop.sources.registry import get_source
 SOURCE_ID = "elstat_spo03_2025"
 TRANSFORM_VERSION = "elstat_spo03_pdf@0.1"
 BIRTHS, DEATHS, NATURAL_CHANGE = "live_births@v1", "deaths@v1", "natural_change@v1"
+DEATHS_PER_BIRTHS = "deaths_per_100_live_births@v1"
 FOREIGN_MOTHER = "live_births_foreign_citizen_mother@v1"
 OUTSIDE_MARRIAGE = "live_births_outside_marriage@v1"
 OUTSIDE_SHARE = "live_births_outside_marriage_share@v1"
@@ -80,6 +82,7 @@ DEFINITIONS = (
     STILLBIRTHS, INFANT_RATE, PERINATAL_RATE, NEONATAL_RATE,
     NORMAL_DELIVERY, CAESAREAN, MARRIAGES, CIVIL_MARRIAGES, PARTNERSHIPS,
     FIRST_MARRIAGES, DIVORCES, DIVORCE_RATIO, DIVORCED, OUTSIDE_SHARE, CAESAREAN_SHARE,
+    DEATHS_PER_BIRTHS,
 )  # fmt: skip
 
 _MONTHS = [
@@ -612,6 +615,20 @@ def to_observations(snapshot: Snapshot, pdf: bytes) -> pl.DataFrame:
             )
             for d, c in ((BIRTHS, "births"), (DEATHS, "deaths"))
         ]
+        # deaths per 100 live births: the country every year of Table 1, the regions and
+        # NUTS 3 regions the year of Table 2
+        + [
+            df.select(
+                "period",
+                "geo_code",
+                definition_id=pl.lit(DEATHS_PER_BIRTHS),
+                value=100 * pl.col("deaths") / pl.col("births"),
+                nature=pl.lit(Nature.DERIVED.value),
+                revised="revised",
+            )
+            for df in (national.with_columns(geo_code=pl.lit("EL")), regional)
+        ],
+        how="vertical_relaxed",  # counts and the ratio in one value column
     ).with_columns(
         sex=pl.lit(Sex.TOTAL.value), age=pl.lit(AGE_TOTAL), break_in_series=pl.lit(False)
     )

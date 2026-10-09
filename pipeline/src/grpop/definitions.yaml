@@ -839,6 +839,22 @@
       Οι γεννήσεις ζώντων με καισαρική τομή ως ποσοστό όλων των γεννήσεων ζώντων του
       έτους, μαζί με όσες δεν δηλώθηκε ο τρόπος τοκετού, όπως το δημοσιεύει η ΕΛΣΤΑΤ.
 
+- id: deaths_per_100_live_births@v1
+  metric: deaths_per_100_live_births
+  unit: deaths per 100 live births
+  title: Deaths per 100 live births
+  description: >-
+    Deaths of the year per 100 live births of the year, by place of residence of the
+    deceased and of the mother, from ELSTAT's natural movement release (Table 1 for
+    Greece, Table 2 for its regions and NUTS 3 regions). Above 100, deaths outnumber
+    births. ELSTAT prints it as "100/186" (births/deaths).
+  el:
+    title: Θάνατοι ανά 100 γεννήσεις
+    description: >-
+      Οι θάνατοι του έτους ανά 100 γεννήσεις ζώντων του έτους, κατά τόπο μόνιμης
+      κατοικίας, από το δελτίο φυσικής κίνησης της ΕΛΣΤΑΤ. Πάνω από 100, οι θάνατοι
+      είναι περισσότεροι από τις γεννήσεις.
+
 - id: mean_age_childbearing@v1
   metric: mean_age_childbearing
   unit: years

@@ -608,6 +608,21 @@ SERIES = {
             "probability_of_dying": "PROBDEATH",
         }.items()
     },
+    # Δ9l: migration flows by single year of age and sex, Greece only (ELSTAT gives
+    # Eurostat ages only in completed years).
+    **{
+        name: Series(
+            source,
+            f"{name}@v1",
+            Nature.OFFICIAL_ESTIMATE,
+            select={"agedef": "COMPLET"},
+            geo_prefix="EL",
+        )
+        for name, source in {
+            "immigration": "eurostat_migr_imm8",
+            "emigration": "eurostat_migr_emi2",
+        }.items()
+    },
     # Greek regional series (EL and NUTS 1-3 as each table has them). #6 has no regional
     # table: demo_r_find2 has no mean age at first birth. #2 and #5 are published, not
     # derived, here: VERIFIED 2026-09-29 that they cannot be reproduced from the

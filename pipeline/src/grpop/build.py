@@ -32,6 +32,7 @@ from grpop import (
     harmonize,
     indicators,
     life_expectancy,
+    migration,
     nowcast,
     projection_accuracy,
     projections,
@@ -239,6 +240,8 @@ DECOMPOSITION = {
     "life_expectancy_change": Step(
         life_expectancy.SOURCES, life_expectancy.life_expectancy_change, 3
     ),
+    # Δ9l
+    "net_migration_by_age": Step(migration.SOURCES, migration.net_migration_by_age, 0),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

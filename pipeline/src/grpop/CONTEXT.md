@@ -14,6 +14,7 @@ The package, in layers (ADR 0005): sources and snapshots (L1), parse (L2), harmo
 | `harmonize.py` | Greek NUTS codes: NUTS 2010 recodes, rejection of unknown codes, hierarchy check; `age_gaps`: age groups add up to the total |
 | `indicators.py` | `INDICATORS` (derived, with official counterpart and corroboration) and `SERIES` (official, published as given); `compute`, `disagreements`, `check` |
 | `life_expectancy.py` | Δ9i: Arriaga's decomposition of the yearly change in life expectancy at birth by age group and sex (`demo_mlifetable` lx and Tx), Greece; the parts add up exactly, and the change matches Eurostat's LIFEXP within its rounding |
+| `migration.py` | Δ9l: net migration by age reached and sex as the residual of each cohort (`demo_pjan`, `demo_mager`, births from `demo_fasec`), Greece; the ages add up to `demo_gind` CNMIGRAT to the person, checked in the build; compared with ELSTAT's flows by age in the docstring |
 | `nowcast.py` | Δ9g: live births of the latest year from its published months (`demo_fmonth`), with 80/95% bounds from the backtest of the same estimate over past years; checked out of sample against ELSTAT's 2025 total; empty when there is no year to estimate |
 | `parse` | Source bytes to long-format tables: see `parse/CONTEXT.md` |
 | `birth_order.py` | Δ9b: total fertility rate by birth order (1, 2, 3, 4+) for Greece: `demo_frate` rates split by the order shares of `demo_fordagec` births; each order's mean age checked against `demo_find`; provenance per ADR 0009 |

@@ -457,6 +457,45 @@ sources:
     phase: 2
     verification: {status: verified, checked_at: 2026-10-09, evidence: 'Source probe run 37845244410: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-09-16; confirms the code exists'}
 
+  - id: eurostat_demo_mager
+    provider: Eurostat
+    dataset_code: demo_mager
+    title: Deaths by year of birth (age reached) and sex
+    title_el: "Θάνατοι κατά έτος γέννησης (ηλικία που συμπληρώνεται) και φύλο"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_mager?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [net_migration_by_age]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_migr_imm8
+    provider: Eurostat
+    dataset_code: migr_imm8
+    title: Immigration by age and sex
+    title_el: "Εισροές μεταναστών κατά ηλικία και φύλο"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_imm8?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&agedef=COMPLET&lastTimePeriod=1
+    licence: eurostat
+    used_for: [migration_flows_by_age, net_migration_by_age]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_migr_emi2
+    provider: Eurostat
+    dataset_code: migr_emi2
+    title: Emigration by age and sex
+    title_el: "Εκροές μεταναστών κατά ηλικία και φύλο"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/migr_emi2?format=JSON&lang=EN&geo=EL&sex=T&age=TOTAL&agedef=COMPLET&lastTimePeriod=1
+    licence: eurostat
+    used_for: [migration_flows_by_age, net_migration_by_age]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_proj_25np
     provider: Eurostat
     dataset_code: proj_25np

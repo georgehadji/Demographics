@@ -17,6 +17,9 @@ Against ELSTAT's flows by age (migr_imm8 minus migr_emi2, age in completed years
 2026-10-10; the test checks 2023-2024), from 70 up to 900 apart (at 81, the cohorts of
 1941-1943), while both add up to the same total in 2023 and 2024. INFERENCE: the
 population estimates are adjusted at old ages, and the residual absorbs the adjustment.
+UNKNOWN whether ELSTAT's age in completed years is the age at the move or at the end of
+the year; the residual by age reached matches the flows at the same age, and not half a
+year apart, which points to the latter.
 """
 
 from __future__ import annotations
@@ -118,7 +121,8 @@ def residual(data: Data) -> pl.DataFrame:
 
 
 def check_total(data: Data, totals: pl.DataFrame) -> None:
-    """The ages of both sexes add up to demo_gind CNMIGRAT, to the person."""
+    """The ages add up to demo_gind CNMIGRAT, to the person. CNMIGRAT has no sex: only
+    the total of both sexes is checked."""
     official = reproduction._read(NET_MIGRATION, data).select("sex", "period", official="value")
     off = totals.join(official, on=["sex", "period"]).filter(pl.col("value") != pl.col("official"))
     if not off.is_empty():

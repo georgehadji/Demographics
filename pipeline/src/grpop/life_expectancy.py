@@ -106,10 +106,15 @@ def parts(data: Data) -> pl.DataFrame:
     later year), x, part, provenance."""
     table = _table(data)
     years = _complete(table)
-    table = table.join(years, on=["sex", "period"]).with_columns(
-        l_next=pl.col("l").shift(-1).over("sex", "period"),
-        t_next=pl.col("t").shift(-1).over("sex", "period"),
-        l0=pl.col("l").first().over("sex", "period"),
+    # shift and first need the ages in order; a join does not keep it
+    table = (
+        table.join(years, on=["sex", "period"])
+        .sort("sex", "period", "x")
+        .with_columns(
+            l_next=pl.col("l").shift(-1).over("sex", "period"),
+            t_next=pl.col("t").shift(-1).over("sex", "period"),
+            l0=pl.col("l").first().over("sex", "period"),
+        )
     )
     before = table.select(
         "sex",

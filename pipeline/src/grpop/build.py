@@ -213,6 +213,8 @@ ELSTAT = {
     # Δ9j: the shares ELSTAT prints, checked against its counts
     "live_births_outside_marriage_share_elstat": _elstat(elstat_pdf.OUTSIDE_SHARE, 1),
     "caesarean_share_elstat": _elstat(elstat_pdf.CAESAREAN_SHARE, 1),
+    # Δ9k: deaths per 100 live births, as ELSTAT's "Αναλογία" (printed to the unit)
+    "deaths_per_100_live_births_elstat": _elstat(elstat_pdf.DEATHS_PER_BIRTHS, 0),
 }
 # Δ9: derived values from several Eurostat tables (ADR 0009)
 DECOMPOSITION = {

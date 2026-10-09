@@ -39,7 +39,7 @@ def test_the_recorded_2025_release(release):
     key = df["definition_id"] + " " + df["period"] + " " + df["sex"] + " " + df["age"]
     value = dict(zip(key + " " + df["geo_code"], df["value"], strict=True))
     status = dict(zip(key + " " + df["geo_code"], df["status"], strict=True))
-    assert (df.height, set(df["vintage"])) == (570, {"2026-10-01"})
+    assert (df.height, set(df["vintage"])) == (652, {"2026-10-01"})
     assert value["natural_change@v1 2025 total total EL"] == -56223
     assert status["deaths@v1 2023 total total EL"] == "revised"
     assert value["live_births@v1 2025 total total EL531"] == 719 + 109  # Κοζάνη + Γρεβενά
@@ -65,6 +65,16 @@ def test_the_recorded_2025_release(release):
     assert value["divorced_persons@v1 2025 female 65+ EL"] == 636
     assert value["live_births_outside_marriage_share@v1 2025 total total EL"] == 10.2
     assert value["caesarean_share@v1 2025 total total EL"] == 62.8
+    # deaths per 100 live births against ELSTAT's "Αναλογία" (100/186 etc.), printed to
+    # the unit in a version of Table 2 the responsible editor sent (2026-10-09). Most are
+    # ours rounded (Larisa 186.55 -> 187); Thessaloniki (167.52) and Chania (125.55) are
+    # printed 167 and 125. Cause UNKNOWN.
+    ratio = "deaths_per_100_live_births@v1 2025 total total "
+    printed = {"EL": 186, "EL30": 172, "EL643": 234, "EL421": 105, "EL433": 99}
+    assert {geo: round(value[ratio + geo]) for geo in printed} == printed
+    assert 167 < value[ratio + "EL522"] < 168
+    assert value[ratio + "EL531"] == 100 * (1621 + 412) / (719 + 109)  # Κοζάνη + Γρεβενά
+    assert value["deaths_per_100_live_births@v1 1932 total total EL"] < 100
     broken = df.filter(pl.col("break_in_series"))
     assert sorted(zip(broken["definition_id"], broken["period"], strict=True)) == [
         ("perinatal_mortality_rate@v1", "2019"),

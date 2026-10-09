@@ -468,7 +468,7 @@ sources:
     licence: eurostat
     used_for: [net_migration_by_age]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-09, evidence: 'Source probe run 38002602251: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-09-23; confirms the code exists'}
 
   - id: eurostat_migr_imm8
     provider: Eurostat
@@ -481,7 +481,7 @@ sources:
     licence: eurostat
     used_for: [migration_flows_by_age, net_migration_by_age]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-09, evidence: 'Source probe run 38002602251: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-07-01; confirms the code exists'}
 
   - id: eurostat_migr_emi2
     provider: Eurostat
@@ -494,7 +494,7 @@ sources:
     licence: eurostat
     used_for: [migration_flows_by_age, net_migration_by_age]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-09, evidence: 'Source probe run 38002602251: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-09-22; confirms the code exists'}
 
   - id: eurostat_proj_25np
     provider: Eurostat

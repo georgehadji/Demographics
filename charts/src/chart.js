@@ -79,6 +79,7 @@ export const TEXT = {
     units: {
       "% of persons of known age": "% των ατόμων γνωστής ηλικίας",
       "% of the observed population": "% του παρατηρούμενου πληθυσμού",
+      "% of live births": "% των γεννήσεων ζώντων",
       "% of the 2016-2019 mean of the month": "% του μέσου όρου του μήνα 2016–2019",
       "% of the observed population in the base year": "% του παρατηρούμενου πληθυσμού του έτους βάσης",
       "deaths per person-year": "θάνατοι ανά ανθρωποέτος",

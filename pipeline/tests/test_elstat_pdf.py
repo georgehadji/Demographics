@@ -39,7 +39,7 @@ def test_the_recorded_2025_release(release):
     key = df["definition_id"] + " " + df["period"] + " " + df["sex"] + " " + df["age"]
     value = dict(zip(key + " " + df["geo_code"], df["value"], strict=True))
     status = dict(zip(key + " " + df["geo_code"], df["status"], strict=True))
-    assert (df.height, set(df["vintage"])) == (560, {"2026-10-01"})
+    assert (df.height, set(df["vintage"])) == (570, {"2026-10-01"})
     assert value["natural_change@v1 2025 total total EL"] == -56223
     assert status["deaths@v1 2023 total total EL"] == "revised"
     assert value["live_births@v1 2025 total total EL531"] == 719 + 109  # Κοζάνη + Γρεβενά
@@ -63,6 +63,8 @@ def test_the_recorded_2025_release(release):
     assert value["divorces@v1 2025 total total EL"] == 15853
     assert value["divorces_per_100_marriages@v1 2025 total total EL"] == 43.1
     assert value["divorced_persons@v1 2025 female 65+ EL"] == 636
+    assert value["live_births_outside_marriage_share@v1 2025 total total EL"] == 10.2
+    assert value["caesarean_share@v1 2025 total total EL"] == 62.8
     broken = df.filter(pl.col("break_in_series"))
     assert sorted(zip(broken["definition_id"], broken["period"], strict=True)) == [
         ("perinatal_mortality_rate@v1", "2019"),
@@ -92,6 +94,8 @@ def test_the_recorded_2025_release(release):
         ("Σύνολο 15.532 100,0", "Σύνολο 15.533 100,0", "Table 11 2024: total"),
         ("10+ έτη 10.314", "10+ έτη 10.315", "Table 11 2024: duration"),
         ("65+ 1.322 8,3", "65+ 1.323 8,3", "Table 12 2025: men \\+ women"),
+        ("9,2 9,8 9,7 9,9 10,2", "9,2 9,8 9,7 9,9 10,3", "Table 4 2025: share outside"),
+        ("2025 37,1 62,8", "2025 37,1 62,9", "Graph 3 2025: normal, caesarean"),
     ],
 )
 def test_a_release_that_does_not_add_up_stops(monkeypatch, old, new, error):

@@ -14,7 +14,7 @@ from __future__ import annotations
 import polars as pl
 
 from grpop import indicators
-from grpop.indicators import SERIES, Indicator, Series, _cells, _gind
+from grpop.indicators import SERIES, Indicator, Series, _cells, _find, _gind
 from grpop.provenance import Nature
 
 # VERIFIED for 2022-2024: since 2022 Eurostat counts only residents of Greece, ELSTAT's
@@ -82,6 +82,17 @@ CHECKS = {
             ("divorces_per_100_marriages@v1", "eurostat_demo_ndivind", "DIVMARPCT", 1),
         )
     },
+    # Δ9j. Eurostat NMARPCT against ELSTAT's printed share (demo_find updated 2026-09-30):
+    # equal in 2023. 2021-2022: 16.5 and 19.2 against 9.2 and 9.8; INFERENCE: Eurostat
+    # then counted births within a civil partnership as outside marriage, ELSTAT counts
+    # them inside ("εκτός γάμου/συμφώνου συμβίωσης"). 2024: 9.8 against 9.9; INFERENCE:
+    # births of residents abroad, which only ELSTAT counts (see above).
+    "live_births_outside_marriage_share@v1": _check(
+        "live_births_outside_marriage_share@v1",
+        _find("live_births_outside_marriage_share@v1", "NMARPCT"),
+        1,
+        "EL 2021-2022, EL 2024",
+    ),
     "neonatal_mortality_rate@v1": _check(
         "neonatal_mortality_rate@v1",
         Series(

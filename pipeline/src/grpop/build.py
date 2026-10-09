@@ -210,6 +210,9 @@ ELSTAT = {
     "divorces_elstat": _elstat(elstat_pdf.DIVORCES),
     "divorces_per_100_marriages_elstat": _elstat(elstat_pdf.DIVORCE_RATIO, 1),
     "divorced_persons_elstat": _elstat(elstat_pdf.DIVORCED),
+    # Δ9j: the shares ELSTAT prints, checked against its counts
+    "live_births_outside_marriage_share_elstat": _elstat(elstat_pdf.OUTSIDE_SHARE, 1),
+    "caesarean_share_elstat": _elstat(elstat_pdf.CAESAREAN_SHARE, 1),
 }
 # Δ9: derived values from several Eurostat tables (ADR 0009)
 DECOMPOSITION = {

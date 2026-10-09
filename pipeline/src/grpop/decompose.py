@@ -4,7 +4,8 @@ Births of a year are the sum over the mother's age of women times the age-specif
 fertility rate. Their change from the year before is split, age by age, into the part
 from the number of women (the change in women times the mean rate of the two years)
 and the part from fertility (the change in the rate times the mean number of women),
-which add up exactly to the change. Women are the mean of the female population on
+which add up exactly to the change: the decomposition of Kitagawa (1955),
+``kitagawa1955`` in data/bibliography. Women are the mean of the female population on
 1 January of the year and of the next; the open classes 10-14 and 50+ take the women
 aged 10-14 and 50-54, as Eurostat's own fertility rates do (VERIFIED: with these
 denominators demo_frate's rates give demo_gind's births to the unit for Greece in

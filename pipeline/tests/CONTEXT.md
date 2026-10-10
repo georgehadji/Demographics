@@ -28,6 +28,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_nowcast.py` | Births nowcast: the 2025 estimate by hand and against ELSTAT, ordered bounds, backtest errors shrinking with more months, empty once the total is published |
 | `test_excess_mortality.py` | Excess mortality: only months whose every day the weekly deaths cover, from the first month after the 2016-2019 baseline |
 | `test_life_expectancy.py` | Arriaga's decomposition: parts adding up, Greek 2023 values, a change away from LIFEXP stops |
+| `test_economic_dependency.py` | Economic old-age dependency ratio: the 2024 Ageing Report's Greek 2022 value, provenance of two tables, the 2021 survey break |
 | `test_migration.py` | Net migration by age: ages adding up to CNMIGRAT, young ages close to ELSTAT's flows (`migr_imm8` minus `migr_emi2`), a total away from CNMIGRAT stops |
 | `test_reproduction.py` | Reproduction rates: Greek values, the ratio to the total fertility rate against UN WPP, a year with an age missing from the life table left out |
 | `test_projections.py` | EUROPOP2025: baseline and scenarios, Greece's base year equals `demo_pjan`, unexplained or vanished base-year differences, unknown projection types |

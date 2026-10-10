@@ -97,6 +97,8 @@ export const TEXT = {
       "live births per 1000 women aged 15-49": "γεννήσεις ζώντων ανά 1.000 γυναίκες 15–49 ετών",
       "daughters per woman": "κόρες ανά γυναίκα",
       "per 100 persons aged 20 to the old-age threshold": "ανά 100 άτομα από 20 ετών ως το όριο γήρατος",
+      "per 100 employed persons aged 20-64": "ανά 100 απασχολούμενους 20–64 ετών",
+      "thousand persons": "χιλιάδες άτομα",
       "first marriages per person": "πρώτοι γάμοι ανά άτομο",
       marriages: "γάμοι",
       "civil partnerships": "σύμφωνα συμβίωσης",

@@ -24,11 +24,12 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_migr_emi2_el.json` | Eurostat `migr_emi2` (emigration by age), Greece, 2023-2024: input of `test_indicators.py` and `test_migration.py` |
 | `eurostat_hlth_cd_apr_el_cy.json` | Eurostat `hlth_cd_apr` (avoidable, preventable and treatable mortality, all causes), Greece and Cyprus, 2021-2023: input of `test_indicators.py` |
 | `eurostat_hlth_hlye_el_cy.json` | Eurostat `hlth_hlye` (healthy life years and the life expectancy they are part of), Greece and Cyprus, 2021-2024: input of `test_indicators.py` |
+| `eurostat_lfsa_pganws_el_cy.json` | Eurostat `lfsa_pganws` (Labour Force Survey: labour force and employed, ages 20-64 and 65+), Greece and Cyprus, 2021 onwards: input of `test_economic_dependency.py` |
 | `eurostat_demo_nind_el_cy.json` | Eurostat `demo_nind` (marriage indicators), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_ndivind_el_cy.json` | Eurostat `demo_ndivind` (divorce indicators), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_pjan_el_cy.json` | Eurostat `demo_pjan`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_pjan_totals_el_cy.json` | Eurostat `demo_pjan`, Greece and Cyprus, totals, 2019 onwards: input of `test_projection_accuracy.py` (the base years) |
-| `eurostat_demo_pjanbroad_el_cy.json` | Eurostat `demo_pjanbroad`, Greece and Cyprus: input of `test_indicators.py` |
+| `eurostat_demo_pjanbroad_el_cy.json` | Eurostat `demo_pjanbroad`, Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and `test_economic_dependency.py` |
 | `eurostat_demo_pjanind_el_cy.json` | Eurostat `demo_pjanind`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_r_d2jan_el5.json` | Eurostat `demo_r_d2jan`, EL, EL5 and some of its regions: input of `test_indicators.py` |
 | `eurostat_demo_r_mwk_ts_el.json` | Eurostat `demo_r_mwk_ts`, Greece, total deaths by week, 2015-W53 to 2026-W27: input of `test_indicators.py` and `test_excess_mortality.py` |

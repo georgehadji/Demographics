@@ -28,6 +28,7 @@ import polars as pl
 from grpop import (
     birth_order,
     decompose,
+    economic_dependency,
     groups,
     harmonize,
     indicators,
@@ -242,6 +243,10 @@ DECOMPOSITION = {
     ),
     # Δ9l
     "net_migration_by_age": Step(migration.SOURCES, migration.net_migration_by_age, 0),
+    # Δ9o
+    "economic_old_age_dependency": Step(
+        economic_dependency.SOURCES, economic_dependency.economic_old_age_dependency, 1
+    ),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

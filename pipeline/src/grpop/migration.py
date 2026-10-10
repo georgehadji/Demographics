@@ -11,7 +11,10 @@ open class k+ the population k-1 and k+ of 1 January of t. The ages add up to th
 population change minus the natural change, Eurostat's net migration (demo_gind
 CNMIGRAT): the build checks it to the person, except the years of ``KNOWN_DIFFERENCES``.
 By sex; years with an age missing, with deaths or population of unknown age, or whose
-open class changes, are left out.
+open class changes, are left out. Greece: 2007-2024, as births by sex (demo_fasec) start
+in 2007; population and deaths by age go back to 1985 (VERIFIED 2026-10-10). ponytail:
+the years before 2007 for both sexes need the total births of demo_gind; add them if a
+page needs a longer series.
 
 Against ELSTAT's flows by age (migr_imm8 minus migr_emi2, age in completed years), Greece
 2022-2024: within 41 persons at every age below 50 and within 104 below 70 (VERIFIED

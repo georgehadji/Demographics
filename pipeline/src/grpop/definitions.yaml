@@ -1122,3 +1122,49 @@
       υγείας, με τη θνησιμότητα και τα ποσοστά περιορισμού του έτους αναφοράς. Ο
       περιορισμός δηλώνεται από τους ίδιους στην έρευνα EU-SILC, γι' αυτό η σύγκριση
       μεταξύ χωρών εξαρτάται από το πώς κατανοείται η ερώτηση.
+
+- id: labour_force@v1
+  metric: labour_force
+  unit: thousand persons
+  title: Labour force
+  description: >-
+    People in private households who are employed or unemployed, annual average of the
+    Labour Force Survey, as Eurostat lfsa_pganws (ACT). An input of the economic
+    old-age dependency ratio; not published on its own.
+  el:
+    title: Εργατικό δυναμικό
+    description: >-
+      Τα άτομα ιδιωτικών νοικοκυριών που είναι απασχολούμενα ή άνεργα, μέσος όρος του
+      έτους της Έρευνας Εργατικού Δυναμικού.
+
+- id: employment@v1
+  metric: employment
+  unit: thousand persons
+  title: Employed persons
+  description: >-
+    People in private households who are employed, annual average of the Labour Force
+    Survey, as Eurostat lfsa_pganws (EMP). An input of the economic old-age dependency
+    ratio; not published on its own.
+  el:
+    title: Απασχολούμενοι
+    description: >-
+      Τα άτομα ιδιωτικών νοικοκυριών που είναι απασχολούμενα, μέσος όρος του έτους της
+      Έρευνας Εργατικού Δυναμικού.
+
+- id: economic_old_age_dependency_ratio@v1
+  metric: economic_old_age_dependency_ratio
+  unit: per 100 employed persons aged 20-64
+  title: Economic old-age dependency ratio
+  description: >-
+    People aged 65 and over who are not in the labour force per 100 employed people
+    aged 20-64: the population aged 65+ on 1 January (demo_pjanbroad) minus the labour
+    force aged 65+, over the employed aged 20-64 (Labour Force Survey, lfsa_pganws), as
+    the European Commission's Ageing Report defines it. Unlike the old-age dependency
+    ratio it counts who works, not only who is of working age.
+  el:
+    title: Οικονομικός δείκτης εξάρτησης ηλικιωμένων
+    description: >-
+      Τα άτομα 65 ετών και άνω που δεν ανήκουν στο εργατικό δυναμικό ανά 100
+      απασχολούμενους 20 έως 64 ετών, όπως τον ορίζει η Έκθεση για τη Γήρανση της
+      Ευρωπαϊκής Επιτροπής. Σε αντίθεση με τον δείκτη εξάρτησης ηλικιωμένων, μετρά
+      ποιοι εργάζονται, όχι μόνο ποιοι είναι σε ηλικία εργασίας.

@@ -36,13 +36,14 @@ RECORDED = {
     "eurostat_migr_emi2": "eurostat_migr_emi2_el.json",  # 2023-2024
     "eurostat_hlth_cd_apr": "eurostat_hlth_cd_apr_el_cy.json",  # all causes, 2021-2023
     "eurostat_hlth_hlye": "eurostat_hlth_hlye_el_cy.json",  # 2021-2024
+    "eurostat_lfsa_pganws": "eurostat_lfsa_pganws_el_cy.json",  # ACT, EMP; 20-64, 65+
     "eurostat_demo_fordagec": "eurostat_demo_fordagec_el_cy.json",  # 2021-2024
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
     "eurostat_demo_nind": "eurostat_demo_nind_el_cy.json",  # 2021-2024
     "eurostat_demo_ndivind": "eurostat_demo_ndivind_el_cy.json",  # 2021-2024
     "eurostat_yth_demo_030": "eurostat_yth_demo_030_el_cy.json",  # 2021-2025
-    "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",
+    "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",  # 2021 onwards
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
     "eurostat_proj_19np": "eurostat_proj_19np_el_cy.json",  # totals, 2019-2026
     "eurostat_proj_23np": "eurostat_proj_23np_el_cy.json",  # totals, 2022-2026

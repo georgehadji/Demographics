@@ -9,8 +9,9 @@ of t and P(a, t+1) on 1 January of t+1 (demo_pjan); in between D(a, t) of them d
 with the year's live births of the sex (demo_fasec) in place of P(-1, t), and for the
 open class k+ the population k-1 and k+ of 1 January of t. The ages add up to the
 population change minus the natural change, Eurostat's net migration (demo_gind
-CNMIGRAT): the build checks it to the person. By sex; years with an age missing, with
-deaths or population of unknown age, or whose open class changes, are left out.
+CNMIGRAT): the build checks it to the person, except the years of ``KNOWN_DIFFERENCES``.
+By sex; years with an age missing, with deaths or population of unknown age, or whose
+open class changes, are left out.
 
 Against ELSTAT's flows by age (migr_imm8 minus migr_emi2, age in completed years), Greece
 2022-2024: within 41 persons at every age below 50 and within 104 below 70 (VERIFIED
@@ -43,6 +44,13 @@ TRANSFORM_VERSION = "cohort_residual@0.1"
 _FLAGS = ["provisional", "break_in_series"]
 _DATES = ["vintage", "retrieved_at"]
 _KEY = ["sex", "period", "x"]
+# Years whose total differs from CNMIGRAT. demo_gind (updated 2026-09-30) gives Greece on
+# 1 January 2012 and 2013 11,086,406 and 11,003,615; demo_pjan 11,072,725 and 10,980,006.
+# CNMIGRAT 2011 and 2012 are demo_gind's own population change minus natural change
+# (-32,315 and -66,494); ours, from demo_pjan, -45,996 and -76,422. VERIFIED 2026-10-10.
+# INFERENCE: the two tables were revised at different times; cause UNKNOWN.
+# The check fails if a listed difference goes away.
+KNOWN_DIFFERENCES = frozenset({"2011", "2012"})
 
 
 def _read(series: Series, data: Data) -> pl.DataFrame:
@@ -122,11 +130,17 @@ def residual(data: Data) -> pl.DataFrame:
 
 def check_total(data: Data, totals: pl.DataFrame) -> None:
     """The ages add up to demo_gind CNMIGRAT, to the person. CNMIGRAT has no sex: only
-    the total of both sexes is checked."""
+    the total of both sexes is checked. Years in ``KNOWN_DIFFERENCES`` must differ."""
     official = reproduction._read(NET_MIGRATION, data).select("sex", "period", official="value")
-    off = totals.join(official, on=["sex", "period"]).filter(pl.col("value") != pl.col("official"))
+    compared = totals.join(official, on=["sex", "period"]).with_columns(
+        known=pl.col("period").is_in(list(KNOWN_DIFFERENCES))
+    )
+    off = compared.filter(pl.col("value") != pl.col("official"), ~pl.col("known"))
     if not off.is_empty():
         raise ValueError(f"{DEFINITION}: ages do not add up to CNMIGRAT: {off.head(5).rows()}")
+    gone = compared.filter(pl.col("value") == pl.col("official"), pl.col("known"))
+    if not gone.is_empty():
+        raise ValueError(f"{DEFINITION}: listed difference gone: {gone['period'].to_list()}")
 
 
 def net_migration_by_age(data: Data) -> pl.DataFrame:

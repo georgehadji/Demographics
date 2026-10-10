@@ -562,7 +562,7 @@ sources:
     licence: eurostat
     used_for: [simulator_reproduction_test]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-10, evidence: 'Source probe run 38082354226: HTTP 200, JSON-stat with the latest Greek baseline value, dataset updated 2026-05-20; confirms the code exists'}
 
   - id: eurostat_proj_25naasmr
     provider: Eurostat
@@ -575,7 +575,7 @@ sources:
     licence: eurostat
     used_for: [simulator_reproduction_test]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-10, evidence: 'Source probe run 38082354226: HTTP 200, JSON-stat with the latest Greek baseline value, dataset updated 2026-06-11; confirms the code exists'}
 
   - id: eurostat_proj_25nanmig
     provider: Eurostat
@@ -588,7 +588,7 @@ sources:
     licence: eurostat
     used_for: [simulator_reproduction_test]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-10, evidence: 'Source probe run 38082354226: HTTP 200, JSON-stat with the latest Greek baseline value, dataset updated 2026-06-11; confirms the code exists'}
 
   - id: eurostat_proj_19np
     provider: Eurostat

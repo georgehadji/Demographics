@@ -496,6 +496,19 @@ sources:
     phase: 2
     verification: {status: verified, checked_at: 2026-10-09, evidence: 'Source probe run 38002602251: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-09-22; confirms the code exists'}
 
+  - id: eurostat_hlth_cd_apr
+    provider: Eurostat
+    dataset_code: hlth_cd_apr
+    title: Treatable and preventable mortality of residents by cause and sex
+    title_el: "Θεραπεύσιμη και αποτρέψιμη θνησιμότητα των κατοίκων κατά αιτία και φύλο"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_cd_apr?format=JSON&lang=EN&geo=EL&sex=T&icd10=TOTAL&mortalit=TOTAL&unit=RT&lastTimePeriod=1
+    licence: eurostat
+    used_for: [avoidable_mortality]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_proj_25np
     provider: Eurostat
     dataset_code: proj_25np

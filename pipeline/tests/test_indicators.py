@@ -33,6 +33,7 @@ RECORDED = {
     "eurostat_demo_mager": "eurostat_demo_mager_el.json",  # 2023-2024
     "eurostat_migr_imm8": "eurostat_migr_imm8_el.json",  # 2023-2024
     "eurostat_migr_emi2": "eurostat_migr_emi2_el.json",  # 2023-2024
+    "eurostat_hlth_cd_apr": "eurostat_hlth_cd_apr_el_cy.json",  # all causes, 2021-2023
     "eurostat_demo_fordagec": "eurostat_demo_fordagec_el_cy.json",  # 2021-2024
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
@@ -183,3 +184,19 @@ def test_incomplete_ages_are_not_computed(name):
     out = ind.formula({"population": gap})
     assert out.filter(pl.col("geo_code") == "EL").is_empty()
     assert not out.filter(pl.col("geo_code") == "CY").is_empty()
+
+
+def test_preventable_and_treatable_add_up_to_avoidable():
+    """A cause on both lists counts half in each, so the two rates add up to the
+    avoidable rate within its rounding (two decimals): it fails if a part is read from
+    the wrong cells."""
+    read = {
+        n: indicators.SERIES[f"{n}_mortality_rate"].read(data({"eurostat_hlth_cd_apr"}))
+        for n in ("avoidable", "preventable", "treatable")
+    }
+    key = ["geo_code", "period", "sex"]
+    parts = read["preventable"].join(read["treatable"], on=key, suffix="_t")
+    both = read["avoidable"].join(parts, on=key, suffix="_p")
+    assert both.height == 2 * 3 * 3  # EL and CY, 2021-2023, three sexes
+    off = both.select((pl.col("value") - pl.col("value_p") - pl.col("value_t")).abs().max())
+    assert off.item() <= 0.011

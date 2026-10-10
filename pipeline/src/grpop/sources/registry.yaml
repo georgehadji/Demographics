@@ -520,7 +520,7 @@ sources:
     licence: eurostat
     used_for: [healthy_life_years]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-10, evidence: 'Source probe run 38044959651: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-07-17; confirms the code exists'}
 
   - id: eurostat_proj_25np
     provider: Eurostat

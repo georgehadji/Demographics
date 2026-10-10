@@ -43,6 +43,10 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_yth_demo_030_el_cy.json` | Eurostat `yth_demo_030` (age of leaving the parental household), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` |
 | `gisco_nuts2_handwritten.geojson` | Hand-written GISCO-like GeoJSON (squares, not boundaries; GISCO's Greek names): `test_gisco.py`, `test_eurostat.py`, `test_build.py` |
 | `eurostat_proj_25np_el_cy_pl.json` | Eurostat `proj_25np` (EUROPOP2025), Greece, Cyprus and Poland, 2025-2026, every projection type: input of `test_projections.py` |
+| `eurostat_proj_25np_el_bsl.json` | Eurostat `proj_25np`, Greece, baseline, 2026-2031: input of `test_cohort.py` |
+| `eurostat_proj_25naasfr_el.json` | Eurostat `proj_25naasfr` (EUROPOP2025 assumption: fertility rates by age reached), Greece, baseline, 2026-2030: input of `test_cohort.py` |
+| `eurostat_proj_25naasmr_el.json` | Eurostat `proj_25naasmr` (EUROPOP2025 assumption: mortality rates by sex by age reached), Greece, baseline, 2026-2030: input of `test_cohort.py` |
+| `eurostat_proj_25nanmig_el.json` | Eurostat `proj_25nanmig` (EUROPOP2025 assumption: net migration by sex by age reached), Greece, baseline, 2026-2030: input of `test_cohort.py` |
 | `eurostat_proj_19np_el_cy.json` | Eurostat `proj_19np` (EUROPOP2019), Greece and Cyprus, totals, 2019-2026, every projection type: input of `test_projection_accuracy.py` |
 | `eurostat_proj_23np_el_cy.json` | Eurostat `proj_23np` (EUROPOP2023), Greece and Cyprus, totals, 2022-2026, every projection type: input of `test_projection_accuracy.py` |
 | `un_wpp2024_ppp_poptot.xlsx` | UN WPP 2024 probabilistic total population (PPP/POPTOT), the published workbook (CC BY 3.0 IGO): input of `test_un_wpp.py` |

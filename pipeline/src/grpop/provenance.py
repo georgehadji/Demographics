@@ -137,7 +137,9 @@ class ObservationSchema(pa.DataFrameModel):
 
         def side(name: str) -> pl.LazyFrame:
             bounds = lf.filter(pl.col("interval").str.ends_with(f"_{name}"))
-            return bounds.select(*key, level=level, **{name: pl.col("value"), f"has_{name}": True})
+            return bounds.select(
+                *key, level=level, **{name: pl.col("value"), f"has_{name}": pl.lit(True)}
+            )
 
         joined = (
             lf.with_columns(level=level)

@@ -551,6 +551,45 @@ sources:
       dataset updated 2026-06-11.
     verification: {status: verified, checked_at: 2026-09-28, evidence: 'Source probe run 36432199610: HTTP 200, JSON-stat with Greek values; confirms the code exists'}
 
+  - id: eurostat_proj_25naasfr
+    provider: Eurostat
+    dataset_code: proj_25naasfr
+    title: EUROPOP2025 assumptions for fertility rates by age and type of projection
+    title_el: "EUROPOP2025: υποθέσεις για τους δείκτες γονιμότητας κατά ηλικία και τύπο προβολής"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25naasfr?format=JSON&lang=EN&geo=EL&projection=BSL&age=Y30&lastTimePeriod=1
+    licence: eurostat
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_proj_25naasmr
+    provider: Eurostat
+    dataset_code: proj_25naasmr
+    title: EUROPOP2025 assumptions for mortality rates by age, sex and type of projection
+    title_el: "EUROPOP2025: υποθέσεις για τους δείκτες θνησιμότητας κατά ηλικία, φύλο και τύπο προβολής"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25naasmr?format=JSON&lang=EN&geo=EL&projection=BSL&sex=F&age=Y80&lastTimePeriod=1
+    licence: eurostat
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    verification: {status: unverified}
+
+  - id: eurostat_proj_25nanmig
+    provider: Eurostat
+    dataset_code: proj_25nanmig
+    title: EUROPOP2025 assumptions for net migration by age, sex and type of projection
+    title_el: "EUROPOP2025: υποθέσεις για την καθαρή μετανάστευση κατά ηλικία, φύλο και τύπο προβολής"
+    access: api
+    probe_kind: eurostat_jsonstat
+    probe_url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/proj_25nanmig?format=JSON&lang=EN&geo=EL&projection=BSL&sex=T&age=TOTAL&lastTimePeriod=1
+    licence: eurostat
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    verification: {status: unverified}
+
   - id: eurostat_proj_19np
     provider: Eurostat
     dataset_code: proj_19np

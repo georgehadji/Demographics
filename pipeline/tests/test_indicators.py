@@ -45,6 +45,11 @@ RECORDED = {
     "eurostat_yth_demo_030": "eurostat_yth_demo_030_el_cy.json",  # 2021-2025
     "eurostat_demo_pjanbroad": "eurostat_demo_pjanbroad_el_cy.json",  # 2021 onwards
     "eurostat_proj_25np": "eurostat_proj_25np_el_cy_pl.json",  # EL, CY, PL; 2025-2026
+    # Greece's baseline, 2026-2030 (test_cohort: with proj_25np_el_bsl, 2026-2031)
+    **{
+        f"eurostat_proj_25n{t}": f"eurostat_proj_25n{t}_el.json"
+        for t in ("aasfr", "aasmr", "anmig")
+    },
     "eurostat_proj_19np": "eurostat_proj_19np_el_cy.json",  # totals, 2019-2026
     "eurostat_proj_23np": "eurostat_proj_23np_el_cy.json",  # totals, 2022-2026
     "eurostat_demo_mlifetable": "eurostat_demo_mlifetable_el_cy.json",  # Mx, qx, ex, lx, Tx
@@ -64,10 +69,11 @@ RECORDED = {
 }
 
 
-def data(source_ids):
+def data(source_ids, files=None):
+    """Snapshots of the recorded responses; ``files`` replaces some, by source id."""
     out = {}
     for source_id in source_ids:
-        raw = (FIXTURES / RECORDED[source_id]).read_bytes()
+        raw = (FIXTURES / {**RECORDED, **(files or {})}[source_id]).read_bytes()
         snap = Snapshot(
             hashlib.sha256(raw).hexdigest(),
             source_id,

@@ -34,10 +34,11 @@ def flag_meaning(flag: str) -> tuple[bool, bool, bool]:
 
     Letters before "|" are status flags; after it comes "N" (not for publication) or
     "C" (confidential), which only occur with a missing value. Only the letters seen
-    in the ingested datasets are accepted: b, e, p, i (imputed, counted as estimated).
+    in the ingested datasets are accepted: b, e, p, i (imputed, counted as estimated)
+    and u (low reliability, whose value ``to_observations`` leaves out).
     """
     letters, _, confidentiality = flag.partition("|")
-    unknown = (set(letters) - set("bepi")) | (set(confidentiality) - {"N", "C"})
+    unknown = (set(letters) - set("bepiu")) | (set(confidentiality) - {"N", "C"})
     if unknown:
         raise ValueError(f"unknown Eurostat flag {flag!r}")
     return "p" in letters, bool(set(letters) & {"e", "i"}), "b" in letters
@@ -109,7 +110,9 @@ def to_observations(
     than one category (e.g. ``{"indic_de": "TOTFERRT"}``). ``nature`` is the nature of
     an unflagged value; an estimated flag turns ``observed`` into ``official_estimate``.
     ``geo_prefix`` keeps only the geo codes that start with it, before the flags are
-    read: a flag is translated, or raises, only where a value is used.
+    read: a flag is translated, or raises, only where a value is used. A value Eurostat
+    flags as of low reliability ("u") is not published: its value is null and its
+    status not available (editor's decision, 2026-10-10; hlth_hlye DE 2022).
     """
     if hashlib.sha256(data).hexdigest() != snapshot.sha256:
         raise ValueError("data does not belong to this snapshot")
@@ -148,7 +151,9 @@ def to_observations(
         period=pl.col("time"),
         sex=pl.col("sex").replace_strict(_SEX),
         age=pl.col("age").replace_strict({c: age(c) for c in df["age"].unique().to_list()}),
-        value=pl.col("value"),
+        value=pl.when(pl.col("flag").str.contains("u", literal=True))
+        .then(None)
+        .otherwise(pl.col("value")),
         unit=pl.lit(definition.unit),
         source=pl.lit(source.provider),
         dataset_code=pl.lit(source.dataset_code),
@@ -159,7 +164,7 @@ def to_observations(
         nature=pl.when(estimated)
         .then(pl.lit(estimated_nature.value))
         .otherwise(pl.lit(nature.value)),
-        status=pl.when(pl.col("value").is_null())
+        status=pl.when(pl.col("value").is_null() | pl.col("flag").str.contains("u", literal=True))
         .then(pl.lit(Status.NOT_AVAILABLE.value))
         .when(provisional)
         .then(pl.lit(Status.PROVISIONAL.value))

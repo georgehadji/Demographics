@@ -23,13 +23,19 @@ from grpop.indicators import Data, Series
 from grpop.provenance import AGE_TOTAL, Nature, Sex, Status, validate_observations
 
 GEO = "EL"
-POPULATION = Series("eurostat_demo_pjanbroad", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE)
-LFS = "eurostat_lfsa_pganws"
-ACTIVE = Series(
-    LFS, "labour_force@v1", Nature.OFFICIAL_ESTIMATE, select={"citizen": "TOTAL", "wstatus": "ACT"}
+POPULATION = Series(
+    "eurostat_demo_pjanbroad", "population_1jan@v1", Nature.OFFICIAL_ESTIMATE, geo_prefix=GEO
 )
-EMPLOYED = Series(
-    LFS, "employment@v1", Nature.OFFICIAL_ESTIMATE, select={"citizen": "TOTAL", "wstatus": "EMP"}
+LFS = "eurostat_lfsa_pganws"
+ACTIVE, EMPLOYED = (
+    Series(
+        LFS,
+        definition_id,
+        Nature.OFFICIAL_ESTIMATE,
+        select={"citizen": "TOTAL", "wstatus": code},
+        geo_prefix=GEO,
+    )
+    for definition_id, code in (("labour_force@v1", "ACT"), ("employment@v1", "EMP"))
 )
 SOURCES = frozenset({POPULATION.source_id, LFS})
 DEFINITION = "economic_old_age_dependency_ratio@v1"

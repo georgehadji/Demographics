@@ -9,7 +9,8 @@ import polars as pl
 import pytest
 
 from grpop import harmonize, indicators
-from grpop.provenance import validate_observations
+from grpop.indicators import Series
+from grpop.provenance import Nature, validate_observations
 from grpop.snapshots import Snapshot
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -34,6 +35,7 @@ RECORDED = {
     "eurostat_migr_imm8": "eurostat_migr_imm8_el.json",  # 2023-2024
     "eurostat_migr_emi2": "eurostat_migr_emi2_el.json",  # 2023-2024
     "eurostat_hlth_cd_apr": "eurostat_hlth_cd_apr_el_cy.json",  # all causes, 2021-2023
+    "eurostat_hlth_hlye": "eurostat_hlth_hlye_el_cy.json",  # 2021-2024
     "eurostat_demo_fordagec": "eurostat_demo_fordagec_el_cy.json",  # 2021-2024
     "eurostat_demo_mlexpec": "eurostat_demo_mlexpec_el_cy.json",
     "eurostat_demo_minfind": "eurostat_demo_minfind_el_cy.json",
@@ -200,3 +202,28 @@ def test_preventable_and_treatable_add_up_to_avoidable():
     assert both.height == 2 * 3 * 3  # EL and CY, 2021-2023, three sexes
     off = both.select((pl.col("value") - pl.col("value_p") - pl.col("value_t")).abs().max())
     assert off.item() <= 0.011
+
+
+@pytest.mark.parametrize("age", ["0", "65"])
+def test_healthy_life_years_are_part_of_their_own_life_expectancy(age):
+    """hlth_hlye gives the life expectancy its healthy years are part of; it is not
+    demo_mlexpec's: Greece 2021-2023 up to 0.2 apart, Cyprus up to 0.7 (the comment
+    in indicators.SERIES)."""
+    d = data({"eurostat_hlth_hlye", "eurostat_demo_mlexpec"})
+    healthy = indicators.SERIES[f"healthy_life_years_{age}"].read(d)
+    own = Series(
+        "eurostat_hlth_hlye",
+        "life_expectancy@v1",
+        Nature.OFFICIAL_ESTIMATE,
+        select={"hlth_hle": f"LE_Y{age}", "unit": "YR"},
+        fixed={"age": age},
+    ).read(d)
+    official = indicators.SERIES[f"life_expectancy_{age}"].read(d)
+    key = ["geo_code", "period", "sex"]
+    both = own.join(official, on=key, suffix="_o").join(healthy, on=key, suffix="_h")
+    assert both.height >= 2 * 3 * 3  # EL and CY, three sexes, three years or more
+    assert (both["value_h"] < both["value"]).all()
+    off = (both["value"] - both["value_o"]).abs()
+    greek = both["geo_code"] == "EL"
+    assert off.filter(greek).max() <= 0.2 + 1e-9
+    assert off.max() <= 0.7 + 1e-9

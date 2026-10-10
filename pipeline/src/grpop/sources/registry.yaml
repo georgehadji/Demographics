@@ -507,7 +507,7 @@ sources:
     licence: eurostat
     used_for: [avoidable_mortality]
     phase: 2
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-10, evidence: 'Source probe run 38042940849: HTTP 200, JSON-stat with the latest Greek value, dataset updated 2026-03-17; confirms the code exists'}
 
   - id: eurostat_proj_25np
     provider: Eurostat

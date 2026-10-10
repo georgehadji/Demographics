@@ -1049,3 +1049,56 @@
       οποία αθροίζουν οι ηλικίες, δεν είναι καταμέτρηση μεταναστών: περιέχει και τις
       στατιστικές προσαρμογές των εκτιμήσεων πληθυσμού, που στις μεγάλες ηλικίες
       μπορεί να ξεπερνούν την ίδια τη μετανάστευση.
+
+- id: avoidable_mortality_rate@v1
+  metric: avoidable_mortality_rate
+  unit: deaths under 75 per 100000, age-standardised
+  title: Avoidable mortality
+  description: >-
+    Deaths before age 75 from causes that are avoidable through public health and
+    prevention or through timely and effective health care, per 100,000 inhabitants,
+    standardised to the European standard population (2013), as Eurostat hlth_cd_apr
+    (TOTAL). The causes are the joint OECD/Eurostat lists of 2019; a cause in both is
+    counted half in each, so the two add up to this rate.
+  el:
+    title: Αποτρέψιμη θνησιμότητα
+    description: >-
+      Οι θάνατοι πριν από τα 75 από αιτίες που μπορούν να αποφευχθούν με τη δημόσια
+      υγεία και την πρόληψη ή με έγκαιρη και αποτελεσματική ιατρική φροντίδα, ανά
+      100.000 κατοίκους, τυποποιημένοι στον ευρωπαϊκό πρότυπο πληθυσμό. Οι αιτίες είναι
+      οι κοινοί κατάλογοι του ΟΟΣΑ και της Eurostat (2019).
+
+- id: preventable_mortality_rate@v1
+  metric: preventable_mortality_rate
+  unit: deaths under 75 per 100000, age-standardised
+  title: Preventable mortality
+  description: >-
+    Deaths before age 75 from causes that can mainly be avoided through effective public
+    health and primary prevention (before the onset of a disease or injury), per 100,000
+    inhabitants, standardised to the European standard population (2013), as Eurostat
+    hlth_cd_apr (PRVT), on the joint OECD/Eurostat list of 2019.
+  el:
+    title: Θνησιμότητα που προλαμβάνεται
+    description: >-
+      Οι θάνατοι πριν από τα 75 από αιτίες που μπορούν κυρίως να αποφευχθούν με
+      αποτελεσματική δημόσια υγεία και πρωτογενή πρόληψη (πριν από την εμφάνιση της
+      νόσου ή του τραυματισμού), ανά 100.000 κατοίκους, τυποποιημένοι στον ευρωπαϊκό
+      πρότυπο πληθυσμό.
+
+- id: treatable_mortality_rate@v1
+  metric: treatable_mortality_rate
+  unit: deaths under 75 per 100000, age-standardised
+  title: Treatable mortality
+  description: >-
+    Deaths before age 75 from causes that can mainly be avoided through timely and
+    effective health care, including secondary prevention and treatment (after the onset
+    of a disease), per 100,000 inhabitants, standardised to the European standard
+    population (2013), as Eurostat hlth_cd_apr (TRT), on the joint OECD/Eurostat list of
+    2019.
+  el:
+    title: Θνησιμότητα που θεραπεύεται
+    description: >-
+      Οι θάνατοι πριν από τα 75 από αιτίες που μπορούν κυρίως να αποφευχθούν με έγκαιρη
+      και αποτελεσματική ιατρική φροντίδα, μαζί με τη δευτερογενή πρόληψη και τη
+      θεραπεία (μετά την εμφάνιση της νόσου), ανά 100.000 κατοίκους, τυποποιημένοι στον
+      ευρωπαϊκό πρότυπο πληθυσμό.

@@ -22,6 +22,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_demo_mager_el.json` | Eurostat `demo_mager` (deaths by age reached), Greece, 2023-2024: input of `test_migration.py` |
 | `eurostat_migr_imm8_el.json` | Eurostat `migr_imm8` (immigration by age), Greece, 2023-2024: input of `test_indicators.py` and `test_migration.py` |
 | `eurostat_migr_emi2_el.json` | Eurostat `migr_emi2` (emigration by age), Greece, 2023-2024: input of `test_indicators.py` and `test_migration.py` |
+| `eurostat_hlth_cd_apr_el_cy.json` | Eurostat `hlth_cd_apr` (avoidable, preventable and treatable mortality, all causes), Greece and Cyprus, 2021-2023: input of `test_indicators.py` |
 | `eurostat_demo_nind_el_cy.json` | Eurostat `demo_nind` (marriage indicators), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_ndivind_el_cy.json` | Eurostat `demo_ndivind` (divorce indicators), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_pjan_el_cy.json` | Eurostat `demo_pjan`, Greece and Cyprus: input of `test_indicators.py` |

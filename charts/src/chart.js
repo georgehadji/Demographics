@@ -93,6 +93,7 @@ export const TEXT = {
       "per 1000 total births": "ανά 1.000 συνολικές γεννήσεις (ζώντων και νεκρών)",
       "per 100 marriages": "ανά 100 γάμους",
       "deaths per 100 live births": "θάνατοι ανά 100 γεννήσεις ζώντων",
+      "deaths under 75 per 100000, age-standardised": "θάνατοι κάτω των 75 ανά 100.000, τυποποιημένοι κατά ηλικία",
       "live births per 1000 women aged 15-49": "γεννήσεις ζώντων ανά 1.000 γυναίκες 15–49 ετών",
       "daughters per woman": "κόρες ανά γυναίκα",
       "per 100 persons aged 20 to the old-age threshold": "ανά 100 άτομα από 20 ετών ως το όριο γήρατος",

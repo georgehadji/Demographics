@@ -623,6 +623,16 @@ SERIES = {
             "emigration": "eurostat_migr_emi2",
         }.items()
     },
+    # Δ9m: avoidable mortality and its two parts, all causes, every country
+    **{
+        f"{name}_mortality_rate": Series(
+            "eurostat_hlth_cd_apr",
+            f"{name}_mortality_rate@v1",
+            Nature.OFFICIAL_ESTIMATE,
+            select={"mortalit": code, "icd10": "TOTAL", "unit": "RT"},
+        )
+        for name, code in {"avoidable": "TOTAL", "preventable": "PRVT", "treatable": "TRT"}.items()
+    },
     # Greek regional series (EL and NUTS 1-3 as each table has them). #6 has no regional
     # table: demo_r_find2 has no mean age at first birth. #2 and #5 are published, not
     # derived, here: VERIFIED 2026-09-29 that they cannot be reproduced from the

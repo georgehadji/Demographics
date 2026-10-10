@@ -633,6 +633,20 @@ SERIES = {
         )
         for name, code in {"avoidable": "TOTAL", "preventable": "PRVT", "treatable": "TRT"}.items()
     },
+    # Δ9n: healthy life years at birth and at 65, every country. hlth_hlye's own life
+    # expectancy (LE_Y0, LE_Y65) is not demo_mlexpec's: Greece 2021-2023 up to 0.2 years
+    # apart, Cyprus up to 0.7 (VERIFIED 2026-10-10, test_indicators.py). INFERENCE: the
+    # healthy years are computed from an earlier version of the life tables.
+    **{
+        f"healthy_life_years_{age}": Series(
+            "eurostat_hlth_hlye",
+            "healthy_life_years@v1",
+            Nature.OFFICIAL_ESTIMATE,
+            select={"hlth_hle": f"HLY_Y{age}", "unit": "YR"},
+            fixed={"age": age},
+        )
+        for age in ("0", "65")
+    },
     # Greek regional series (EL and NUTS 1-3 as each table has them). #6 has no regional
     # table: demo_r_find2 has no mean age at first birth. #2 and #5 are published, not
     # derived, here: VERIFIED 2026-09-29 that they cannot be reproduced from the

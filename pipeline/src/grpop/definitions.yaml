@@ -1102,3 +1102,23 @@
       και αποτελεσματική ιατρική φροντίδα, μαζί με τη δευτερογενή πρόληψη και τη
       θεραπεία (μετά την εμφάνιση της νόσου), ανά 100.000 κατοίκους, τυποποιημένοι στον
       ευρωπαϊκό πρότυπο πληθυσμό.
+
+- id: healthy_life_years@v1
+  metric: healthy_life_years
+  unit: years
+  title: Healthy life years
+  description: >-
+    Number of further years a person of the exact age (the age column; 0 is at birth)
+    would live without limitation in usual activities because of health problems, at
+    the mortality rates and the shares reporting such a limitation of the reference
+    year, as Eurostat hlth_hlye. The limitation is self-reported
+    in the EU-SILC survey (the Global Activity Limitation Indicator), so comparisons
+    between countries depend on how the question is understood.
+  el:
+    title: Έτη υγιούς ζωής
+    description: >-
+      Ο αριθμός ετών που θα ζούσε ακόμη ένα άτομο μιας ακριβούς ηλικίας (0 σημαίνει
+      στη γέννηση) χωρίς περιορισμό στις συνήθεις δραστηριότητες λόγω προβλήματος
+      υγείας, με τη θνησιμότητα και τα ποσοστά περιορισμού του έτους αναφοράς. Ο
+      περιορισμός δηλώνεται από τους ίδιους στην έρευνα EU-SILC, γι' αυτό η σύγκριση
+      μεταξύ χωρών εξαρτάται από το πώς κατανοείται η ερώτηση.

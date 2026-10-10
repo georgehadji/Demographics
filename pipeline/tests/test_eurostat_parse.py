@@ -40,6 +40,7 @@ def parse(data, tmp_path, source_id="eurostat_demo_pjan", **kw):
         ("bp", (True, False, True)),
         ("ep", (True, True, False)),
         ("bep", (True, True, True)),
+        ("bu", (False, False, True)),  # hlth_hlye DE 2022; the value is left out
         ("|N", (False, False, False)),
         ("b|N", (False, False, True)),
         ("|C", (False, False, False)),  # NUTS 2 datasets, 2026-09-29
@@ -49,7 +50,7 @@ def test_every_ingested_flag_has_a_meaning(flag, meaning):
     assert eurostat.flag_meaning(flag) == meaning
 
 
-@pytest.mark.parametrize("flag", ["c", "d", "u", "|X"])
+@pytest.mark.parametrize("flag", ["c", "d", "f", "|X"])
 def test_unknown_flag_fails(flag):
     with pytest.raises(ValueError, match="unknown Eurostat flag"):
         eurostat.flag_meaning(flag)
@@ -107,6 +108,17 @@ def test_flags_are_read_only_where_a_value_is_kept(tmp_path):
     assert set(parse(data, tmp_path, geo_prefix="EL")["geo_code"]) == {"EL"}
     with pytest.raises(ValueError, match="unknown Eurostat flag 'f'"):
         parse(data, tmp_path, geo_prefix="CY")
+
+
+def test_a_value_of_low_reliability_is_left_out(tmp_path):
+    doc = json.loads(PJAN)
+    doc["status"] = {"0": "bu"}  # the first cell
+    obs = parse(json.dumps(doc).encode(), tmp_path)
+    before = parse(PJAN, tmp_path)
+    left_out = obs.filter(obs["status"] == "not_available")
+    assert obs["value"].null_count() == before["value"].null_count() + 1
+    assert left_out.height == before.filter(before["status"] == "not_available").height + 1
+    assert left_out["break_in_series"].any()
 
 
 def test_multi_category_dimension_must_be_selected(tmp_path):

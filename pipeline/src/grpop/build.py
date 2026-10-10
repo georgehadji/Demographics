@@ -27,6 +27,7 @@ import polars as pl
 
 from grpop import (
     birth_order,
+    cohort,
     decompose,
     economic_dependency,
     groups,
@@ -155,12 +156,21 @@ GEOMETRY = {
         lambda data: gisco.greek_regions(*data["gisco_nuts2_2024_geo"], level=2),
     ),
 }
+
+
+def _gated(data: indicators.Data) -> pl.DataFrame:
+    """EUROPOP2025, once our cohort-component step reproduces its baseline for Greece
+    (the engine's gate, PROPOSAL §5.2)."""
+    cohort.reproduce(data)
+    return projections.read(data)
+
+
 # EUROPOP2025 (ADR 0008): Greece in full detail; totals of every area, whose baseline
 # is checked against the observed population in its base year.
 PROJECTIONS = {
     "population_projection": Step(
-        frozenset({projections.SOURCE}),
-        lambda data: projections.read(data).filter(pl.col("geo_code") == "EL"),
+        frozenset({projections.SOURCE}) | cohort.SOURCES,
+        lambda data: _gated(data).filter(pl.col("geo_code") == "EL"),
     ),
     # UN WPP 2024, Greece and every peer group member, checked against demo_pjan.
     "population_projection_wpp": Step(

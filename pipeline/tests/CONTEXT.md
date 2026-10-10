@@ -32,6 +32,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_migration.py` | Net migration by age: ages adding up to CNMIGRAT, young ages close to ELSTAT's flows (`migr_imm8` minus `migr_emi2`), a total away from CNMIGRAT stops |
 | `test_reproduction.py` | Reproduction rates: Greek values, the ratio to the total fertility rate against UN WPP, a year with an age missing from the life table left out |
 | `test_projections.py` | EUROPOP2025: baseline and scenarios, Greece's base year equals `demo_pjan`, unexplained or vanished base-year differences, unknown projection types |
+| `test_cohort.py` | Cohort-component step: the recorded Greek baseline 2027-2031 reproduced, Eurostat's share of boys, another mortality not reproduced, without births, deaths and migration cohorts only age |
 | `test_un_wpp.py` | UN WPP 2024: Greece's median and ordered bounds, ISO2 mapping, years, the check against `demo_pjan` |
 | `test_provenance.py` | Every rule of the provenance contract |
 | `test_registry.py` | Registry validation: licence keys and terms, verification evidence, duplicate ids, unknown fields |

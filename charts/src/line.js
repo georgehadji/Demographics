@@ -15,6 +15,7 @@ import { style } from "./grammar.js";
 // Plot's 10px font.
 const LABEL_CHAR = 6;
 const LABEL_GAP = 12;
+const MARGIN_LEFT = 40; // Plot's default
 // Radius, in pixels, of the invisible point that shows a value's tooltip under the pointer.
 export const TIP_RADIUS = 5;
 const BANDS = [
@@ -144,9 +145,11 @@ function draw(all, s, options) {
     }
   }
   let domain = {};
+  let marginLeft;
   const plot = (extra) =>
     Plot.plot({
       ...frame(s, options),
+      marginLeft,
       marginRight: Math.max(0, ...labels.map((l) => l.name.length)) * LABEL_CHAR + 12,
       x: { type: "utc", label: null },
       y: { label: s.unit, tickFormat: s.format, ...domain },
@@ -154,6 +157,8 @@ function draw(all, s, options) {
     });
   const y = plot([]).scale("y");
   domain = { domain: y.domain }; // labels must not move the scale they were placed on
+  // room for the longest tick label (10.372.335 would be cut at Plot's default 40)
+  marginLeft = Math.max(MARGIN_LEFT, ...y.domain.map((v) => s.format(v).length * LABEL_CHAR + 12));
   return plot(dodge(labels, y).map((l) => Plot.text([l], { x: "x", y: "y", text: "name", fill: l.fill, dx: 6, textAnchor: "start" })));
 }
 

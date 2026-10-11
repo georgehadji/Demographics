@@ -233,3 +233,15 @@ test("a new nature continues from the last available value, not from a gap", () 
   const dashed = paths(chart(rows).figure).filter((g) => g.getAttribute("stroke-dasharray") === tokens["stroke-dash-projected"]);
   assert.match(dashed[0].querySelector("path").getAttribute("d"), /^M[^M]+L[^M]+$/);
 });
+
+test("the y axis leaves room for its longest tick label", () => {
+  const big = [row("EL", "2025", 10372335), row("EL", "2100", 5134042)];
+  const svg = chart(big).figure.querySelector("svg");
+  const labels = svg.querySelector('g[data-mark="y-axis tick label"]');
+  const dx = (el) => +el.getAttribute("transform").match(/translate\((-?[\d.]+)/)[1];
+  const texts = [...labels.querySelectorAll("text")];
+  const x = dx(labels) + dx(texts[0]); // right edge of the right-aligned labels
+  const longest = Math.max(...texts.map((t) => t.textContent.length));
+  assert.equal(longest, "10.000.000".length);
+  assert.ok(x >= longest * 6, `labels end at ${x}px, ${longest} characters need ${longest * 6}`);
+});

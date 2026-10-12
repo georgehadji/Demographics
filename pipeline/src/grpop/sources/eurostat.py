@@ -41,6 +41,10 @@ def _check(entry: SourceEntry, data: bytes) -> None:
         if not data.startswith(b"%PDF"):
             raise ValueError(f"{entry.id}: response is not a PDF file")
         return
+    if entry.ingest == "gzip":
+        if not data.startswith(bytes.fromhex("1f8b")):  # gzip magic number
+            raise ValueError(f"{entry.id}: response is not a gzip file")
+        return
     doc = json.loads(data)
     if entry.ingest == "geojson":
         if doc.get("type") != "FeatureCollection" or not doc.get("features"):

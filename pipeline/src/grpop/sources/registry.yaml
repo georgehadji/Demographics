@@ -700,6 +700,91 @@ sources:
       licence line inside the file says CC BY 3.0 IGO. parse/un_wpp.py reads it.
     verification: {status: verified, checked_at: 2026-10-03, evidence: 'Source probe run 37126991773: HTTP 200, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, 990684 bytes. Confirms the URL; the contents are checked by parse/un_wpp.py at each build (Build run 37127299989)'}
 
+  - id: un_wpp_2024_population_by_sex
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 TotalPopulationBySex
+    title: World Population Prospects 2024, total population by sex, 1950-2100, every projection variant
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: συνολικός πληθυσμός κατά φύλο, 1950–2100, όλα τα σενάρια"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_TotalPopulationBySex.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, thousands, as of 1 July (the mean of two 1 January values). Carries the
+      Momentum variant, the target of the momentum gate.
+    verification: {status: unverified}
+
+  - id: un_wpp_2024_population_1jan_single_age
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Population1JanuaryBySingleAgeSex Medium 2024-2100
+    title: World Population Prospects 2024, population on 1 January by single age and sex, medium variant, 2024-2100
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: πληθυσμός την 1η Ιανουαρίου κατά έτος ηλικίας και φύλο, μεσαίο σενάριο, 2024–2100"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Population1JanuaryBySingleAgeSex_Medium_2024-2100.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, thousands, ages 0-99 and 100+. Its 1 January 2024 is the base of every
+      WPP 2024 projection variant.
+    verification: {status: unverified}
+
+  - id: un_wpp_2024_life_table_female_1950_2023
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Life_Table_Complete Medium Female 1950-2023
+    title: World Population Prospects 2024, complete life tables, females, 1950-2023
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: πλήρεις πίνακες επιβίωσης, γυναίκες, 1950–2023"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Life_Table_Complete_Medium_Female_1950-2023.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, single ages 0-99 and 100+, with survival ratios Sx. The Momentum variant
+      holds mortality at the 2023 table.
+    verification: {status: unverified}
+
+  - id: un_wpp_2024_fertility_by_age1
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Fertility_by_Age1
+    title: World Population Prospects 2024, fertility by single age of mother, 1950-2100, every projection variant
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: γονιμότητα κατά έτος ηλικίας της μητέρας, 1950–2100, όλα τα σενάρια"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Fertility_by_Age1.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, about 300 MB, ages of mother 15-49: births per 1,000 women (ASFR), the
+      percentage of births at each age (PASFR) and births, in thousands.
+    verification: {status: unverified}
+
+  - id: un_wpp_2024_indicators_medium
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Demographic_Indicators_Medium
+    title: World Population Prospects 2024, demographic indicators, medium variant, 1950-2100
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: δημογραφικοί δείκτες, μεσαίο σενάριο, 1950–2100"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Demographic_Indicators_Medium.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, one row per area and year. The momentum gate reads the sex ratio at birth
+      (SRB, boys per 100 girls).
+    verification: {status: unverified}
+
   - id: hmd_grc
     provider: Human Mortality Database
     dataset_code: GRC

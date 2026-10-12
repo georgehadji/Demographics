@@ -42,6 +42,8 @@ life table's T(0)/l(0) within 1e-6, and the step's net reproduction rate is Δ9f
 1e-4. Intrinsic growth rate: the root of the discrete renewal equation the step
 follows, so a run at the year's own rates grows by it in the end. The engine's gate is
 the WPP one above (a step of its own), since Eurostat publishes neither value.
+Published on the decision of the responsible editor (2026-10-12: the published
+momentum reproduced first, then ours).
 """
 
 from __future__ import annotations
@@ -218,7 +220,9 @@ def inputs_eurostat(data: Data) -> dict[int, Year]:
     pop = _raw(data, WOMEN.source_id).filter(
         pl.col("sex").is_in(list(_SEXES)), pl.col("age").str.contains(r"^Y(_LT1|\d+|_OPEN)$")
     )
-    rates = _raw(data, RATES.source_id).filter(pl.col("age").is_in(list(_CLASSES)))
+    rates = _raw(data, RATES.source_id).filter(
+        pl.col("agedef") == "COMPLET", pl.col("age").is_in(list(_CLASSES))
+    )
     births = _raw(data, GIRLS.source_id).filter(pl.col("age") == "TOTAL")
     out = {}
     for year, (s, exposure) in sorted(_life(data).items()):

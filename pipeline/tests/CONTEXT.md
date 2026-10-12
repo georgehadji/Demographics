@@ -34,7 +34,7 @@ pytest suite. Fixtures are recorded from real responses; hand-written ones say s
 | `test_projections.py` | EUROPOP2025: baseline and scenarios, Greece's base year equals `demo_pjan`, unexplained or vanished base-year differences, unknown projection types |
 | `test_cohort.py` | Cohort-component step: the recorded Greek baseline 2027-2031 reproduced, Eurostat's share of boys, another mortality not reproduced, without births, deaths and migration cohorts only age |
 | `test_un_wpp.py` | UN WPP 2024: Greece's median and ordered bounds, ISO2 mapping, years, the check against `demo_pjan` |
-| `test_momentum.py` | Momentum gate on Greece's WPP 2024 rows: the variant reproduced 2024-2100; lower mortality and births a year of age off are refused; the variant as observations; another area refused |
+| `test_momentum.py` | Momentum: the WPP gate on Greece's rows (reproduced 2024-2100; lower mortality and births a year of age off refused; the variant as observations; another area refused); from Eurostat, the stationary population per birth equals T(0)/l(0), the step's net reproduction equals Δ9f's, constant rates grow at the intrinsic rate, Greece's values, and a projection that never settles raises |
 | `test_provenance.py` | Every rule of the provenance contract |
 | `test_registry.py` | Registry validation: licence keys and terms, verification evidence, duplicate ids, unknown fields |
 | `test_snapshots.py` | Content addressing, no overwrite, revisions as history, corrupt objects detected |

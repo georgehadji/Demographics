@@ -729,6 +729,45 @@
       των γυναικών του έτους. Κάτω από 1, μια γενιά γυναικών δεν αντικαθίσταται από την
       επόμενη με τη γονιμότητα και τη θνησιμότητα του έτους.
 
+- id: population_momentum@v1
+  metric: population_momentum
+  unit: ratio
+  title: Population momentum
+  description: >-
+    The population the country would end with, relative to its population on 1 January
+    of the year, if from that day women had exactly enough children to replace
+    themselves (the year's fertility by age, scaled to a net reproduction rate of 1,
+    mothers of every age counted), mortality stayed at the year's life table and there
+    were no migration. Below 1, the age structure alone makes the population shrink. A
+    mathematical consequence of these assumptions, not a forecast.
+  el:
+    title: Ορμή πληθυσμού
+    description: >-
+      Ο πληθυσμός στον οποίο θα κατέληγε η χώρα, ως λόγος προς τον πληθυσμό της 1ης
+      Ιανουαρίου του έτους, αν από εκείνη τη μέρα οι γυναίκες έκαναν ακριβώς όσα παιδιά
+      χρειάζονται για να αντικατασταθούν (η γονιμότητα του έτους κατά ηλικία,
+      κλιμακωμένη σε καθαρό δείκτη αναπαραγωγής 1, με τις μητέρες κάθε ηλικίας), η
+      θνησιμότητα έμενε όση στον πίνακα επιβίωσης του έτους και δεν υπήρχε μετανάστευση.
+      Κάτω από 1, η ηλικιακή σύνθεση μόνη της κάνει τον πληθυσμό να μικραίνει.
+      Μαθηματική συνέπεια αυτών των υποθέσεων, όχι πρόβλεψη.
+
+- id: intrinsic_growth_rate@v1
+  metric: intrinsic_growth_rate
+  unit: "% per year"
+  title: Intrinsic growth rate
+  description: >-
+    The yearly rate at which the population would in the end grow or shrink if the
+    year's fertility and mortality by age stayed the same for ever, with no migration
+    (from the female rates). A mathematical consequence of these assumptions, not a
+    forecast.
+  el:
+    title: Εγγενής ρυθμός αύξησης
+    description: >-
+      Ο ετήσιος ρυθμός με τον οποίο ο πληθυσμός θα αυξανόταν ή θα μίκραινε τελικά, αν η
+      γονιμότητα και η θνησιμότητα του έτους κατά ηλικία έμεναν ίδιες για πάντα, χωρίς
+      μετανάστευση (από τους δείκτες των γυναικών).
+      Μαθηματική συνέπεια αυτών των υποθέσεων, όχι πρόβλεψη.
+
 - id: live_births_nowcast@v1
   metric: live_births_nowcast
   unit: persons

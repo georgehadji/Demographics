@@ -22,7 +22,7 @@ conventions, each VERIFIED 2026-10-12 on Greece:
 The gate compares the female population (one sex, as momentum is defined): the mean of
 our 1 January values against the variant's 1 July value, 2024-2100. VERIFIED: at most
 0.073% apart (2,943 persons, in 2100); the female deaths add up to the UN's within
-200 persons over the period, the gap is in births after 2060 (40 to 110 a year, cause
+200 persons over the period, the gap is in births after 2060 (about 40 to 110 a year, cause
 UNKNOWN). What the gate does not check: no age detail (the UN publishes the variant's
 totals only), and survival is the UN's by construction, so it checks the bookkeeping
 (ageing, the open age group, births by age reached, the boys' share, the 1 July

@@ -37,7 +37,7 @@ def _changed(monkeypatch, mortality=1.0, shift=0):
 
 
 def test_lower_mortality_is_not_the_variant(monkeypatch):
-    _changed(monkeypatch, mortality=0.97)  # about the 2024 table's level instead of 2023's
+    _changed(monkeypatch, mortality=0.97)  # 3% lower mortality
     with pytest.raises(ValueError, match="not reproduced"):
         momentum.reproduce(DATA)
 

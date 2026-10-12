@@ -73,7 +73,7 @@ Current state: Phase 1 closed on 2026-10-03 (PROPOSAL §10); Phase 2 (approved 2
 
 ## Working in `charts/` (Node package, chart library)
 
-- Every chart type is `compose(figure)` from `src/chart.js`: `f(rows, spec, {tokens, document})` returns `{figure, table, alt, csv}`. Rows are observations of the data product, checked on entry; `spec.title` states the finding; the footer is built from the rows. `tokens` is one mode of `design/dist/tokens.js`.
+- Every chart type is `compose(figure)` from `src/chart.js`: `f(rows, spec, {tokens, document})` returns `{figure, table, alt, csv, svg}` (svg: the figure as one SVG file, with title and footer). Rows are observations of the data product, checked on entry; `spec.title` states the finding; the footer is built from the rows. `tokens` is one mode of `design/dist/tokens.js`.
 - `src/grammar.js` `style(nature, status)` is the only place the epistemic grammar lives. It returns token names, never values. `test/grammar.test.js` checks it for every `nature` × `status` and against the vocabularies of `provenance.py`.
 - Chart types: `line` (with interval bounds it is the fan chart), `pyramid`, `lexis`, `dumbbell` (two periods), `waterfall` (parts that must add up to their total), `tiles` (layout in `data/reference/el_nuts2_tiles.csv`), and the maps `choropleth` (rates only) and `symbols` (counts), which take the data product's geometry as `spec.geometry` and put its attribution in every footer. Interval bounds (ADR 0007) are drawn as bands, never as lines, labels or alt text.
 - Numbers go through `design/src/format.js`; colours, widths and dashes come from `tokens`. Install `design/` (`npm ci`) before running `npm test` here.

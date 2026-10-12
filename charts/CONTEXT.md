@@ -1,6 +1,6 @@
 # charts/
 
-Node package with the chart library (ADR 0005): ES modules on Observable Plot. Every chart is `f(rows, spec, {tokens, document})` and returns `{figure, table, alt, csv}`. Rows are observations of the data product; `tokens` are one mode of `design/dist/tokens.js`. `npm test` runs the unit tests and `npm run visual` the Playwright screenshots and axe checks (install `design/` first: charts imports its tokens and number formatter).
+Node package with the chart library (ADR 0005): ES modules on Observable Plot. Every chart is `f(rows, spec, {tokens, document})` and returns `{figure, table, alt, csv, svg}`. Rows are observations of the data product; `tokens` are one mode of `design/dist/tokens.js`. `npm test` runs the unit tests and `npm run visual` the Playwright screenshots and axe checks (install `design/` first: charts imports its tokens and number formatter).
 
 | File | What it does |
 |---|---|

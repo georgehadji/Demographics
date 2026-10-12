@@ -1,4 +1,4 @@
-// The line chart and the composite every chart returns: figure, table, alt text, CSV.
+// The line chart and the composite every chart returns: figure, table, alt text, CSV, SVG file.
 // The rows are hand-written, not data.
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -150,6 +150,19 @@ test("the CSV holds the raw values of every row and column", () => {
   assert.equal(lines[3].split(",")[4], "");
   const quoted = line([row("EL", "2011", 1, { source: 'a, "b"' })], SPEC, { tokens, document }).csv;
   assert.ok(quoted.includes('"a, ""b"""'));
+});
+
+test("the SVG file carries the title and the footer with the plot", () => {
+  const { svg, figure } = chart();
+  assert.ok(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"'));
+  const file = new document.defaultView.DOMParser().parseFromString(svg, "image/svg+xml").documentElement;
+  const text = [...file.querySelectorAll(":scope > text")].map((t) => t.textContent).join(" ");
+  assert.equal(text, `${SPEC.title} ${figure.querySelector("figcaption").textContent}`);
+  assert.equal(file.querySelectorAll(":scope > svg").length, 1);
+  assert.equal(file.getAttribute("viewBox"), `0 0 ${file.getAttribute("width")} ${file.getAttribute("height")}`);
+  // a long footer wraps at the plot's width
+  const long = line([row("EL", "2011", 1, { source: "πηγή ".repeat(60) })], SPEC, { tokens, document }).svg;
+  assert.ok((long.match(/<text /g) ?? []).length > 3);
 });
 
 test("English charts use English text and number format", () => {

@@ -715,7 +715,7 @@ sources:
     notes: >-
       CSV, thousands, as of 1 July (the mean of two 1 January values). Carries the
       Momentum variant, the target of the momentum gate.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-12, evidence: 'Source probe run 38212417151: HTTP 200, application/x-gzip, 16980593 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_population_1jan_single_age
     provider: UN DESA Population Division
@@ -732,7 +732,7 @@ sources:
     notes: >-
       CSV, thousands, ages 0-99 and 100+. Its 1 January 2024 is the base of every
       WPP 2024 projection variant.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-12, evidence: 'Source probe run 38212417151: HTTP 200, application/x-gzip, 67882675 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_life_table_female_1950_2023
     provider: UN DESA Population Division
@@ -749,7 +749,7 @@ sources:
     notes: >-
       CSV, single ages 0-99 and 100+, with survival ratios Sx. The Momentum variant
       holds mortality at the 2023 table.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-12, evidence: 'Source probe run 38212417151: HTTP 200, application/x-gzip, 199164889 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_fertility_by_age1
     provider: UN DESA Population Division
@@ -766,7 +766,7 @@ sources:
     notes: >-
       CSV, about 300 MB, ages of mother 15-49: births per 1,000 women (ASFR), the
       percentage of births at each age (PASFR) and births, in thousands.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-12, evidence: 'Source probe run 38212417151: HTTP 200, application/x-gzip, 301907467 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_indicators_medium
     provider: UN DESA Population Division
@@ -783,7 +783,7 @@ sources:
     notes: >-
       CSV, one row per area and year. The momentum gate reads the sex ratio at birth
       (SRB, boys per 100 girls).
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-12, evidence: 'Source probe run 38212417151: HTTP 200, application/x-gzip, 16557272 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: hmd_grc
     provider: Human Mortality Database

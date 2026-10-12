@@ -35,6 +35,7 @@ from grpop import (
     indicators,
     life_expectancy,
     migration,
+    momentum,
     nowcast,
     projection_accuracy,
     projections,
@@ -44,7 +45,7 @@ from grpop import (
     snapshots,
 )
 from grpop.definitions import get_definition
-from grpop.parse import elstat_pdf, gisco, un_wpp
+from grpop.parse import elstat_pdf, gisco, un_wpp, un_wpp_csv
 from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
 from grpop.snapshots import Snapshot
 
@@ -165,6 +166,12 @@ def _gated(data: indicators.Data) -> pl.DataFrame:
     return projections.read(data)
 
 
+def _momentum(data: indicators.Data) -> pl.DataFrame:
+    """The Momentum variant's population, once our step reproduces it for women."""
+    momentum.reproduce(data)
+    return un_wpp_csv.momentum(*data[momentum.POPULATION])
+
+
 # EUROPOP2025 (ADR 0008): Greece in full detail; totals of every area, whose baseline
 # is checked against the observed population in its base year.
 PROJECTIONS = {
@@ -180,6 +187,8 @@ PROJECTIONS = {
             _POPULATION.read(data),
         ),
     ),
+    # WPP 2024's Momentum variant for Greece, once our step reproduces it (Δ9).
+    "population_projection_wpp_momentum": Step(momentum.SOURCES, _momentum),
     "population_projection_totals": Step(
         frozenset({projections.SOURCE, _POPULATION.source_id}),
         lambda data: projections.totals(projections.read(data), _POPULATION.read(data)),

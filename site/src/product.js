@@ -43,6 +43,7 @@ const LABELS = {
   el: {
     table: "Πίνακας δεδομένων",
     csv: "Λήψη CSV",
+    svg: "Λήψη SVG",
     panel: "Πηγή και ορισμός",
     retrieved: "λήψη",
     definition: "ορισμός",
@@ -53,6 +54,7 @@ const LABELS = {
   en: {
     table: "Data table",
     csv: "Download CSV",
+    svg: "Download SVG",
     panel: "Source and definition",
     retrieved: "retrieved",
     definition: "definition",
@@ -148,7 +150,7 @@ export function panel(rows, l, t) {
 /**
  * A chart from a JSON spec: {type, data, geo: [...], sex?, age?, ...the chart's spec}. The
  * figure in the light and the dark mode (styles.css shows the one Quarto is in), its alt
- * text in view without the title, its data table and its CSV.
+ * text in view without the title, its data table, its CSV and the light mode as an SVG file.
  */
 export function chart(dir, spec) {
   const { type, data, geo, sex = "total", age, ages, ...given } = spec;
@@ -172,6 +174,7 @@ export function chart(dir, spec) {
     const [light, dark] = ["light", "dark"].map((m) => draw(rows, rest, { tokens: modes[m], document: window.document }));
     const l = LABELS[(rest.locale ?? "el").slice(0, 2)];
     const href = `data:text/csv;charset=utf-8,${encodeURIComponent(light.csv)}`;
+    const svg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(light.svg)}`;
     const summary = light.alt.startsWith(`${rest.title}. `) ? light.alt.slice(rest.title.length + 2) : light.alt;
     return [
       `<div class="kh-chart">`,
@@ -180,7 +183,7 @@ export function chart(dir, spec) {
       `<p class="kh-summary"><strong>${l.summary}:</strong> ${escape(summary)}</p>`,
       `<details><summary>${l.table}</summary>${light.table.outerHTML}</details>`,
       panel(rows, l, TEXT[(rest.locale ?? "el").slice(0, 2)]),
-      `<p><a download="${escape(data)}.csv" href="${href}">${l.csv}</a></p>`,
+      `<p><a download="${escape(data)}.csv" href="${href}">${l.csv}</a> · <a download="${escape(data)}.svg" href="${svg}">${l.svg}</a></p>`,
       `</div>`,
     ].join("");
   } finally {

@@ -69,3 +69,10 @@ test("alt text says when the highest or lowest value is projected", () => {
   const projected = ROWS.map((r) => (r.period === "2000" ? { ...r, nature: "projected" } : r));
   assert.match(chart(projected).alt, /υψηλότερη τιμή 0,1 \(ηλικία 30, 2000, προβολή\)/);
 });
+
+test("the SVG file keeps the legend above the surface", () => {
+  const file = new document.defaultView.DOMParser().parseFromString(chart().svg, "image/svg+xml").documentElement;
+  const [legend, plot] = file.querySelectorAll(":scope > svg");
+  assert.ok(legend.getAttribute("class").endsWith("-ramp"));
+  assert.ok(Number(plot.getAttribute("y")) >= Number(legend.getAttribute("y")) + Number(legend.getAttribute("height")));
+});

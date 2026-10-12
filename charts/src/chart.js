@@ -305,8 +305,63 @@ export function compose(figure, describe = seriesAlt) {
       g.setAttribute("data-mark", g.getAttribute("aria-label"));
       g.removeAttribute("aria-label");
     }
-    return { figure: fig, table: table(rows, s, document), alt, csv: csv(rows) };
+    return { figure: fig, table: table(rows, s, document), alt, csv: csv(rows), svg: standalone(fig, tokens, document) };
   };
+}
+
+// The figure's text in the SVG file: token of its size, weight.
+const FIGURE_TEXT = { H2: ["font-size-title", "bold"], H3: ["font-size-base", "normal"], FIGCAPTION: ["font-size-small", "normal"] };
+const SVG = "http://www.w3.org/2000/svg";
+const ROOT_PX = 16; // what 1rem is in a file without a page
+const GLYPH_EM = 0.55; // an average glyph's width, to wrap text without a layout engine
+
+/** Greedy word wrap at most `chars` characters a line (a longer word keeps its own line). */
+const wrap = (text, chars) =>
+  text.split(" ").reduce((lines, w) => {
+    const last = lines.at(-1);
+    return last !== undefined && `${last} ${w}`.length <= chars ? [...lines.slice(0, -1), `${last} ${w}`] : [...lines, w];
+  }, []);
+
+/**
+ * The figure as one SVG file: title, subtitle, legend, plot and footer stacked, so the
+ * finding and the source travel with a downloaded chart. Text wraps at the widest SVG.
+ */
+function standalone(fig, tokens, document) {
+  const node = (tag, attrs) => {
+    const e = document.createElementNS(SVG, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    return e;
+  };
+  const width = Math.max(...[...fig.querySelectorAll(":scope > svg")].map((s) => Number(s.getAttribute("width"))));
+  const root = node("svg", {
+    width,
+    "font-family": `${tokens["font-family"]}, ${tokens["font-fallback"]}`,
+    style: `color: ${tokens["color-text"]}`,
+  });
+  root.append(node("rect", { width: "100%", height: "100%", fill: tokens["color-background"] }));
+  let y = 0;
+  for (const child of fig.children) {
+    if (child.tagName === "svg") {
+      const height = Number(child.getAttribute("height"));
+      if (!(height > 0)) throw new Error("an SVG of the figure has no height");
+      const copy = child.cloneNode(true);
+      copy.setAttribute("y", y);
+      root.append(copy);
+      y += height;
+      continue;
+    }
+    if (!FIGURE_TEXT[child.tagName]) throw new Error(`figure element ${child.tagName}: the SVG file does not draw it`);
+    const [size, weight] = FIGURE_TEXT[child.tagName];
+    const px = parseFloat(tokens[size]) * ROOT_PX;
+    for (const text of wrap(child.textContent, width / (px * GLYPH_EM))) {
+      y += px * 1.4;
+      root.append(Object.assign(node("text", { y, "font-size": px, "font-weight": weight, fill: "currentColor" }), { textContent: text }));
+    }
+    y += px * 0.4;
+  }
+  root.setAttribute("height", y);
+  root.setAttribute("viewBox", `0 0 ${width} ${y}`);
+  return new document.defaultView.XMLSerializer().serializeToString(root);
 }
 
 /** Plot options every chart shares: document, title, subtitle, footer and type. */

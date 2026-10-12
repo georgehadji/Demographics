@@ -266,6 +266,8 @@ DECOMPOSITION = {
     "economic_old_age_dependency": Step(
         economic_dependency.SOURCES, economic_dependency.economic_old_age_dependency, 1
     ),
+    # Δ9: momentum and intrinsic growth rate; the engine's WPP gate is its own step above
+    "population_momentum": Step(momentum.EUROSTAT_SOURCES, momentum.momentum, 3),
 }
 _STEPS = {
     **{name: _indicator(i) for name, i in indicators.INDICATORS.items()},

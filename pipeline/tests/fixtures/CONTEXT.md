@@ -50,5 +50,10 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_proj_19np_el_cy.json` | Eurostat `proj_19np` (EUROPOP2019), Greece and Cyprus, totals, 2019-2026, every projection type: input of `test_projection_accuracy.py` |
 | `eurostat_proj_23np_el_cy.json` | Eurostat `proj_23np` (EUROPOP2023), Greece and Cyprus, totals, 2022-2026, every projection type: input of `test_projection_accuracy.py` |
 | `un_wpp2024_ppp_poptot.xlsx` | UN WPP 2024 probabilistic total population (PPP/POPTOT), the published workbook (CC BY 3.0 IGO): input of `test_un_wpp.py` |
+| `un_wpp2024_population_by_sex_grc.csv.gz` | UN `WPP2024_TotalPopulationBySex`, Greece's rows (every variant): rows kept from the file downloaded 2026-10-12, values unchanged, rewritten as CSV and gzipped: input of `test_momentum.py` |
+| `un_wpp2024_population_1jan_grc_2024.csv.gz` | UN `WPP2024_Population1JanuaryBySingleAgeSex_Medium_2024-2100`, Greece, 2024: rows kept from the file downloaded 2026-10-12, values unchanged, rewritten as CSV and gzipped: input of `test_momentum.py` |
+| `un_wpp2024_life_table_female_grc_2023.csv.gz` | UN `WPP2024_Life_Table_Complete_Medium_Female_1950-2023`, Greece, 2023: rows kept from the file downloaded 2026-10-12, values unchanged, rewritten as CSV and gzipped: input of `test_momentum.py` |
+| `un_wpp2024_fertility_by_age1_grc_momentum.csv.gz` | UN `WPP2024_Fertility_by_Age1`, Greece, Momentum variant: rows kept from the file downloaded 2026-10-12, values unchanged, rewritten as CSV and gzipped: input of `test_momentum.py` |
+| `un_wpp2024_indicators_medium_grc.csv.gz` | UN `WPP2024_Demographic_Indicators_Medium`, Greece's rows: rows kept from the file downloaded 2026-10-12, values unchanged, rewritten as CSV and gzipped: input of `test_momentum.py` |
 | `eurostat_demo_r_pjangrp3_el5.json` | Eurostat `demo_r_pjangrp3`, EL, EL5, EL51-EL54 and EL511, 2023 onwards: input of `test_indicators.py` and `test_harmonize.py` |
 | `jsonstat_sparse.json` | Hand-written JSON-stat with unpublished cells: `test_jsonstat.py`, `test_probe.py` |

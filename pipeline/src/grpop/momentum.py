@@ -42,6 +42,8 @@ life table's T(0)/l(0) within 1e-6, and the step's net reproduction rate is Δ9f
 1e-4. Intrinsic growth rate: the root of the discrete renewal equation the step
 follows, so a run at the year's own rates grows by it in the end. The engine's gate is
 the WPP one above (a step of its own), since Eurostat publishes neither value.
+The series starts in 2014: Greece's demo_mlifetable runs to 94 and 95+ from 2014, to
+84 and 85+ in 1961-2013 (VERIFIED 2026-10-12; build of that day, 2014-2024).
 Published on the decision of the responsible editor (2026-10-12: the published
 momentum reproduced first, then ours).
 """

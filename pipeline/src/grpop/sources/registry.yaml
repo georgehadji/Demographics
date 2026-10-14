@@ -751,6 +751,57 @@ sources:
       holds mortality at the 2023 table.
     verification: {status: verified, checked_at: 2026-10-12, evidence: 'Source probe run 38212417151: HTTP 200, application/x-gzip, 199164889 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
+  - id: un_wpp_2024_life_table_male_1950_2023
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Life_Table_Complete Medium Male 1950-2023
+    title: World Population Prospects 2024, complete life tables, males, 1950-2023
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: πλήρεις πίνακες επιβίωσης, άνδρες, 1950–2023"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Life_Table_Complete_Medium_Male_1950-2023.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, single ages 0-99 and 100+. The Lee-Carter gate fits its age pattern to
+      the death rates mx of both sexes.
+    verification: {status: unverified}
+
+  - id: un_wpp_2024_life_table_female_2024_2100
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Life_Table_Complete Medium Female 2024-2100
+    title: World Population Prospects 2024, complete life tables, females, medium variant, 2024-2100
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: πλήρεις πίνακες επιβίωσης, γυναίκες, μεσαίο σενάριο, 2024–2100"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Life_Table_Complete_Medium_Female_2024-2100.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, single ages 0-99 and 100+. The target of the Lee-Carter gate: its e0 is
+      the input, its mx and e65 the values to reproduce.
+    verification: {status: unverified}
+
+  - id: un_wpp_2024_life_table_male_2024_2100
+    provider: UN DESA Population Division
+    dataset_code: WPP2024 Life_Table_Complete Medium Male 2024-2100
+    title: World Population Prospects 2024, complete life tables, males, medium variant, 2024-2100
+    title_el: "Παγκόσμιες Πληθυσμιακές Προοπτικές 2024: πλήρεις πίνακες επιβίωσης, άνδρες, μεσαίο σενάριο, 2024–2100"
+    access: bulk_file
+    probe_kind: http
+    probe_url: https://population.un.org/wpp/assets/Excel%20Files/1_Indicator%20(Standard)/CSV_FILES/WPP2024_Life_Table_Complete_Medium_Male_2024-2100.csv.gz
+    ingest: gzip
+    licence: un_wpp
+    used_for: [simulator_reproduction_test]
+    phase: 2
+    notes: >-
+      CSV, single ages 0-99 and 100+. The target of the Lee-Carter gate, as for
+      females.
+    verification: {status: unverified}
+
   - id: un_wpp_2024_fertility_by_age1
     provider: UN DESA Population Division
     dataset_code: WPP2024 Fertility_by_Age1

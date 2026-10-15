@@ -1,6 +1,9 @@
-"""Lee-Carter mortality: the parts of the model on hand-made rates (not data)."""
+"""Lee-Carter mortality: the parts of the model on hand-made rates, then the gate on
+Greece's rows of the WPP 2024 life tables (recorded 2026-10-15)."""
 
 import numpy as np
+import pytest
+from test_indicators import data
 
 from grpop import mortality
 
@@ -64,3 +67,34 @@ def test_projection_reaches_each_life_expectancy():
         got = [mortality.expectancy(col, sex)[0] for col in m.T]
         assert np.allclose(got, e0[sex], atol=1e-8)
     assert (rates["male"][-1] >= rates["female"][-1]).all()
+
+
+FILES = {
+    mortality.HISTORY["female"]: "un_wpp2024_life_table_female_grc_1950_2023.csv.gz",
+    mortality.HISTORY["male"]: "un_wpp2024_life_table_male_grc_1950_2023.csv.gz",
+    mortality.TARGET["female"]: "un_wpp2024_life_table_female_grc_2024_2100.csv.gz",
+    mortality.TARGET["male"]: "un_wpp2024_life_table_male_grc_2024_2100.csv.gz",
+}
+DATA = data(mortality.SOURCES, FILES)
+
+
+def test_reproduces_the_medium_variant_mortality():
+    df = mortality.reproduce(DATA)
+    assert df.height == 2 * 77 * mortality.AGES
+    assert (df["e65_ours"] - df["e65_theirs"]).abs().max() < 0.007  # 0.0061 observed
+    core = df.filter((df["age"] >= 7) & (df["age"] <= 98))
+    assert ((core["ours"] / core["theirs"]) - 1).abs().max() < 0.023  # 0.0223 observed
+
+
+@pytest.mark.parametrize(
+    ("name", "changed"),
+    [
+        ("rotate", lambda bx, u, e0: bx),  # no rotation
+        ("smooth_spline", lambda y, df: y),  # a(x) not smoothed
+        ("FIT_YEARS", range(1990, 2024)),  # b(x) fitted on 1990-2023
+    ],
+)
+def test_another_model_is_not_the_variant(monkeypatch, name, changed):
+    monkeypatch.setattr(mortality, name, changed)
+    with pytest.raises(ValueError, match="not reproduced"):
+        mortality.reproduce(DATA)

@@ -766,7 +766,7 @@ sources:
     notes: >-
       CSV, single ages 0-99 and 100+. The Lee-Carter gate fits its age pattern to
       the death rates mx of both sexes.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-15, evidence: 'Source probe run 38642921170: HTTP 200, application/x-gzip, 199442259 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_life_table_female_2024_2100
     provider: UN DESA Population Division
@@ -783,7 +783,7 @@ sources:
     notes: >-
       CSV, single ages 0-99 and 100+. The target of the Lee-Carter gate: its e0 is
       the input, its mx and e65 the values to reproduce.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-15, evidence: 'Source probe run 38642921170: HTTP 200, application/x-gzip, 203000798 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_life_table_male_2024_2100
     provider: UN DESA Population Division
@@ -800,7 +800,7 @@ sources:
     notes: >-
       CSV, single ages 0-99 and 100+. The target of the Lee-Carter gate, as for
       females.
-    verification: {status: unverified}
+    verification: {status: verified, checked_at: 2026-10-15, evidence: 'Source probe run 38642921170: HTTP 200, application/x-gzip, 204285181 bytes. Confirms the URL and the gzip format only; contents not yet parsed'}
 
   - id: un_wpp_2024_fertility_by_age1
     provider: UN DESA Population Division

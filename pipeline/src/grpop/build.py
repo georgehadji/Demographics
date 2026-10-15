@@ -36,6 +36,7 @@ from grpop import (
     life_expectancy,
     migration,
     momentum,
+    mortality,
     nowcast,
     projection_accuracy,
     projections,
@@ -46,7 +47,7 @@ from grpop import (
 )
 from grpop.definitions import get_definition
 from grpop.parse import elstat_pdf, gisco, un_wpp, un_wpp_csv
-from grpop.provenance import OBSERVATION_KEY, ObservationSchema, validate_observations
+from grpop.provenance import OBSERVATION_KEY, ObservationSchema, Sex, validate_observations
 from grpop.snapshots import Snapshot
 
 COLUMNS = list(ObservationSchema.to_schema().columns)
@@ -172,6 +173,16 @@ def _momentum(data: indicators.Data) -> pl.DataFrame:
     return un_wpp_csv.momentum(*data[momentum.POPULATION])
 
 
+def _mortality(data: indicators.Data) -> pl.DataFrame:
+    """The medium variant's life expectancy at 0 and 65 by sex, once our Lee-Carter
+    reproduces its death rates for Greece."""
+    mortality.reproduce(data)
+    return pl.concat(
+        un_wpp_csv.life_expectancy(*data[source_id], Sex(sex))
+        for sex, source_id in mortality.TARGET.items()
+    )
+
+
 # EUROPOP2025 (ADR 0008): Greece in full detail; totals of every area, whose baseline
 # is checked against the observed population in its base year.
 PROJECTIONS = {
@@ -189,6 +200,8 @@ PROJECTIONS = {
     ),
     # WPP 2024's Momentum variant for Greece, once our step reproduces it (Δ9).
     "population_projection_wpp_momentum": Step(momentum.SOURCES, _momentum),
+    # WPP 2024's projected life expectancy, once our Lee-Carter reproduces it (Δ9).
+    "life_expectancy_projection_wpp": Step(mortality.SOURCES, _mortality),
     "population_projection_totals": Step(
         frozenset({projections.SOURCE, _POPULATION.source_id}),
         lambda data: projections.totals(projections.read(data), _POPULATION.read(data)),

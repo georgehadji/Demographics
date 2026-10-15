@@ -1,5 +1,5 @@
-"""UN WPP 2024 standard CSV files (gzip): Greece's rows, and the Momentum variant of the
-total population as observations.
+"""UN WPP 2024 standard CSV files (gzip): Greece's rows, and as observations the Momentum
+variant of the total population and the medium variant's life expectancy at 0 and 65.
 
 The files cover every area and, where they have them, every projection variant; rows
 are kept by the UN's location code. Values are thousands; 1 July values are the mean
@@ -20,6 +20,9 @@ DEFINITION_ID = "population_1jul@v1"
 TRANSFORM_VERSION = "un_wpp_csv@0.1"
 VINTAGE = "WPP 2024"
 MOMENTUM = "Momentum"
+MEDIUM = "Medium"
+LIFE_EXPECTANCY_ID = "life_expectancy@v1"
+LIFE_EXPECTANCY_AGES = ["0", "65"]
 SCENARIO_ID = "wpp2024_momentum"  # ADR 0008: a source's own variant, labelled as such
 _SEXES = {"PopTotal": Sex.TOTAL, "PopMale": Sex.MALE, "PopFemale": Sex.FEMALE}
 
@@ -31,6 +34,37 @@ def greece(data: bytes, columns: list[str]) -> pl.DataFrame:
     if df.is_empty():
         raise ValueError(f"no rows of LocID {GREECE}")
     return df
+
+
+def life_expectancy(snapshot: Snapshot, data: bytes, sex: Sex) -> pl.DataFrame:
+    """Greece's projected life expectancy at birth and at 65 from a WPP complete life
+    table file of one sex (medium variant)."""
+    definition, source = get_definition(LIFE_EXPECTANCY_ID), get_source(snapshot.source_id)
+    df = greece(data, ["Variant", "Time", "AgeGrpStart", "ex"]).filter(
+        pl.col("Variant") == MEDIUM, pl.col("AgeGrpStart").is_in(LIFE_EXPECTANCY_AGES)
+    )
+    return df.select(
+        metric=pl.lit(definition.metric),
+        definition_id=pl.lit(definition.id),
+        geo_code=pl.lit("EL"),
+        geo_vintage=pl.lit("ISO 3166-1"),
+        period="Time",
+        sex=pl.lit(sex.value),
+        age="AgeGrpStart",
+        value=pl.col("ex").cast(pl.Float64),
+        unit=pl.lit(definition.unit),
+        source=pl.lit(source.provider),
+        dataset_code=pl.lit(source.dataset_code),
+        source_url=pl.lit(snapshot.source_url),
+        vintage=pl.lit(VINTAGE),
+        retrieved_at=pl.lit(snapshot.retrieved_at, dtype=pl.Datetime("us", "UTC")),
+        transform_version=pl.lit(TRANSFORM_VERSION),
+        nature=pl.lit(Nature.PROJECTED.value),
+        status=pl.lit(Status.FINAL.value),
+        break_in_series=pl.lit(False),
+        scenario_id=pl.lit(None, dtype=pl.String),
+        interval=pl.lit(None, dtype=pl.String),
+    )
 
 
 def momentum(snapshot: Snapshot, data: bytes) -> pl.DataFrame:

@@ -5,7 +5,8 @@ import numpy as np
 import pytest
 from test_indicators import data
 
-from grpop import mortality
+from grpop import build, mortality
+from grpop.provenance import validate_observations
 
 AGE = np.arange(mortality.AGES)
 
@@ -98,3 +99,11 @@ def test_another_model_is_not_the_variant(monkeypatch, name, changed):
     monkeypatch.setattr(mortality, name, changed)
     with pytest.raises(ValueError, match="not reproduced"):
         mortality.reproduce(DATA)
+
+
+def test_the_step_publishes_the_variants_life_expectancy():
+    df = validate_observations(build._mortality(DATA))
+    assert df.height == 77 * 2 * 2
+    assert set(df["nature"]) == {"projected"} and set(df["age"]) == {"0", "65"}
+    by = {(s, a, p): v for s, a, p, v in df.select("sex", "age", "period", "value").iter_rows()}
+    assert by["female", "0", "2024"] == 84.4562  # WPP 2024 medium variant, Greece

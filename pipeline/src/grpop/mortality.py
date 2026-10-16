@@ -31,6 +31,23 @@ VERIFIED 2026-10-15 on Greece, 2024-2100: e65 at most 0.0061 years off (women) a
 0.9%), at the other ages 9.6%; median 0.4% and 0.2%. The gate refuses each of: no rotation (e65
 0.11 years off), a(x) not smoothed (0.014 years, rates 6.5%), b(x) fitted from 1990
 (0.77 years), women's b(x) for both sexes (0.25 years).
+
+Then ours (``ours``, decided by the responsible editor 2026-10-16): the same b(x),
+``finish``, ``ultimate`` and ``rotate`` on Greece's Eurostat life tables, 1961 to the
+latest year, ages 0-84 and 85+ (85+ as l(85)/T(85); single ages to 84 and 85+ in
+1961-2013, to 94 and 95+ since 2014, VERIFIED 2026-10-16). A rate of zero, at a young
+age in a few years, is the mean of the years beside it. First our life table on
+Eurostat's rates must give Eurostat's LIFEXP at 0 and 65 (a(0) = 0.2, Eurostat's own):
+VERIFIED 2026-10-16, every year and sex within 0.0506 years (median 0.023), against
+``LIFE_TABLE_TOLERANCE``. k(t) is refitted each year to the year's e0 and taken as a
+random walk; its drift, the mean of both sexes', runs from 1961 to 2019, so the
+2020-2022 deaths do not set it; the projection starts from the latest year's observed
+rates. A scenario (ADR 0008): the consequence of the trend continuing, not a forecast.
+Backtest, the same model from 2009 over 2010-2019 (published as ``BACKTEST``), VERIFIED
+2026-10-16: e0 at most 0.41 years off (women) and 0.65 (men), e65 0.38 and 0.65; 33 of
+40 values inside the 80% interval, 39 inside the 95%. In 2100 ours gives women 92.6 years
+at birth and men 89.5, WPP 2024 93.4 and 89.6. ponytail: no Kannisto above 85; the
+cohort engine, which needs ages to 100+, brings it with its own gate.
 """
 
 from __future__ import annotations
@@ -40,8 +57,12 @@ from itertools import pairwise
 import numpy as np
 import polars as pl
 
+from grpop.definitions import get_definition
 from grpop.indicators import Data
-from grpop.parse.un_wpp_csv import greece
+from grpop.parse import eurostat
+from grpop.parse.un_wpp_csv import LIFE_EXPECTANCY_ID, greece
+from grpop.provenance import Interval, Nature, Status
+from grpop.sources.registry import get_source
 
 HISTORY = {
     "female": "un_wpp_2024_life_table_female_1950_2023",
@@ -137,12 +158,15 @@ def smooth_spline(y: np.ndarray, df: float) -> np.ndarray:
 # --- life table and the coherent rotated Lee-Carter model ---
 
 
-def expectancy(mx: np.ndarray, sex: str) -> np.ndarray:
-    """Life expectancy at each age of a single-age life table with an open last age."""
+def expectancy(mx: np.ndarray, sex: str, a0: float | None = None) -> np.ndarray:
+    """Life expectancy at each age of a single-age life table with an open last age;
+    a(0) by the Andreev-Kingkade rule unless given."""
     (b1, c1, s1), (b2, c2, s2), c3 = A0[sex]
     m0 = mx[0]
-    a = np.full(AGES - 1, 0.5)
+    a = np.full(len(mx) - 1, 0.5)
     a[0] = c1 + s1 * m0 if m0 < b1 else (c2 + s2 * m0 if m0 < b2 else c3)
+    if a0 is not None:
+        a[0] = a0
     q = mx[:-1] / (1 + (1 - a) * mx[:-1])
     lx = np.concatenate(([1.0], np.cumprod(1 - q)))
     lived = np.concatenate((lx[1:] + a * (lx[:-1] - lx[1:]), [lx[-1] / mx[-1]]))
@@ -285,3 +309,207 @@ def reproduce(data: Data) -> pl.DataFrame:
     if off:
         raise ValueError(f"WPP 2024 mortality not reproduced: {', '.join(off[:5])}")
     return pl.concat(frames)
+
+
+# --- ours: Lee-Carter with drift from Eurostat's life tables (Δ9, decided 2026-10-16) ---
+
+EUROSTAT = "eurostat_demo_mlifetable"
+OURS_SOURCES = frozenset({EUROSTAT})
+GEO = "EL"
+OPEN_AGE = 85  # ages 0-84 and 85+, which every Greek table since 1961 has
+EUROSTAT_A0 = 0.2  # Eurostat's a(0), (T(0) - T(1) - l(1)) / (l(0) - l(1)), every year
+LIFE_TABLE_TOLERANCE = 0.06  # years: LIFEXP is rounded to 0.1, the rates to 5 decimals
+DRIFT_END = 2019  # the drift ends before 2020-2022
+BACKTEST_JUMP_OFF, BACKTEST_END = 2009, 2019
+HORIZON = 2100
+LEVELS = {  # normal quantiles of the two-sided 80% and 95% intervals
+    1.2815515655446004: (Interval.LOWER_80, Interval.UPPER_80),
+    1.959963984540054: (Interval.LOWER_95, Interval.UPPER_95),
+}
+SCENARIO = "kohortes_lc_drift"
+BACKTEST = "kohortes_lc_drift_from_2009"
+OURS_TRANSFORM = "lee_carter_drift@0.1"
+_CODES = {"female": "F", "male": "M"}
+
+
+def _fill(m: np.ndarray) -> np.ndarray:
+    """Death rates (age x year) with each zero (no death at one young age that year) as
+    the mean of the same age in the years beside it."""
+    m = m.copy()
+    for x, t in np.argwhere(m <= 0):
+        near = [m[x, j] for j in (t - 1, t + 1) if 0 <= j < m.shape[1] and m[x, j] > 0]
+        if not near:
+            raise ValueError(f"{EUROSTAT}: no death rate beside age {x}, year index {t}")
+        m[x, t] = np.mean(near)
+    return m
+
+
+def eurostat_rates(
+    data: Data,
+) -> tuple[list[int], dict[str, np.ndarray], dict[tuple[str, int, int], float], bool]:
+    """Greece's years, death rates by sex (ages 0-84 and 85+ x year; 85+ as l(85)/T(85)),
+    Eurostat's LIFEXP at 0 and 65 by (sex, age, year), and whether a value is provisional."""
+    df = eurostat._parsed(data[EUROSTAT][1])[1].filter(
+        pl.col("geo") == GEO,
+        pl.col("sex").is_in(list(_CODES.values())),
+        pl.col("value").is_not_null(),
+    )
+    cells = {
+        (i, s, a, int(t)): v
+        for i, s, a, t, v in df.select("indic_de", "sex", "age", "time", "value").iter_rows()
+    }
+    years = sorted({k[3] for k in cells if k[0] == "DEATHRATE"})
+    rates, lifexp = {}, {}
+    for sex, s in _CODES.items():
+        columns = []
+        for t in years:
+            top = "Y85" if ("SURVIVORS", s, "Y85", t) in cells else "Y_GE85"
+            try:
+                m = [cells["DEATHRATE", s, "Y_LT1", t]]
+                m += [cells["DEATHRATE", s, f"Y{x}", t] for x in range(1, OPEN_AGE)]
+                m.append(cells["SURVIVORS", s, top, t] / cells["TOTPYLIVED", s, top, t])
+                for x, code in ((0, "Y_LT1"), (65, "Y65")):
+                    lifexp[sex, x, t] = cells["LIFEXP", s, code, t]
+            except KeyError as e:
+                raise ValueError(f"{EUROSTAT}: {sex} {t} lacks {e}") from None
+            columns.append(m)
+        rates[sex] = _fill(np.array(columns).T)
+    provisional = any(eurostat.flag_meaning(f)[0] for f in df["flag"].drop_nulls().unique())
+    return years, rates, lifexp, provisional
+
+
+def check_life_tables(
+    years: list[int], rates: dict[str, np.ndarray], lifexp: dict[tuple[str, int, int], float]
+) -> None:
+    """Our life table on Eurostat's rates gives Eurostat's LIFEXP at 0 and 65, every year
+    and sex, within ``LIFE_TABLE_TOLERANCE``; raises otherwise."""
+    off = []
+    for sex, m in rates.items():
+        for j, t in enumerate(years):
+            e = expectancy(m[:, j], sex, EUROSTAT_A0)
+            off += [
+                f"{sex} {t} e{x}"
+                for x in (0, 65)
+                if abs(e[x] - lifexp[sex, x, t]) > LIFE_TABLE_TOLERANCE
+            ]
+    if off:
+        raise ValueError(f"Eurostat's life expectancy not reproduced: {', '.join(off[:5])}")
+
+
+def _k(ax: np.ndarray, bx: np.ndarray, e0: float, sex: str) -> float:
+    """The k at which exp(a + b k) gives life expectancy ``e0``."""
+    low, high = -1000.0, 1000.0
+    for _ in range(80):
+        k = (low + high) / 2
+        longer = expectancy(np.exp(ax + bx * k), sex, EUROSTAT_A0)[0] > e0
+        low, high = (k, high) if longer else (low, k)
+    return (low + high) / 2
+
+
+def drift(
+    years: list[int], rates: dict[str, np.ndarray], jump_off: int, drift_end: int, end: int
+) -> dict[tuple[str, str | None], np.ndarray]:
+    """Life expectancy at 0 and 65 (year x 2) of each year after ``jump_off`` to ``end``,
+    by (sex, interval bound or None), from the rates of the years up to ``jump_off``.
+
+    b(x): fitted by sex on those years around their mean log rate, repaired as
+    ``finish`` does, the sexes' mean; rotated as in WPP by the mean e0 of the year
+    before. k(t): refitted each year to the year's e0 from the jump-off rates; a random
+    walk with one drift for both sexes, the mean of the two from the first year to
+    ``drift_end``; each sex's own variance, the drift's uncertainty added.
+    """
+    j = years.index(jump_off)
+    logs = {sex: np.log(m[:, : j + 1]) for sex, m in rates.items()}
+    bs = []
+    for log in logs.values():
+        centred = log - log.mean(axis=1, keepdims=True)
+        total = centred.sum(axis=0)
+        bs.append(finish(centred @ total / (total @ total)))
+    bx = np.mean(bs, axis=0)
+    u = ultimate(bx)
+    ax = {sex: log[:, j] for sex, log in logs.items()}
+    e0 = {
+        sex: [expectancy(m[:, i], sex, EUROSTAT_A0)[0] for i in range(j + 1)]
+        for sex, m in rates.items()
+    }
+    n = years.index(drift_end)
+    kt = {sex: np.array([_k(ax[sex], bx, e, sex) for e in e0[sex][: n + 1]]) for sex in rates}
+    own = {sex: (k[-1] - k[0]) / n for sex, k in kt.items()}
+    d = np.mean(list(own.values()))
+    sigma = {sex: np.std(np.diff(k) - own[sex], ddof=1) for sex, k in kt.items()}
+    # a lower bound of life expectancy is an upper bound of k
+    bounds: list[tuple[str | None, float]] = [(None, 0.0)]
+    bounds += [(lower.value, z) for z, (lower, _) in LEVELS.items()]
+    bounds += [(upper.value, -z) for z, (_, upper) in LEVELS.items()]
+    out: dict[tuple[str, str | None], list[np.ndarray]] = {
+        (sex, b): [] for sex in rates for b, _ in bounds
+    }
+    previous = np.mean([e[-1] for e in e0.values()])
+    for h in range(1, end - jump_off + 1):
+        b = rotate(bx, u, previous)
+        for sex in rates:
+            for bound, z in bounds:
+                k = d * h + z * sigma[sex] * np.sqrt(h + h * h / n)
+                out[sex, bound].append(
+                    expectancy(np.exp(ax[sex] + b * k), sex, EUROSTAT_A0)[[0, 65]]
+                )
+        previous = np.mean([out[sex, None][-1][0] for sex in rates])
+    return {key: np.array(v) for key, v in out.items()}
+
+
+def _scenario(
+    data: Data,
+    frames: dict[str, tuple[int, dict[tuple[str, str | None], np.ndarray]]],
+    provisional: bool,
+) -> pl.DataFrame:
+    snapshot, raw = data[EUROSTAT]
+    definition, source = get_definition(LIFE_EXPECTANCY_ID), get_source(EUROSTAT)
+    rows = [
+        (scenario, str(jump_off + 1 + i), sex, str(age), bound, float(v[i, a]))
+        for scenario, (jump_off, values) in frames.items()
+        for (sex, bound), v in values.items()
+        for i in range(len(v))
+        for a, age in enumerate((0, 65))
+    ]
+    schema = ["scenario_id", "period", "sex", "age", "interval", "value"]
+    df = pl.DataFrame(
+        rows, schema={c: pl.Float64 if c == "value" else pl.String for c in schema}, orient="row"
+    )
+    return df.select(
+        metric=pl.lit(definition.metric),
+        definition_id=pl.lit(definition.id),
+        geo_code=pl.lit(GEO),
+        geo_vintage=pl.lit("NUTS2024"),
+        period="period",
+        sex="sex",
+        age="age",
+        value="value",
+        unit=pl.lit(definition.unit),
+        source=pl.lit(source.provider),
+        dataset_code=pl.lit(source.dataset_code),
+        source_url=pl.lit(snapshot.source_url),
+        vintage=pl.lit(eurostat._parsed(raw)[0]["updated"]),
+        retrieved_at=pl.lit(snapshot.retrieved_at, dtype=pl.Datetime("us", "UTC")),
+        transform_version=pl.lit(OURS_TRANSFORM),
+        nature=pl.lit(Nature.SCENARIO.value),
+        status=pl.lit(Status.PROVISIONAL.value if provisional else Status.FINAL.value),
+        break_in_series=pl.lit(False),
+        scenario_id="scenario_id",
+        interval="interval",
+    ).sort("scenario_id", "period", "sex", "age", "interval", nulls_last=False)
+
+
+def ours(data: Data) -> pl.DataFrame:
+    """Greece's life expectancy at 0 and 65 by sex if mortality keeps its trend since
+    1961 (``SCENARIO``, from the latest year to ``HORIZON``), and the same model from
+    2009 over 2010-2019 (``BACKTEST``), once our life table reproduces Eurostat's."""
+    years, rates, lifexp, provisional = eurostat_rates(data)
+    check_life_tables(years, rates, lifexp)
+    frames = {
+        SCENARIO: (years[-1], drift(years, rates, years[-1], DRIFT_END, HORIZON)),
+        BACKTEST: (
+            BACKTEST_JUMP_OFF,
+            drift(years, rates, BACKTEST_JUMP_OFF, BACKTEST_JUMP_OFF, BACKTEST_END),
+        ),
+    }
+    return _scenario(data, frames, provisional)

@@ -18,6 +18,7 @@ Source responses recorded from the live APIs, named by dataset and the countries
 | `eurostat_demo_minfind_el_cy.json` | Eurostat `demo_minfind` (infant and neonatal mortality), Greece and Cyprus, 2021 onwards: input of `test_indicators.py` and of the reconciliation in `test_elstat_pdf.py` |
 | `eurostat_demo_mlexpec_el_cy.json` | Eurostat `demo_mlexpec`, Greece and Cyprus: input of `test_indicators.py` |
 | `eurostat_demo_mlifetable_el_cy.json` | Eurostat `demo_mlifetable`, Greece and Cyprus, death rate, probability of dying, life expectancy, survivors and person-years above each age, 2022 onwards: input of `test_indicators.py`, `test_prospective.py`, `test_reproduction.py` and `test_life_expectancy.py` |
+| `eurostat_demo_mlifetable_el_1961_2024.json` | Eurostat `demo_mlifetable`, Greece, men and women, death rate, survivors, person-years above each age and life expectancy, 1961-2024 (downloaded 2026-10-16): input of `test_mortality.py` |
 | `eurostat_demo_mexrt_el.json` | Eurostat `demo_mexrt`, Greece, excess mortality by month, 2020-01 to 2026-06: official counterpart in `test_indicators.py` |
 | `eurostat_demo_mager_el.json` | Eurostat `demo_mager` (deaths by age reached), Greece, 2023-2024: input of `test_migration.py` |
 | `eurostat_migr_imm8_el.json` | Eurostat `migr_imm8` (immigration by age), Greece, 2023-2024: input of `test_indicators.py` and `test_migration.py` |

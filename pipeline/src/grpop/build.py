@@ -202,6 +202,8 @@ PROJECTIONS = {
     "population_projection_wpp_momentum": Step(momentum.SOURCES, _momentum),
     # WPP 2024's projected life expectancy, once our Lee-Carter reproduces it (Δ9).
     "life_expectancy_projection_wpp": Step(mortality.SOURCES, _mortality),
+    # Ours: Lee-Carter with drift from Eurostat's life tables, a scenario (Δ9).
+    "life_expectancy_scenario_lc": Step(mortality.OURS_SOURCES, mortality.ours),
     "population_projection_totals": Step(
         frozenset({projections.SOURCE, _POPULATION.source_id}),
         lambda data: projections.totals(projections.read(data), _POPULATION.read(data)),

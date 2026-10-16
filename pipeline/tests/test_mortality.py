@@ -107,3 +107,55 @@ def test_the_step_publishes_the_variants_life_expectancy():
     assert set(df["nature"]) == {"projected"} and set(df["age"]) == {"0", "65"}
     by = {(s, a, p): v for s, a, p, v in df.select("sex", "age", "period", "value").iter_rows()}
     assert by["female", "0", "2024"] == 84.4562  # WPP 2024 medium variant, Greece
+
+
+# Ours, from Greece's Eurostat life tables, 1961-2024 (recorded 2026-10-16)
+OURS = data(
+    mortality.OURS_SOURCES, {mortality.EUROSTAT: "eurostat_demo_mlifetable_el_1961_2024.json"}
+)
+
+
+def test_a_zero_rate_takes_the_years_beside_it():
+    m = mortality._fill(np.array([[1e-4, 0.0, 3e-4], [0.0, 2e-3, 2e-3]]))
+    assert np.allclose(m, [[1e-4, 2e-4, 3e-4], [2e-3, 2e-3, 2e-3]])
+
+
+def test_our_life_table_gives_eurostats_life_expectancy():
+    years, rates, lifexp, provisional = mortality.eurostat_rates(OURS)
+    assert (years[0], years[-1], rates["female"].shape) == (1961, 2024, (86, 64))
+    assert not provisional
+    mortality.check_life_tables(years, rates, lifexp)
+    rates["male"][60, years.index(1990)] *= 1.5  # one rate off: e0 moves 0.1 years
+    with pytest.raises(ValueError, match="not reproduced: male 1990 e0"):
+        mortality.check_life_tables(years, rates, lifexp)
+
+
+def test_the_drift_scenario_and_its_backtest():
+    df = validate_observations(build.STEPS["life_expectancy_scenario_lc"].run(OURS))
+    assert set(df["nature"]) == {"scenario"}
+    assert df.group_by("scenario_id").len().sort("scenario_id").rows() == [
+        (mortality.SCENARIO, 76 * 2 * 2 * 5),  # 2025-2100, sexes, ages 0 and 65, five values
+        (mortality.BACKTEST, 10 * 2 * 2 * 5),  # 2010-2019
+    ]
+    v = {
+        (s, i, a, p, b): x
+        for s, a, p, b, x, i in df.select(
+            "sex", "age", "period", "interval", "value", "scenario_id"
+        ).iter_rows()
+    }
+    scenario, backtest = mortality.SCENARIO, mortality.BACKTEST
+    assert round(v["female", scenario, "0", "2100", None], 1) == 92.6
+    assert round(v["male", scenario, "0", "2100", None], 1) == 89.5
+    for key in [k for k in v if k[4] is None]:
+        bounds = [v[(*key[:4], b)] for b in ("95_lower", "80_lower", None, "80_upper", "95_upper")]
+        assert bounds == sorted(bounds)
+    years, rates, _, _ = mortality.eurostat_rates(OURS)
+    inside = 0
+    for sex, m in rates.items():
+        for t in range(2010, 2020):
+            e = mortality.expectancy(m[:, years.index(t)], sex, mortality.EUROSTAT_A0)
+            for age in (0, 65):
+                key = (sex, backtest, str(age), str(t))
+                assert abs(v[(*key, None)] - e[age]) < 0.66  # 0.652 observed
+                inside += v[(*key, "95_lower")] <= e[age] <= v[(*key, "95_upper")]
+    assert inside == 39  # of 40

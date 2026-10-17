@@ -6,9 +6,9 @@ import { expect, test } from "@playwright/test";
 const SITE = new URL("../_site/", import.meta.url);
 // Tab presses allowed to reach a control: the navbar and the page's links come first.
 const MAX_TABS = 80;
-// With every table open, axe takes more than Playwright's default 30 s on the projections page.
+// With every table open, axe takes more than Playwright's default 30 s on the life expectancy page.
 const AXE_TIMEOUT = 120_000;
-const PAGES = ["index.html", "indicators/index.html", "indicators/total_fertility_rate.html", "regions/index.html", "regions/EL30.html", "projections.html", "definitions.html", "sources.html", "ai.html", "errata.html"];
+const PAGES = ["index.html", "indicators/index.html", "indicators/total_fertility_rate.html", "regions/index.html", "regions/EL30.html", "projections.html", "life-expectancy.html","definitions.html", "sources.html", "ai.html", "errata.html"];
 
 // The tooltips are SVG titles, shown under the pointer; the keyboard reaches the same
 // fields through the source panel and the data table, both details elements.

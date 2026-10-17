@@ -239,7 +239,11 @@ function projections(dir, catalog) {
       "([ορισμός](definitions.qmd#population-1jul-v1)).\n\n" +
       explained("wpp", "projections/wpp.json"),
   };
-  if (catalog.projections.life_expectancy) files["projections.qmd"] += lifeExpectancy(dir, catalog, files);
+  if (catalog.projections.life_expectancy) {
+    files["life-expectancy.qmd"] = lifeExpectancy(dir, catalog, files);
+    files["projections.qmd"] +=
+      "\n\nΤο προσδόκιμο ζωής, όπως το προβάλλει ο ΟΗΕ και σε ένα δικό μας σενάριο, έχει δική του σελίδα: [Διάρκεια ζωής](life-expectancy.qmd).\n";
+  }
   return files;
 }
 
@@ -248,14 +252,14 @@ const AT_EL = { 0: "στη γέννηση", 65: "στα 65" };
 
 /**
  * Life expectancy at birth and at 65 by sex: observed, the UN's projection and our
- * scenario with its backtest, side by side in one chart each. Adds the specs to `files`.
+ * scenario with its backtest, side by side in one chart each: the page; adds the specs to `files`.
  */
 function lifeExpectancy(dir, catalog, files) {
   const { observed, wpp, ours, scenarios } = catalog.projections.life_expectancy;
   const unnamed = [...new Set(load(dir, ours).map((r) => r.scenario_id).filter((id) => !scenarios[id]))];
   if (unnamed.length) throw new Error(`catalog.json: no Greek name for the scenarios ${unnamed.join(", ")}`);
   const EL = catalog.areas.EL;
-  let text = `\n## Διάρκεια ζωής\n\n${TEXTS.pages.projections_life}\n`;
+  let text = front("Διάρκεια ζωής") + `${TEXTS.pages.projections_life}\n`;
   for (const age of Object.keys(observed))
     for (const sex of Object.keys(SEX_EL)) {
       const path = `projections/life-expectancy-${age}-${sex}.json`;
@@ -268,7 +272,7 @@ function lifeExpectancy(dir, catalog, files) {
         title: `Προσδόκιμο ζωής ${AT_EL[age]}, ${SEX_EL[sex]}: ${EL}, παρατήρηση, UN WPP 2024 και σενάριο τάσης`,
         labels: { EL, [wpp]: "ΟΗΕ", ...scenarios },
       });
-      text += `\n### ${SEX_EL[sex][0].toUpperCase()}${SEX_EL[sex].slice(1)}, ${AT_EL[age]}\n\n` + explained("life_expectancy", path);
+      text += `\n## ${SEX_EL[sex][0].toUpperCase()}${SEX_EL[sex].slice(1)}, ${AT_EL[age]}\n\n` + explained("life_expectancy", path);
     }
   return text;
 }

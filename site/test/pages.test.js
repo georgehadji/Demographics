@@ -160,7 +160,8 @@ test("life expectancy: one chart per sex and age, observed, the UN's projection 
   assert.deepEqual([spec.data, spec.sex, spec.age], [["le65", "lewpp", "lelc"], "male", "65"]);
   assert.equal(spec.labels.lewpp, "ΟΗΕ");
   assert.equal(spec.labels.kohortes_lc_drift, "συνέχιση της τάσης");
-  const page = files["projections.qmd"].split("## Διάρκεια ζωής")[1];
+  const page = files["life-expectancy.qmd"];
+  assert.match(files["projections.qmd"], /\[Διάρκεια ζωής\]\(life-expectancy\.qmd\)/);
   assert.equal(page.match(/\{\{< chart projections\/life-expectancy-/g).length, 4);
   assert.ok(page.includes(TEXTS.pages.projections_life));
   assert.throws(() => pages(DIR, { ...catalog, projections: { ...catalog.projections, life_expectancy: { ...life, scenarios: {} } } }), /no Greek name for the scenarios kohortes_lc_drift/);

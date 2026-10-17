@@ -38,7 +38,7 @@ const LINE = {
   official_estimate: { dash: null, band: false, color: null },
   derived: { dash: null, band: false, color: null },
   projected: { dash: "stroke-dash-projected", band: true, color: null },
-  scenario: { dash: "stroke-dash-scenario", band: false, color: "color-scenario" },
+  scenario: { dash: "stroke-dash-scenario", band: true, color: "color-scenario" },
 };
 const POINT = {
   final: { drawn: true, hollow: false },

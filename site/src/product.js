@@ -148,7 +148,8 @@ export function panel(rows, l, t) {
 }
 
 /**
- * A chart from a JSON spec: {type, data, geo: [...], sex?, age?, ...the chart's spec}. The
+ * A chart from a JSON spec: {type, data, geo: [...], sex?, age?, ...the chart's spec}; data
+ * is one data product file or a list of them, drawn side by side, never combined. The
  * figure in the light and the dark mode (styles.css shows the one Quarto is in), its alt
  * text in view without the title, its data table, its CSV and the light mode as an SVG file.
  */
@@ -159,13 +160,16 @@ export function chart(dir, spec) {
   // "single": single years of age only, without the open classes (a Lexis surface)
   if (ages !== undefined && ages !== "single") throw new Error(`ages ${ages}: only "single" is known`);
   // A spec names its geometry (a data product file) and layout (a reference table).
+  // several files side by side, each row tagged with its file so it stays its own series
+  const files = [data].flat();
   const rest = {
-    format: formatOf(dir, data),
+    format: formatOf(dir, files[0]),
     ...given,
     ...(given.geometry && { geometry: geometry(dir, given.geometry) }),
     ...(given.layout && { layout: reference(given.layout) }),
   };
-  const rows = load(dir, data).filter(
+  const all = Array.isArray(data) ? files.flatMap((f) => load(dir, f).map((r) => ({ ...r, series: f }))) : load(dir, data);
+  const rows = all.filter(
     (r) => geo.includes(r.geo_code) && r.sex === sex && (age === undefined || r.age === age) && (ages === undefined || /^\d+$/.test(r.age)),
   );
   const { window } = new JSDOM("");
@@ -183,7 +187,7 @@ export function chart(dir, spec) {
       `<p class="kh-summary"><strong>${l.summary}:</strong> ${escape(summary)}</p>`,
       `<details><summary>${l.table}</summary>${light.table.outerHTML}</details>`,
       panel(rows, l, TEXT[(rest.locale ?? "el").slice(0, 2)]),
-      `<p><a download="${escape(data)}.csv" href="${href}">${l.csv}</a> · <a download="${escape(data)}.svg" href="${svg}">${l.svg}</a></p>`,
+      `<p><a download="${escape(files.join("+"))}.csv" href="${href}">${l.csv}</a> · <a download="${escape(files.join("+"))}.svg" href="${svg}">${l.svg}</a></p>`,
       `</div>`,
     ].join("");
   } finally {

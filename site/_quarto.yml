@@ -10,6 +10,7 @@ project:
     - indicators/*.qmd
     - regions/*.qmd
     - projections.qmd
+    - life-expectancy.qmd
     - definitions.qmd
     - sources.qmd
     - ai.qmd
@@ -28,6 +29,8 @@ website:
         text: Περιφέρειες
       - href: projections.qmd
         text: Προβολές
+      - href: life-expectancy.qmd
+        text: Διάρκεια ζωής
       - href: definitions.qmd
         text: Ορισμοί
       - href: sources.qmd

@@ -84,14 +84,16 @@ for (const mode of MODES) {
       }
   });
 
-  test(`${mode}: uncertainty bands stay visible and ordered`, () => {
-    const band = (k) => interpolate([t["color-background"], t["color-accent"]], "rgb")(t[k]);
-    const inner = contrast(band("opacity-band-80"), t["color-background"]);
-    const outer = contrast(band("opacity-band-95"), t["color-background"]);
-    assert.ok(outer >= 1.3, `95% band: ${outer}`);
-    assert.ok(inner >= 1.6 && inner > outer, `80% band: ${inner}`);
-    assert.ok(t["stroke-width-band-edge"] > 0, "bands have an edge line in the accent colour");
-  });
+  // a projection's bands in the accent, a scenario's in its own hue
+  for (const hue of ["color-accent", "color-scenario"])
+    test(`${mode}: uncertainty bands in ${hue} stay visible and ordered`, () => {
+      const band = (k) => interpolate([t["color-background"], t[hue]], "rgb")(t[k]);
+      const inner = contrast(band("opacity-band-80"), t["color-background"]);
+      const outer = contrast(band("opacity-band-95"), t["color-background"]);
+      assert.ok(outer >= 1.3, `95% band: ${outer}`);
+      assert.ok(inner >= 1.6 && inner > outer, `80% band: ${inner}`);
+      assert.ok(t["stroke-width-band-edge"] > 0, "bands have an edge line in their colour");
+    });
 
   test(`${mode}: region boundaries have 3:1 where a map class alone does not`, () => {
     const bg = t["color-background"];

@@ -212,7 +212,7 @@ export function seriesAlt(rows, s, { focusFirst = true } = {}) {
   );
   const parts = series.map((part) => {
     const id = part[0].scenario_id;
-    const name = s.label(part[0].geo_code) + (id ? ` (${s.text.nature.scenario}: ${s.label(id)})` : "");
+    const name = id ? `${s.label(part[0].geo_code)} (${s.text.nature.scenario}: ${s.label(id)})` : seriesName(s, part[0]);
     const drawn = byPeriod(part.filter((r) => r.value !== null));
     if (drawn.length === 0) return `${name}: ${s.text.missing}`;
     const [a, b] = [drawn[0], drawn.at(-1)];
@@ -403,7 +403,7 @@ export function barLook(r, color, tokens) {
  * data table carries the same fields for the keyboard.
  */
 export const tip = (s, r) =>
-  `${s.label(r.geo_code)}${r.scenario_id ? ` (${s.label(r.scenario_id)})` : ""} ${r.period}: ${s.format(r.value)} ${s.unit}` +
+  `${seriesName(s, r)} ${r.period}: ${s.format(r.value)} ${s.unit}` +
   ` · ${s.text.nature[r.nature]}, ${s.text.status[r.status]} · ${r.source}, ${r.dataset_code}`;
 
 /** ", προβολή" after a value that is projected or a scenario, so it is never read as observed. */
@@ -418,7 +418,12 @@ export const unique = (rows, key) => [...new Set(rows.map((r) => r[key]))];
 export const byPeriod = (rows) => [...rows].sort((a, b) => (a.period < b.period ? -1 : a.period > b.period ? 1 : 0));
 /** Central values only: interval bounds are drawn as bands, never as values. */
 export const central = (rows) => rows.filter((r) => !r.interval);
-/** One line: an area, or one scenario of it. */
-export const seriesKey = (r) => `${r.geo_code}|${r.scenario_id ?? ""}`;
+/** One line: an area, or one scenario of it; `series` tells apart the files of a chart that has several. */
+export const seriesKey = (r) => `${r.geo_code}|${r.scenario_id ?? ""}|${r.series ?? ""}`;
+/** A series' name: the area, then its scenario or, if labelled, its file. */
+export const seriesName = (s, r) => {
+  const tag = r.scenario_id ?? (r.series && s.labels?.[r.series] !== undefined ? r.series : null);
+  return s.label(r.geo_code) + (tag ? ` (${s.label(tag)})` : "");
+};
 /** Lower bound of an age ("85+" -> 85, "15-64" -> 15, "7" -> 7); null for total and unknown. */
 export const ageStart = (age) => (/^\d/.test(age) ? Number.parseInt(age, 10) : null);

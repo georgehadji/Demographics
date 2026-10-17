@@ -109,6 +109,36 @@ def test_the_step_publishes_the_variants_life_expectancy():
     assert by["female", "0", "2024"] == 84.4562  # WPP 2024 medium variant, Greece
 
 
+def test_cokannisto_recovers_its_own_rates():
+    ages = np.arange(80.0, 95.0)
+    truth = {"female": np.array([-11.0, 0.11]), "male": np.array([-10.6, 0.11])}
+    rates = {sex: mortality.kannisto(p, ages) for sex, p in truth.items()}
+    pars = mortality.cokannisto(rates["female"], rates["male"], ages)
+    assert all(np.allclose(pars[sex], truth[sex]) for sex in truth)
+    # a constant rate gives an open age with that rate (the table stops at 130)
+    open_rate = mortality.kannisto_open(np.array([np.log(0.25 / 0.75), 0.0]), 100)
+    assert np.isclose(open_rate, 0.25, rtol=1e-3)
+
+
+def test_kannisto_follows_the_uns_oldest_ages():
+    df = mortality.reproduce_kannisto(DATA)
+    assert df.height == 2 * 77 * 6  # sexes, 2024-2100, ages 95-99 and 100+
+    assert ((df["ours"] / df["theirs"]) - 1).abs().max() < 0.051  # 0.0500 observed
+
+
+@pytest.mark.parametrize(
+    ("name", "changed"),
+    [
+        ("kannisto", lambda p, a: np.exp(p[0] + p[1] * a)),  # Gompertz
+        ("KANNISTO_FIT", np.arange(70.0, 95.0)),  # fitted from 70
+    ],
+)
+def test_another_old_age_model_is_refused(monkeypatch, name, changed):
+    monkeypatch.setattr(mortality, name, changed)
+    with pytest.raises(ValueError, match="old-age mortality not reproduced"):
+        mortality.reproduce_kannisto(DATA)
+
+
 # Ours, from Greece's Eurostat life tables, 1961-2024 (recorded 2026-10-16)
 OURS = data(
     mortality.OURS_SOURCES, {mortality.EUROSTAT: "eurostat_demo_mlifetable_el_1961_2024.json"}

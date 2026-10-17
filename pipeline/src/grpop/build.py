@@ -175,8 +175,9 @@ def _momentum(data: indicators.Data) -> pl.DataFrame:
 
 def _mortality(data: indicators.Data) -> pl.DataFrame:
     """The medium variant's life expectancy at 0 and 65 by sex, once our Lee-Carter
-    reproduces its death rates for Greece."""
+    reproduces its death rates for Greece and Kannisto its oldest ages."""
     mortality.reproduce(data)
+    mortality.reproduce_kannisto(data)
     return pl.concat(
         un_wpp_csv.life_expectancy(*data[source_id], Sex(sex))
         for sex, source_id in mortality.TARGET.items()

@@ -46,8 +46,20 @@ rates. A scenario (ADR 0008): the consequence of the trend continuing, not a for
 Backtest, the same model from 2009 over 2010-2019 (published as ``BACKTEST``), VERIFIED
 2026-10-16: e0 at most 0.41 years off (women) and 0.65 (men), e65 0.38 and 0.65; 33 of
 40 values inside the 80% interval, 39 inside the 95%. In 2100 ours gives women 92.6 years
-at birth and men 89.5, WPP 2024 93.4 and 89.6. ponytail: no Kannisto above 85; the
-cohort engine, which needs ages to 100+, brings it with its own gate.
+at birth and men 89.5, WPP 2024 93.4 and 89.6. ponytail: no Kannisto above 85 here; the
+cohort engine, which needs ages to 100+, takes it from ``cokannisto`` below.
+
+Kannisto (MortCast's ``cokannisto``, ported: logit m(x) = log c + d x, one slope for
+both sexes, a level each, least squares) for ages above the last one fitted, the open
+age as l / T of its table closed at 130. Its gate (``reproduce_kannisto``, in the WPP
+step): fitted on WPP 2024's projected rates at 80-94, it gives the UN's 95-99 and 100+,
+2024-2100, within ``KANNISTO_TOLERANCE``. The UN's own old-age rates come from its
+Lee-Carter (reproduced above), so this checks that Kannisto follows a published old-age
+pattern, not that it reproduces a published Kannisto (INFERENCE: none for Greece is
+public without registration). VERIFIED 2026-10-17: at most 5.0% off (women, 95-99;
+median 2.4%), 100+ within 4.8%. The gate refuses Gompertz (75%) and a fit from 70
+(19%). On Eurostat's Greek rates the fit from 80-84 put men's 85-94 6-24% too high
+(2022-2024): the cohort engine must fit where the data allow, which it decides.
 """
 
 from __future__ import annotations
@@ -309,6 +321,59 @@ def reproduce(data: Data) -> pl.DataFrame:
     if off:
         raise ValueError(f"WPP 2024 mortality not reproduced: {', '.join(off[:5])}")
     return pl.concat(frames)
+
+
+# --- Kannisto above the last fitted age, for the cohort engine (ages to 100+) ---
+
+KANNISTO_FIT = np.arange(80.0, 95.0)  # the gate's ages, the UN's 80-94
+KANNISTO_TOP = 130  # the table above the open age closes here, as MortCast projects to
+KANNISTO_TOLERANCE = 0.055  # relative, ages 95-99 and 100+
+
+
+def cokannisto(female: np.ndarray, male: np.ndarray, ages: np.ndarray) -> dict[str, np.ndarray]:
+    """MortCast's ``cokannisto.estimate``: logit m(x) = log c + d x by least squares on
+    both sexes' rates at ``ages``, one slope d, a level c each; (log c, d) by sex."""
+    y = np.log(np.r_[male, female] / (1 - np.r_[male, female]))
+    n = len(ages)
+    x = np.column_stack([np.ones(2 * n), np.r_[np.ones(n), np.zeros(n)], np.r_[ages, ages]])
+    level, men, slope = np.linalg.lstsq(x, y, rcond=None)[0]
+    return {"female": np.array([level, slope]), "male": np.array([level + men, slope])}
+
+
+def kannisto(pars: np.ndarray, ages: np.ndarray) -> np.ndarray:
+    """MortCast's ``kannisto.predict``: c e^(d x) / (1 + c e^(d x))."""
+    z = np.exp(pars[0] + pars[1] * ages)
+    return np.asarray(z / (1 + z))
+
+
+def kannisto_open(pars: np.ndarray, start: int) -> float:
+    """The rate of the open age ``start``+, l / T of the Kannisto table to KANNISTO_TOP."""
+    m = kannisto(pars, np.arange(start, KANNISTO_TOP + 1.0))
+    lx = np.r_[1.0, np.cumprod((1 - m / 2) / (1 + m / 2))]
+    return float(1 / ((lx[1:] + lx[:-1]) / 2).sum())
+
+
+def reproduce_kannisto(data: Data) -> pl.DataFrame:
+    """WPP 2024's projected death rates of Greece at 95-99 and 100+ by Kannisto from its
+    rates at 80-94, each year and sex: sex, year, age, ours, theirs. Raises if any is
+    more than ``KANNISTO_TOLERANCE`` off."""
+    tables = {sex: _table(data[TARGET[sex]][1]) for sex in TARGET}
+    years = tables["female"][0]
+    rows, off = [], []
+    for j, year in enumerate(years):
+        fit = KANNISTO_FIT.astype(int)
+        pars = cokannisto(tables["female"][1][fit, j], tables["male"][1][fit, j], KANNISTO_FIT)
+        for sex, p in pars.items():
+            ours = np.r_[kannisto(p, np.arange(95.0, AGES - 1)), kannisto_open(p, AGES - 1)]
+            theirs = tables[sex][1][95:, j]
+            if (np.abs(ours / theirs - 1) > KANNISTO_TOLERANCE).any():
+                off.append(f"{sex} {year}")
+            rows += [
+                (sex, year, 95 + i, o, t) for i, (o, t) in enumerate(zip(ours, theirs, strict=True))
+            ]
+    if off:
+        raise ValueError(f"WPP 2024 old-age mortality not reproduced: {', '.join(off[:5])}")
+    return pl.DataFrame(rows, schema=["sex", "year", "age", "ours", "theirs"], orient="row")
 
 
 # --- ours: Lee-Carter with drift from Eurostat's life tables (Δ9, decided 2026-10-16) ---

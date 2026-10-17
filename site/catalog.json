@@ -36,6 +36,15 @@
     "europop2025_lower_migration": "χαμηλότερη μετανάστευση",
     "europop2025_no_migration": "χωρίς μετανάστευση",
     "europop2025_delayed_convergence": "καθυστερημένη σύγκλιση"
+    },
+    "life_expectancy": {
+      "observed": { "0": "life_expectancy_0", "65": "life_expectancy_65" },
+      "wpp": "life_expectancy_projection_wpp",
+      "ours": "life_expectancy_scenario_lc",
+      "scenarios": {
+        "kohortes_lc_drift": "συνέχιση της τάσης",
+        "kohortes_lc_drift_from_2009": "έλεγχος από το 2009"
+      }
     }
   }
 }

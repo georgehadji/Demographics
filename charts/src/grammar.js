@@ -8,8 +8,8 @@ const NATURE = {
   official_estimate: { dash: null, band: false, color: null },
   derived: { dash: null, band: false, color: null },
   projected: { dash: "stroke-dash-projected", band: true, color: null },
-  // Scenarios take another hue family than the series they belong to.
-  scenario: { dash: "stroke-dash-scenario", band: false, color: "color-scenario" },
+  // Scenarios take another hue family than the series they belong to, their bands too.
+  scenario: { dash: "stroke-dash-scenario", band: true, color: "color-scenario" },
 };
 
 const STATUS = {

@@ -97,6 +97,15 @@ test("labels that would overlap are pushed apart and stay inside the plot", () =
   assert.ok(ys.at(-1) <= bottom, `lowest label at ${ys.at(-1)}, plot ends at ${bottom}`);
 });
 
+test("labels that end a period apart but would overlap are pushed apart too", () => {
+  const rows = [row("EL", "2000", 10), row("EL", "2030", 20), row("PT", "2000", 10), row("PT", "2029", 20.05)];
+  const ys = marks(line(rows, SPEC, { tokens, document }).figure, "text")
+    .filter((g) => ["Ελλάδα", "Πορτογαλία"].includes(g.textContent))
+    .map((g) => +g.querySelector("text").getAttribute("transform").match(/,([-\d.]+)\)/)[1]);
+  assert.equal(ys.length, 2);
+  assert.ok(Math.abs(ys[0] - ys[1]) > 11.99, `label positions ${ys}`);
+});
+
 test("a scenario starts at the area's last value before it", () => {
   const [scenario] = paths(chart().figure).filter((g) => g.getAttribute("stroke") === tokens["color-scenario"]);
   assert.match(scenario.querySelector("path").getAttribute("d"), /^M[^M]+L[^M]+$/);
@@ -220,6 +229,42 @@ test("interval bounds are bands, never lines or labels; alt text names the 95% i
   const cells = [...table.querySelectorAll("td")].map((td) => td.textContent);
   assert.ok(cells.includes("κάτω όριο 95%"));
   assert.ok(cells.includes("κεντρική τιμή"));
+});
+
+// two files side by side: observed, another's projection from the last observed year, our scenario with bounds
+const FILES = [
+  row("EL", "2023", 100, { series: "observed" }),
+  row("EL", "2024", 101, { series: "observed" }),
+  row("EL", "2024", 100.5, { nature: "projected", series: "wpp" }),
+  row("EL", "2040", 104, { nature: "projected", series: "wpp" }),
+  ...["2030", "2040"].flatMap((p, i) => [
+    row("EL", p, 102 + i, { nature: "scenario", scenario_id: "lc", series: "lc" }),
+    row("EL", p, 99 - i, { nature: "scenario", scenario_id: "lc", series: "lc", interval: "95_lower" }),
+    row("EL", p, 105 + i, { nature: "scenario", scenario_id: "lc", series: "lc", interval: "95_upper" }),
+  ]),
+];
+const FILE_SPEC = { title: "Ζουν περισσότερο", labels: { EL: "Ελλάδα", wpp: "ΟΗΕ", lc: "δικό μας" } };
+
+test("a scenario with bounds is a fan in its own hue, opening at the observation", () => {
+  const { figure } = chart(FILES, FILE_SPEC);
+  const [band] = marks(figure, "area");
+  assert.equal(band.getAttribute("fill"), tokens["color-scenario"]);
+  // 2024 observed (not the projection of 2024), then 2030 and 2040
+  const d = band.querySelector("path").getAttribute("d");
+  assert.equal((d.match(/L/g) ?? []).length, 5);
+  const scenario = paths(figure).find((g) => g.getAttribute("stroke-dasharray") === tokens["stroke-dash-scenario"]);
+  assert.equal(scenario.querySelector("path").getAttribute("d").split("L")[0], d.split("L")[0]);
+});
+
+test("files of one chart are their own series, named by their labels", () => {
+  const { figure, alt } = chart(FILES, FILE_SPEC);
+  const texts = marks(figure, "text").map((g) => g.textContent);
+  for (const name of ["Ελλάδα", "Ελλάδα (ΟΗΕ)", "Ελλάδα (δικό μας)"]) assert.ok(texts.includes(name), texts.join("|"));
+  assert.ok(alt.includes("Ελλάδα (ΟΗΕ): από 100,5 (2024) σε 104 (2040)"), alt);
+  // the observed line does not zigzag into the other file's 2024
+  const solid = paths(figure).filter((g) => !g.getAttribute("stroke-dasharray") && g.getAttribute("stroke-width") === String(tokens["stroke-width-focus"]));
+  assert.equal(solid.length, 1);
+  assert.match(solid[0].querySelector("path").getAttribute("d"), /^M[^ML]+L[^ML]+$/);
 });
 
 test("the last observation before a projection is marked with its date", () => {

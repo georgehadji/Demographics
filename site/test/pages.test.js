@@ -141,6 +141,31 @@ test("the projections page quotes the baseline and the WPP median, and names eve
   assert.throws(() => pages(DIR, { ...CATALOG, projections: { ...CATALOG.projections, scenarios: {} } }), /no Greek name for the scenarios s1/);
 });
 
+test("life expectancy: one chart per sex and age, observed, the UN's projection and our scenario side by side", () => {
+  const at = (age, sex, extra = "") => (r) => r.replace("population,population_1jan@v1", "life_expectancy,life_expectancy@v1").replace(",total,total,", `,${sex},${age},`).replace(",persons,", ",years,") + extra;
+  const rows = (age) =>
+    ["female", "male"].flatMap((sex) => [
+      at(age, sex)(row("EL", "2024", "84.4")),
+      at(age, sex)(row("EL", "2030", "86.0", "", "projected")),
+      at(age, sex)(row("EL", "2030", "85.5", "kohortes_lc_drift")),
+    ]);
+  write("le0.csv", csv(...rows("0").filter((r) => r.includes(",2024,"))));
+  write("le65.csv", csv(...rows("65").filter((r) => r.includes(",2024,"))));
+  write("lewpp.csv", csv(...["0", "65"].flatMap(rows).filter((r) => r.includes(",projected,"))));
+  write("lelc.csv", csv(...["0", "65"].flatMap(rows).filter((r) => r.includes(",scenario,"))));
+  const life = { observed: { 0: "le0", 65: "le65" }, wpp: "lewpp", ours: "lelc", scenarios: { kohortes_lc_drift: "συνέχιση της τάσης" } };
+  const catalog = { ...CATALOG, projections: { ...CATALOG.projections, life_expectancy: life } };
+  const files = pages(DIR, catalog);
+  const spec = JSON.parse(files["projections/life-expectancy-65-male.json"]);
+  assert.deepEqual([spec.data, spec.sex, spec.age], [["le65", "lewpp", "lelc"], "male", "65"]);
+  assert.equal(spec.labels.lewpp, "ΟΗΕ");
+  assert.equal(spec.labels.kohortes_lc_drift, "συνέχιση της τάσης");
+  const page = files["projections.qmd"].split("## Διάρκεια ζωής")[1];
+  assert.equal(page.match(/\{\{< chart projections\/life-expectancy-/g).length, 4);
+  assert.ok(page.includes(TEXTS.pages.projections_life));
+  assert.throws(() => pages(DIR, { ...catalog, projections: { ...catalog.projections, life_expectancy: { ...life, scenarios: {} } } }), /no Greek name for the scenarios kohortes_lc_drift/);
+});
+
 test("the mortality page quotes the probability of dying at each age and draws the death rates as a Lexis surface", () => {
   const at = (metric, age) =>
     row("EL", "2024", "0.003").replace("population,population_1jan@v1", `${metric},${metric}@v1`).replace(",total,total,", `,total,${age},`).replace(",persons,", ",probability,");

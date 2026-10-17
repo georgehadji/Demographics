@@ -8,7 +8,7 @@
 // fan chart: 95% and 80% bands open from the last value before them, and a thin rule
 // marks the focus' last observation.
 import * as Plot from "@observablehq/plot";
-import { BREAK_MARK, byPeriod, central, compose, frame, seriesKey, tip } from "./chart.js";
+import { BREAK_MARK, byPeriod, central, compose, frame, seriesKey, seriesName, tip } from "./chart.js";
 import { style } from "./grammar.js";
 
 // Approximate width of a label character and line height of labels, in pixels, at
@@ -49,6 +49,19 @@ function segments(rows, gaps) {
 }
 
 /**
+ * The value a scenario starts from: its area's last value before it (an observation
+ * before a projection of another file at the same period), unless a break starts it.
+ */
+function scenarioStart(part, rows, gaps) {
+  const start = byPeriod(part)[0];
+  if (!start.scenario_id || (gaps && start.break_in_series)) return undefined;
+  const before = rows.filter((r) => r.geo_code === start.geo_code && !r.scenario_id && r.value !== null && r.period < start.period);
+  const latest = byPeriod(before).at(-1);
+  const tied = before.filter((r) => r.period === latest?.period);
+  return tied.find((r) => !style(r.nature, "final").dash) ?? latest;
+}
+
+/**
  * The marks of one series: a line per segment (a scenario starting at its area's last
  * value before it), hollow markers and break marks. `rows` are all central rows, for
  * that start; `facet` adds fx/fy channels in small multiples; `gaps` cuts the line at a
@@ -56,13 +69,8 @@ function segments(rows, gaps) {
  */
 export function seriesMarks(part, rows, { color, width, tokens, facet = {}, gaps = true, title }) {
   const parts = segments(part, gaps);
-  const start = byPeriod(part)[0];
-  if (start.scenario_id && !(gaps && start.break_in_series)) {
-    const before = rows.filter(
-      (r) => r.geo_code === start.geo_code && !r.scenario_id && r.value !== null && r.period < start.period,
-    );
-    if (before.length) parts[0].rows.unshift(byPeriod(before).at(-1));
-  }
+  const from = scenarioStart(part, rows, gaps);
+  if (from) parts[0].rows.unshift(from);
   const at = { x: (r) => date(r.period), y: "value", ...facet };
   const marks = parts.map((seg) => {
     const dash = style(seg.nature, "final").dash;
@@ -84,8 +92,8 @@ export function seriesMarks(part, rows, { color, width, tokens, facet = {}, gaps
   return marks;
 }
 
-/** The 95% and 80% bands of one series, each opening from the last value before it. */
-function bands(part, bounds, color, tokens) {
+/** The 95% and 80% bands of one series, each opening from the last value before it (a scenario's: where its line starts). */
+function bands(part, bounds, color, tokens, from) {
   const marks = [];
   for (const [level, opacity] of BANDS) {
     const bound = (side) =>
@@ -94,7 +102,7 @@ function bands(part, bounds, color, tokens) {
     const shown = byPeriod(part).filter((r) => style(r.nature, "final").band && lower.has(r.period) && upper.has(r.period));
     if (!shown.length) continue;
     const band = shown.map((r) => ({ x: date(r.period), y1: lower.get(r.period), y2: upper.get(r.period), nature: r.nature }));
-    const before = byPeriod(part.filter((r) => r.value !== null && r.period < shown[0].period)).at(-1);
+    const before = byPeriod(part.filter((r) => r.value !== null && r.period < shown[0].period)).at(-1) ?? from;
     if (before) band.unshift({ x: date(before.period), y1: before.value, y2: before.value, nature: shown[0].nature });
     const fill = color(shown[0].nature);
     marks.push(Plot.areaY(band, { x: "x", y1: "y1", y2: "y2", fill, fillOpacity: tokens[opacity] }));
@@ -136,11 +144,13 @@ function draw(all, s, options) {
     const base = focus ? tokens["color-accent"] : tokens["color-comparator"];
     const width = tokens[focus ? "stroke-width-focus" : "stroke-width-context"];
     const color = (nature) => tokens[style(nature, "final").color] ?? base;
-    under.push(...bands(part, all.filter((r) => r.interval && seriesKey(r) === key), color, tokens));
+    const gaps = part[0].geo_code === s.focus;
+    const from = scenarioStart(part, rows, gaps);
+    under.push(...bands(part, all.filter((r) => r.interval && seriesKey(r) === key), color, tokens, from));
     marks.push(...seriesMarks(part, rows, { color, width, tokens, gaps: part[0].geo_code === s.focus, title: (r) => tip(s, r) }));
     const end = byPeriod(part.filter((r) => r.value !== null)).at(-1);
     if (end) {
-      const name = s.label(end.geo_code) + (end.scenario_id ? ` (${s.label(end.scenario_id)})` : "");
+      const name = seriesName(s, end);
       labels.push({ x: date(end.period), y: end.value, name, fill: focus ? color(end.nature) : tokens["color-text-muted"] });
     }
   }
@@ -159,26 +169,31 @@ function draw(all, s, options) {
   domain = { domain: y.domain }; // labels must not move the scale they were placed on
   // room for the longest tick label (10.372.335 would be cut at Plot's default 40)
   marginLeft = Math.max(MARGIN_LEFT, ...y.domain.map((v) => s.format(v).length * LABEL_CHAR + 12));
-  return plot(dodge(labels, y).map((l) => Plot.text([l], { x: "x", y: "y", text: "name", fill: l.fill, dx: 6, textAnchor: "start" })));
+  const x = plot([]).scale("x"); // with the final margins
+  return plot(dodge(labels, x, y).map((l) => Plot.text([l], { x: "x", y: "y", text: "name", fill: l.fill, dx: 6, textAnchor: "start" })));
 }
 
 /**
- * Labels at the same x pushed apart vertically so they do not overlap, and back up
- * when the lowest would leave the plot.
- * ponytail: only labels at the same period are dodged; labels at neighbouring periods
- * can still touch on a narrow chart. Dodge by pixel extent if that shows up.
+ * Labels pushed apart vertically wherever their text would overlap (by pixel extent:
+ * a label runs LABEL_CHAR per character to the right of its x), each group moved back
+ * up when its lowest would leave the plot.
  */
-function dodge(labels, y) {
+function dodge(labels, x, y) {
   const bottom = Math.max(...y.range);
-  const out = [];
-  for (const group of Map.groupBy(labels, (l) => +l.x).values()) {
-    const px = group.map((l) => y.apply(l.y)).toSorted((a, b) => a - b);
-    const sorted = group.toSorted((a, b) => y.apply(a.y) - y.apply(b.y));
-    for (let i = 1; i < px.length; i++) px[i] = Math.max(px[i], px[i - 1] + LABEL_GAP);
-    const shift = Math.max(0, px.at(-1) - bottom);
-    sorted.forEach((l, i) => out.push({ ...l, y: y.invert(px[i] - shift) }));
+  const span = (l) => [x.apply(l.x), x.apply(l.x) + l.name.length * LABEL_CHAR + 6];
+  const sorted = labels.map((l) => ({ ...l, px: y.apply(l.y) })).toSorted((a, b) => a.px - b.px);
+  const placed = [];
+  for (const l of sorted) {
+    const [a, b] = span(l);
+    const near = placed.filter((p) => {
+      const [c, d] = span(p);
+      return a < d && c < b;
+    });
+    for (const p of near) if (l.px < p.px + LABEL_GAP) l.px = p.px + LABEL_GAP;
+    placed.push(l);
   }
-  return out;
+  const shift = Math.max(0, ...placed.map((l) => l.px - bottom));
+  return placed.map(({ px, ...l }) => ({ ...l, y: y.invert(px - shift) }));
 }
 
 export const line = compose(draw);

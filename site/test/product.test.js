@@ -91,6 +91,15 @@ test("a chart gives the figure in both modes, its table and its CSV", () => {
   assert.throws(() => chart(DIR, { type: "tiles", data: "population", geo: ["EL"], layout: "../x", title: "x" }), /not a reference table name/);
 });
 
+test("a chart of several files draws each as its own series, named by its label", () => {
+  const html = chart(DIR, { type: "line", data: ["population", "rounded"], geo: ["EL"], title: "Τίτλος", labels: { EL: "Ελλάδα", rounded: "άλλο" } });
+  const summary = html.match(/<p class="kh-summary">(.+?)<\/p>/)[1];
+  assert.match(summary, /Ελλάδα: από /);
+  assert.match(summary, /Ελλάδα \(άλλο\): από 46,667 \(2023\)/);
+  assert.match(html, /download="population\+rounded.csv"/);
+  assert.throws(() => chart(DIR, { type: "line", data: ["population", "unlisted"], geo: ["EL"], title: "x" }), /unlisted/);
+});
+
 test("ages single keeps the single years of age only, for a Lexis surface", () => {
   const spec = { type: "lexis", data: "byAge", geo: ["EL"], title: "x" };
   assert.throws(() => chart(DIR, spec), /single years of age, not 95\+/);
